@@ -32,9 +32,7 @@ export default function Layout({children}: any) {
                     <div style={{
                         width: '100%',
                         height: '100%',
-                        margin: '10px',
-                        border: '1px solid #0b213f',
-                        borderRadius: '6px'
+                        margin: '10px'
                     }}>
                         {children}
                     </div>

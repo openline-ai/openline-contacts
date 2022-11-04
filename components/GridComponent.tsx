@@ -42,7 +42,7 @@ const GridComponent = (props: any) => {
 
     const leftContents = (
         <Fragment>
-            <Button onClick={() => onEdit(null)} className='p-button-text'>
+            <Button onClick={() => onEdit('new')} className='p-button-text'>
                 <FontAwesomeIcon icon={faPlus} style={{color: 'black'}}/>&nbsp;&nbsp;New {props.resourceLabel}
             </Button>
             <Button disabled={selectedRecords.length === 0} onClick={() => console.log(1)} className='p-button-text'>
@@ -55,10 +55,9 @@ const GridComponent = (props: any) => {
         layout: 'RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink',
         'RowsPerPageDropdown': (options: any) => {
             const dropdownOptions = [
-                {label: '5', value: 5},
-                {label: '10', value: 10},
-                {label: '20', value: 20},
-                {label: '50', value: 50}
+                {label: '25', value: 25},
+                {label: '50', value: 50},
+                {label: '100', value: 100}
             ];
 
             return (
@@ -69,7 +68,7 @@ const GridComponent = (props: any) => {
                         setLazyParams((prevLazyParams: any) => {
                             return {
                                 ...prevLazyParams, ...{
-                                    rows: evt.value
+                                    limit: evt.value
                                 }
                             };
                         })
@@ -93,45 +92,52 @@ const GridComponent = (props: any) => {
     const [totalRecords, setTotalRecords] = useState(0);
     const [lazyParams, setLazyParams] = useState({
         first: 0,
-        rows: 5,
-        page: 0,
+        limit: 25,
+        page: 1,
         sortField: '',
         sortOrder: null,
-        sortOrderBE: '',
-        filters: props.filters
+        sortOrderBE: ''
     });
-
-    var fieldsForQuery = props.columns.map((p: any) => p.field).join("\n");
-    fieldsForQuery += "\nid\n";
 
     const loadLazyData = () => {
         setLoading(true);
 
         const params = {
-            page: lazyParams.page,
-            size: lazyParams.rows,
+            pagination: {
+                page: lazyParams.page,
+                limit: lazyParams.limit
+            },
             sortOrder: lazyParams.sortOrderBE,
             sortField: lazyParams.sortField,
         } as any;
 
-        for (let filtersKey in lazyParams.filters) {
-            if (lazyParams.filters[filtersKey].value) {
-                params[filtersKey] = lazyParams.filters[filtersKey].value;
+        var fieldsForQuery = props.columns.map((p: any) => p.field).join("\n");
+        fieldsForQuery += "\nid\n";
+
+        const query = gql`
+            query GetList($pagination: PaginationFilter){
+
+                ${props.hqlQuery}(paginationFilter: $pagination){
+                    content {
+                        ${fieldsForQuery}
+                    }
+                    totalPages
+                    totalElements
+                }
+
             }
-        }
+        `
 
-        const query = gql`{${props.resourceLoadBaseUrl}{${fieldsForQuery}}}`
-
-        client.request(query)
-            .then((response) => {
-                setData(props.prepareDataForGrid(response));
-                setLoading(false);
-            }).catch((e) => {
-            setData([]);
+        client.request(query, params).then((response: any) => {
+            setData(response[props.hqlQuery].content);
+            setTotalRecords(response[props.hqlQuery].totalElements);
+            setLoading(false);
+        }).catch((e) => {
             setTotalRecords(0);
             setLoading(false);
             //TODO show error
         });
+
     }
 
     useEffect(() => {
@@ -139,10 +145,11 @@ const GridComponent = (props: any) => {
     }, [lazyParams, props.triggerReload]);
 
     const onPage = (event: any) => {
+        console.log(event);
         setLazyParams((prevLazyParams: any) => {
             return {
                 ...prevLazyParams, ...{
-                    page: event.page,
+                    page: (event.first / event.rows) + 1,
                     first: event.first
                 }
             };
@@ -172,18 +179,20 @@ const GridComponent = (props: any) => {
 
     return <>
         <Toolbar left={leftContents}/>
-        <DataTable value={data} lazy filterDisplay="row" responsiveLayout="scroll" dataKey="id" size={'normal'}
+        <DataTable value={data} lazy responsiveLayout="scroll" dataKey="id" size={'normal'}
                    paginator paginatorTemplate={paginatorTemplate} paginatorLeft={paginatorLeft}
-                   first={lazyParams.first} rows={lazyParams.rows} totalRecords={totalRecords} onPage={onPage}
-                   onSort={onSort} sortField={lazyParams.sortField} sortOrder={lazyParams.sortOrder}
-                   onFilter={onFilter} filters={lazyParams.filters} loading={loading}
+                   first={lazyParams.first} rows={lazyParams.limit} totalRecords={totalRecords} onPage={onPage}
+                   onFilter={onFilter} loading={loading}
                    selection={selectedRecords} onSelectionChange={onSelectionChange}
                    selectAll={selectAll} onSelectAllChange={onSelectAllChange} selectionMode="checkbox">
-            <Column selectionMode="multiple" headerStyle={{width: '3em'}}></Column>
             {
-                props.columns.map((columnDefinition: any) => {
+                props.columns
+                    .filter((c: any) => c.hidden === undefined || c.hidden === false)
+                    .map((columnDefinition: any) => {
                     let bodyTemplate = (rowData: any) => {
-                        if (columnDefinition.template) {
+                        if (columnDefinition.hidden !== undefined && columnDefinition.hidden === true) {
+                            return;
+                        } else if (columnDefinition.template) {
                             return columnDefinition.template;
                         } else if (columnDefinition.editLink) {
                             return <span className={`cta ${columnDefinition.className ?? ''}`}
@@ -197,11 +206,7 @@ const GridComponent = (props: any) => {
                                    field={columnDefinition.field}
                                    header={columnDefinition.header}
                                    className={columnDefinition.className ?? ''}
-                                   body={bodyTemplate}
-                                   sortable={columnDefinition.sortable ?? true}
-                                   filter
-                                   filterPlaceholder={'Search by ' + (
-                                       columnDefinition.filterPlaceholder ?? columnDefinition.field)}/>
+                                   body={bodyTemplate}/>
                 })
             }
         </DataTable>
@@ -210,19 +215,18 @@ const GridComponent = (props: any) => {
 
 GridComponent.propTypes = {
     resourceLabel: PropTypes.string,
-    resourceLoadBaseUrl: PropTypes.string,
     filters: PropTypes.object,
     columns: PropTypes.arrayOf(PropTypes.shape({
         field: PropTypes.string.isRequired,
-        header: PropTypes.string.isRequired,
+        hidden: PropTypes.bool,
+        header: PropTypes.string,
         className: PropTypes.string,
         template: PropTypes.func,
         editLink: PropTypes.bool,
-        sortable: PropTypes.bool,
         filterPlaceholder: PropTypes.string,
     })),
     triggerReload: PropTypes.bool,
-    prepareDataForGrid: PropTypes.func,
+    hqlQuery: PropTypes.string,
     onEdit: PropTypes.func
 }
 
