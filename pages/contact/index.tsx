@@ -2,6 +2,7 @@ import type {NextPage} from 'next'
 import {useRouter} from "next/router";
 import Layout from "../../layout/layout";
 import GridComponent from "../../components/GridComponent";
+import {gql} from "graphql-request";
 
 const ContactList: NextPage = () => {
     const router = useRouter();
@@ -10,35 +11,27 @@ const ContactList: NextPage = () => {
         <>
             <Layout>
                 <GridComponent resourceLabel={'contact'}
-                               resourceLoadBaseUrl={'contacts'}
+                               hqlQuery="contacts"
                                columns={
                                    [
                                        {
-                                           field: 'first_name',
+                                           field: 'title',
+                                           hidden: true
+                                       },
+                                       {
+                                           field: 'firstName',
                                            header: 'First name',
-                                           className: 'w100',
+                                           className: 'w50',
                                            editLink: true
                                        },
                                        {
-                                           field: 'last_name',
+                                           field: 'lastName',
                                            header: 'Last name',
-                                           className: 'w100',
-                                           editLink: true
-                                       },
-                                       {
-                                           field: 'email',
-                                           header: 'Last name',
-                                           className: 'w100',
-                                           editLink: true
+                                           className: 'w50',
+                                           editLink: false
                                        }
                                    ]
                                }
-                               filters={
-                                   {
-                                       'name': {value: '', matchMode: 'contains'},
-                                   }
-                               }
-                               prepareDataForGrid={(response: any) => {return response.contacts}}
                                onEdit={(id: any) => router.push(`/contact/${id}`)}
                 />
             </Layout>

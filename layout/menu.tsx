@@ -6,14 +6,15 @@ const LayoutMenu = () => {
     const router = useRouter();
 
     let items = [
-        {
-            label: 'Customers', icon: 'pi pi-mobile', command: () => {
-                router.push('/customer');
-            }
-        },
+
         {
             label: 'Contacts', icon: 'pi pi-mobile', command: () => {
                 router.push('/contact');
+            }
+        },
+        {
+            label: 'Contact groups', icon: 'pi pi-mobile', command: () => {
+                router.push('/contactGroup');
             }
         }
     ];

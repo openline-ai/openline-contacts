@@ -9,6 +9,7 @@ import {Fragment} from "preact";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faSave} from "@fortawesome/free-solid-svg-icons";
+import {useEffect} from "react";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -17,48 +18,44 @@ function ContactDetails() {
     const {id} = router.query;
 
     const formik = useFormik({
+        enableReinitialize: true,
         initialValues: {
-            customerId: '',
-            first_name: '',
-            last_name: '',
-            middle_name: '',
-            phone_number: '',
-            email: '',
-            address: '',
+            id: undefined,
+            firstName: '',
+            lastName: '',
         },
         validate: (data) => {
             let errors = {} as any;
 
-            if (!data.first_name) {
-                errors.first_name = 'First name is required.';
+            if (!data.firstName) {
+                errors.firstName = 'First name is required.';
             }
-            if (!data.last_name) {
-                errors.last_name = 'Last name is required.';
-            }
-
-            if (!data.email) {
-                errors.email = 'Email is required.';
+            if (!data.lastName) {
+                errors.lastName = 'Last name is required.';
             }
 
             return errors;
         },
         onSubmit: (data) => {
+            let query = undefined;
 
-            const query = gql`
-              mutation createContact($first_name: String, $last_name: String, $middle_name: String, $phone_number: String, $email: String, $address: String) {
-                  createContact(input: {
-                      first_name: $first_name,
-                      last_name: $last_name,
-                      middle_name: $middle_name,
-                      phone_number: $phone_number,
-                      email: $email,
-                      address: $address
-                  }) {
-                  id
-                  }
-              }`
+            if (!data.id) {
+                query = gql`mutation CreateContact($contact: ContactInput!) {
+                    createContact(input: $contact) {
+                        id
+                    }
+                }`
+            } else {
+                query = gql`mutation UpdateContact($contact: ContactUpdateInput!) {
+                    updateContact(input: $contact) {
+                        id
+                    }
+                }`
+            }
 
-            client.request(query, data).then(() => {
+            client.request(query, {
+                contact: data
+            }).then(() => {
                     router.push('/contact');
                 }
             ).catch((reason) => {
@@ -73,6 +70,26 @@ function ContactDetails() {
 
         }
     });
+
+    useEffect(() => {
+
+        if (id !== undefined && id !== 'new') {
+
+            const query = gql`query GetContactById($id: ID!) {
+                contact(id: $id) {
+                    id
+                    firstName
+                    lastName
+                }
+            }`
+
+            client.request(query, {id: id}).then((response: any) => {
+                formik.setValues(response.contact);
+            });
+
+        }
+
+    }, [id]);
 
     const formikTouched: any = formik.touched;
     const formikErrors: any = formik.errors;
@@ -101,64 +118,23 @@ function ContactDetails() {
 
                         <div>
                                     <span className="p-float-label">
-                                        <InputText id="first_name" name="first_name" value={formik.values.first_name}
+                                        <InputText id="firstName" name="firstName" value={formik.values.firstName}
                                                    onChange={formik.handleChange} autoFocus
-                                                   className={classNames({'p-invalid': isFormFieldValid('first_name')})}/>
-                                        <label htmlFor="first_name"
-                                               className={classNames({'p-error': isFormFieldValid('first_name')})}>First name *</label>
+                                                   className={classNames({'p-invalid': isFormFieldValid('firstName')})}/>
+                                        <label htmlFor="firstName"
+                                               className={classNames({'p-error': isFormFieldValid('firstName')})}>First name *</label>
                                     </span>
-                            {getFormErrorMessage('first_name')}
+                            {getFormErrorMessage('firstName')}
                         </div>
                         <div>
                                     <span className="p-float-label">
-                                        <InputText id="last_name" name="last_name" value={formik.values.last_name}
+                                        <InputText id="lastName" name="lastName" value={formik.values.lastName}
                                                    onChange={formik.handleChange} autoFocus
-                                                   className={classNames({'p-invalid': isFormFieldValid('last_name')})}/>
-                                        <label htmlFor="last_name"
-                                               className={classNames({'p-error': isFormFieldValid('last_name')})}>Last name *</label>
+                                                   className={classNames({'p-invalid': isFormFieldValid('lastName')})}/>
+                                        <label htmlFor="lastName"
+                                               className={classNames({'p-error': isFormFieldValid('lastName')})}>Last name *</label>
                                     </span>
-                            {getFormErrorMessage('last_name')}
-                        </div>
-                        <div>
-                                    <span className="p-float-label">
-                                        <InputText id="middle_name" name="middle_name" value={formik.values.middle_name}
-                                                   onChange={formik.handleChange} autoFocus
-                                                   className={classNames({'p-invalid': isFormFieldValid('middle_name')})}/>
-                                        <label htmlFor="middle_name"
-                                               className={classNames({'p-error': isFormFieldValid('middle_name')})}>Middle name</label>
-                                    </span>
-                            {getFormErrorMessage('middle_name')}
-                        </div>
-                        <div>
-                                    <span className="p-float-label">
-                                        <InputText id="phone_number" name="phone_number"
-                                                   value={formik.values.phone_number}
-                                                   onChange={formik.handleChange} autoFocus
-                                                   className={classNames({'p-invalid': isFormFieldValid('phone_number')})}/>
-                                        <label htmlFor="phone_number"
-                                               className={classNames({'p-error': isFormFieldValid('phone_number')})}>Phone</label>
-                                    </span>
-                            {getFormErrorMessage('phone_number')}
-                        </div>
-                        <div>
-                                    <span className="p-float-label">
-                                        <InputText id="email" name="email" value={formik.values.email}
-                                                   onChange={formik.handleChange} autoFocus
-                                                   className={classNames({'p-invalid': isFormFieldValid('email')})}/>
-                                        <label htmlFor="email"
-                                               className={classNames({'p-error': isFormFieldValid('email')})}>Email *</label>
-                                    </span>
-                            {getFormErrorMessage('email')}
-                        </div>
-                        <div>
-                                    <span className="p-float-label">
-                                        <InputText id="address" name="address" value={formik.values.address}
-                                                   onChange={formik.handleChange} autoFocus
-                                                   className={classNames({'p-invalid': isFormFieldValid('address')})}/>
-                                        <label htmlFor="address"
-                                               className={classNames({'p-error': isFormFieldValid('address')})}>Address</label>
-                                    </span>
-                            {getFormErrorMessage('address')}
+                            {getFormErrorMessage('lastName')}
                         </div>
                     </form>
                 </div>
