@@ -45,9 +45,6 @@ const GridComponent = (props: any) => {
             <Button onClick={() => onEdit('new')} className='p-button-text'>
                 <FontAwesomeIcon icon={faPlus} style={{color: 'black'}}/>&nbsp;&nbsp;New {props.resourceLabel}
             </Button>
-            <Button disabled={selectedRecords.length === 0} onClick={() => console.log(1)} className='p-button-text'>
-                <FontAwesomeIcon icon={faTrash} style={{color: 'black'}}/>&nbsp;&nbsp;Deactivate
-            </Button>
         </Fragment>
     );
 

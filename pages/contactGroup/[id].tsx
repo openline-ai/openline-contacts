@@ -8,7 +8,7 @@ import {Toolbar} from "primereact/toolbar";
 import {Fragment} from "preact";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faSave} from "@fortawesome/free-solid-svg-icons";
+import {faRemove, faSave} from "@fortawesome/free-solid-svg-icons";
 import {useEffect} from "react";
 
 function ContactGroupEdit() {
@@ -79,6 +79,9 @@ function ContactGroupEdit() {
             <Button onClick={() => formik.handleSubmit()} className='p-button-text'>
                 <FontAwesomeIcon icon={faSave} style={{color: 'black'}}/>&nbsp;&nbsp;Save
             </Button>
+            <Button onClick={() => deleteContactGroup()} className='p-button-text'>
+                <FontAwesomeIcon icon={faRemove} style={{color: 'black'}}/>&nbsp;&nbsp;Delete
+            </Button>
         </Fragment>
     );
 
@@ -102,6 +105,24 @@ function ContactGroupEdit() {
         }
 
     }, [id]);
+
+    const deleteContactGroup = () => {
+        const query = gql`mutation DeleteContactGroup($id: ID!) {
+
+            deleteContactGroupAndUnlinkAllContacts(id: $id) {
+                result
+            }
+
+        }`
+
+        client.request(query, {id: id}).then((response: any) => {
+            if(response.deleteContactGroupAndUnlinkAllContacts.result) {
+                router.push('/contactGroup');
+            } else {
+                //TODO throw error
+            }
+        });
+    }
 
     return (
         <Layout>

@@ -8,7 +8,7 @@ import {Toolbar} from "primereact/toolbar";
 import {Fragment} from "preact";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faSave} from "@fortawesome/free-solid-svg-icons";
+import {faSave, faRemove} from "@fortawesome/free-solid-svg-icons";
 import {useEffect} from "react";
 
 function ContactDetails() {
@@ -91,6 +91,24 @@ function ContactDetails() {
 
     }, [id]);
 
+    const deleteContact = () => {
+        const query = gql`mutation DeleteContact($id: ID!) {
+
+            softDeleteContact(contactId: $id) {
+                result
+            }
+
+        }`
+
+        client.request(query, {id: id}).then((response: any) => {
+            if(response.softDeleteContact.result) {
+                router.push('/contact');
+            } else {
+                //TODO throw error
+            }
+        });
+    }
+
     const formikTouched: any = formik.touched;
     const formikErrors: any = formik.errors;
     const isFormFieldValid = (property: any) => !!(formikTouched[property] && formikErrors[property]);
@@ -102,6 +120,9 @@ function ContactDetails() {
         <Fragment>
             <Button onClick={() => formik.handleSubmit()} className='p-button-text'>
                 <FontAwesomeIcon icon={faSave} style={{color: 'black'}}/>&nbsp;&nbsp;Save
+            </Button>
+            <Button onClick={() => deleteContact()} className='p-button-text'>
+                <FontAwesomeIcon icon={faRemove} style={{color: 'black'}}/>&nbsp;&nbsp;Delete
             </Button>
         </Fragment>
     );
