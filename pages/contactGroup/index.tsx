@@ -3,14 +3,14 @@ import {useRouter} from "next/router";
 import Layout from "../../layout/layout";
 import GridComponent from "../../components/GridComponent";
 
-const CustomerList: NextPage = () => {
+const ContactGroupList: NextPage = () => {
     const router = useRouter();
 
     return (
         <>
             <Layout>
-                <GridComponent resourceLabel={'customer'}
-                               resourceLoadBaseUrl={'customers'}
+                <GridComponent resourceLabel={'contact group'}
+                               hqlQuery="contactGroups"
                                columns={
                                    [
                                        {
@@ -21,16 +21,11 @@ const CustomerList: NextPage = () => {
                                        }
                                    ]
                                }
-                               filters={
-                                   {
-                                       'name': {value: '', matchMode: 'contains'},
-                                   }
-                               }
-                               prepareDataForGrid={(response: any) => {return response.customers}}
-                               onEdit={(id: any) => router.push(`/customer/${id}`)}/>
+                               onEdit={(id: any) => router.push(`/contactGroup/${id}`)}
+                />
             </Layout>
         </>
     );
 }
 
-export default CustomerList
+export default ContactGroupList

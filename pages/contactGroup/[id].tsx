@@ -9,8 +9,9 @@ import {Fragment} from "preact";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faSave} from "@fortawesome/free-solid-svg-icons";
+import {useEffect} from "react";
 
-function CustomerCase() {
+function ContactGroupEdit() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
 
     const router = useRouter();
@@ -18,7 +19,7 @@ function CustomerCase() {
 
     const formik = useFormik({
         initialValues: {
-            id: '',
+            id: undefined,
             name: '',
         },
         validate: (data) => {
@@ -31,17 +32,27 @@ function CustomerCase() {
             return errors;
         },
         onSubmit: (data) => {
+            let query = undefined;
+            let variables = undefined;
 
-            const query = gql`
-              mutation createCustomer($name: String!) {
-                  createCustomer(input: {name: $name}) {
-                    id
-                    name
-                  }
+            if (!data.id) {
+                query = gql`mutation CreateContactGroup($contactGroup: ContactGroupInput!) {
+                    createContactGroup(input: $contactGroup) {
+                        id
+                    }
+                }`;
+            } else {
+                query = gql`mutation UpdateContact($contactGroup: ContactGroupUpdateInput!) {
+                    updateContactGroup(input: $contactGroup) {
+                        id
+                    }
                 }`
+            }
 
-            client.request(query, data).then(() => {
-                    router.push('/customer');
+            client.request(query, {
+                contactGroup: data
+            }).then(() => {
+                    router.push('/contactGroup');
                 }
             ).catch((reason) => {
                 if (reason.response.status === 400) {
@@ -71,6 +82,27 @@ function CustomerCase() {
         </Fragment>
     );
 
+    useEffect(() => {
+
+        if (id !== undefined && id !== 'new') {
+
+            const query = gql`query GetContactGroupById($id: ID!) {
+
+                contactGroup(id: $id) {
+                    id
+                    name
+                }
+
+            }`
+
+            client.request(query, {id: id}).then((response: any) => {
+                formik.setValues(response.contactGroup);
+            });
+
+        }
+
+    }, [id]);
+
     return (
         <Layout>
 
@@ -99,4 +131,4 @@ function CustomerCase() {
     );
 }
 
-export default CustomerCase
+export default ContactGroupEdit
