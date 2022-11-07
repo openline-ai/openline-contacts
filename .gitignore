@@ -3,7 +3,9 @@
 *.iml
 
 # dependencies
-/node_modules
+contacts-gui/node_modules
+contacts-gui/.next
+
 /.pnp
 .pnp.js
 package-lock.json
