@@ -1,0 +1,37 @@
+.openline-menu{
+    background: none;
+    border: none;
+    color: white;
+}
+
+/*Overriding default theme colors for the menu in the layout*/
+.openline-menu.p-menu .p-menuitem-link {
+    color: #dee2e6;
+}
+.openline-menu.p-menu .p-menuitem-link .p-menuitem-text {
+    color: #dee2e6;
+}
+.openline-menu.p-menu .p-menuitem-link .p-menuitem-icon {
+    color: #dee2e6;
+}
+.openline-menu.p-menu .p-menuitem-link .p-submenu-icon {
+    color: #dee2e6;
+}
+
+/*remove border effect on click on menu*/
+.openline-menu.p-menu .p-menuitem-link:focus{
+    box-shadow: none;
+}
+
+/*change icon color on hover*/
+.openline-menu.p-menu .p-menuitem-link:not(.p-disabled):hover svg {
+    color: #495057;
+}
+
+/*selected item*/
+.openline-menu.p-menu .p-menuitem.selected{
+    background: #e9ecef;
+}
+.openline-menu.p-menu .p-menuitem.selected svg, .openline-menu.p-menu .p-menuitem.selected .p-menuitem-text{
+    color: #495057;
+}
