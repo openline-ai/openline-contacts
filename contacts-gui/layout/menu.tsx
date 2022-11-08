@@ -12,7 +12,7 @@ const LayoutMenu = () => {
         {
             label: 'Contacts',
             icon: <FontAwesomeIcon icon={faIdCard} className="mr-2"/>,
-            className: router.pathname.startsWith('/contact') ? 'selected' : '',
+            className: router.pathname.split('/')[1] === 'contact' ? 'selected' : '',
             command: () => {
                 router.push('/contact');
             }
@@ -20,7 +20,7 @@ const LayoutMenu = () => {
         {
             label: 'Contact groups',
             icon: <FontAwesomeIcon icon={faUsersRectangle} className="mr-2"/>,
-            className: router.pathname.startsWith('/contactGroup') ? 'selected' : '',
+            className: router.pathname.split('/')[1] === 'contactGroup' ? 'selected' : '',
             command: () => {
                 router.push('/contactGroup');
             }
