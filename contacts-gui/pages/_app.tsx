@@ -4,7 +4,9 @@ import 'primeflex/primeflex.css';
 import "primeicons/primeicons.css";
 
 import '../styles/globals.css'
+import '../styles/theme-override.css'
 import '../styles/menu.css'
+import '../styles/card-fieldset.css'
 
 export default function App({Component, pageProps}: any) {
     return <Component {...pageProps} />
