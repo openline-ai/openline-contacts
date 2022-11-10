@@ -1,0 +1,21 @@
+.card-fieldset {
+    border: solid 1px var(--border-color);
+    border-radius: 5px;
+}
+
+.card-fieldset .card-header {
+    padding: 15px;
+    border-bottom: solid 1px var(--border-color);
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.card-fieldset .card-body .display {
+    background: white;
+    padding: 15px;
+}
+
+.card-fieldset .card-body .content {
+    background: rgba(59, 218, 246, 0.02);
+    padding: 15px;
+}
