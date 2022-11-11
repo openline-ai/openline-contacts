@@ -1,14 +1,16 @@
 import {DataTable} from 'primereact/datatable';
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Column} from "primereact/column";
 import {Button} from "primereact/button";
-import {Toolbar} from 'primereact/toolbar';
 import {Fragment} from "preact";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlus, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faArrowDownShortWide, faColumns, faFilter} from "@fortawesome/free-solid-svg-icons";
 import {Dropdown} from "primereact/dropdown";
 import PropTypes from "prop-types";
 import {gql, GraphQLClient} from 'graphql-request'
+import {Sidebar} from "primereact/sidebar";
+import {OverlayPanel} from "primereact/overlaypanel";
+import {Divider} from "primereact/divider";
 
 
 const GridComponent = (props: any) => {
@@ -16,40 +18,16 @@ const GridComponent = (props: any) => {
 
     const [data, setData] = useState([] as any);
 
-    const [selectAll, setSelectAll] = useState(false);
-    const [selectedRecords, setSelectedRecords] = useState([]);
-    const onSelectionChange = (event: any) => {
-        const value = event.value;
-        setSelectedRecords(value);
-        setSelectAll(value.length === data.length);
-    }
-
-    const onSelectAllChange = (event: any) => {
-        const selectAll = event.checked;
-
-        if (selectAll) {
-            setSelectAll(true);
-            setSelectedRecords(data);
-        } else {
-            setSelectAll(false);
-            setSelectedRecords([]);
-        }
-    }
+    const [filtersPanelVisible, setFiltersPanelVisible] = useState(false);
+    const sortContainerRef = useRef(null);
+    const configurationContainerRef = useRef(null);
 
     const onEdit = function (id: any) {
         props.onEdit(id);
     };
 
-    const leftContents = (
-        <Fragment>
-            <Button onClick={() => onEdit('new')} className='p-button-text'>
-                <FontAwesomeIcon icon={faPlus} style={{color: 'black'}}/>&nbsp;&nbsp;New {props.resourceLabel}
-            </Button>
-        </Fragment>
-    );
-
     const paginatorTemplate = {
-        layout: 'RowsPerPageDropdown CurrentPageReport PrevPageLink NextPageLink',
+        layout: 'CurrentPageReport PrevPageLink NextPageLink RowsPerPageDropdown',
         'RowsPerPageDropdown': (options: any) => {
             const dropdownOptions = [
                 {label: '25', value: 25},
@@ -59,8 +37,6 @@ const GridComponent = (props: any) => {
 
             return (
                 <Fragment>
-                    <span className="mx-1"
-                          style={{color: 'var(--text-color)', userSelect: 'none'}}>Items per page: </span>
                     <Dropdown value={options.value} options={dropdownOptions} onChange={(evt: any) => {
                         setLazyParams((prevLazyParams: any) => {
                             return {
@@ -75,15 +51,12 @@ const GridComponent = (props: any) => {
         },
         'CurrentPageReport': (options: any) => {
             return (
-                <span style={{color: 'var(--text-color)', userSelect: 'none', width: '120px', textAlign: 'center'}}>
-                    {options.first} - {options.last} of {options.totalRecords}
-                </span>
+                <span className="mx-1" style={{color: 'var(--text-color)', userSelect: 'none'}}>Showing {options.first} to {options.last} of {options.totalRecords} entries</span>
             )
         }
     } as any;
 
-    const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text"
-                                  onClick={() => loadLazyData()}/>;
+    const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text" onClick={() => loadLazyData()}/>
 
     const [loading, setLoading] = useState(false);
     const [totalRecords, setTotalRecords] = useState(0);
@@ -115,12 +88,12 @@ const GridComponent = (props: any) => {
             query GetList($pagination: PaginationFilter){
 
                 ${props.hqlQuery}(paginationFilter: $pagination){
-                    content {
-                        ${fieldsForQuery}
-                    }
-                    totalPages
-                    totalElements
+                content {
+                    ${fieldsForQuery}
                 }
+                totalPages
+                totalElements
+            }
 
             }
         `
@@ -175,42 +148,122 @@ const GridComponent = (props: any) => {
     }
 
     return <>
-        <Toolbar left={leftContents}/>
+        {
+            props.showHeader != undefined && props.showHeader &&
+            <div className="p-datatable header flex align-items-center">
+
+                <div className="flex flex-grow-1 text-3xl">
+                    {props.gridTitle}
+                </div>
+                <div className="flex flex-grow-1 justify-content-end">
+                    {props.gridActions}
+                </div>
+
+            </div>
+        }
+
+        {
+            (props.filtersEnabled || props.sortingEnabled) &&
+            <div className="p-datatable filters flex">
+
+                <div className="flex flex-grow-1">
+                    {
+                        props.filtersEnabled &&
+                        <div className="flex align-items-center ml-1">
+                            <FontAwesomeIcon icon={faFilter}/>
+                            <Button onClick={() => setFiltersPanelVisible(true)} className='p-button-link'
+                                    label="Filters"/>
+                        </div>
+                    }
+                </div>
+                <div className="flex flex-grow-1 justify-content-end">
+
+                    {
+                        (props.sortingEnabled || props.configurationEnabled) &&
+                        <Divider layout="vertical" className="p-0"/>
+                    }
+
+                    {
+                        props.sortingEnabled &&
+                        <Button onClick={(e) => sortContainerRef.current.toggle(e)} className='p-button-text'>
+                            <FontAwesomeIcon icon={faArrowDownShortWide} className="mr-2"/>
+                            <span>Sorting</span>
+                        </Button>
+                    }
+
+                    {
+                        props.sortingEnabled && props.configurationEnabled &&
+                        <Divider layout="vertical" className="p-0"/>
+                    }
+
+                    {
+                        props.configurationEnabled &&
+                        <Button onClick={(e) => configurationContainerRef.current.toggle(e)} className='p-button-text mr-1'>
+                            <FontAwesomeIcon icon={faColumns} className="mr-2"/>
+                            <span>Columns</span>
+                        </Button>
+                    }
+
+                </div>
+
+            </div>
+        }
+
         <DataTable value={data} lazy responsiveLayout="scroll" dataKey="id" size={'normal'}
                    paginator paginatorTemplate={paginatorTemplate} paginatorLeft={paginatorLeft}
                    first={lazyParams.first} rows={lazyParams.limit} totalRecords={totalRecords} onPage={onPage}
-                   onFilter={onFilter} loading={loading}
-                   selection={selectedRecords} onSelectionChange={onSelectionChange}
-                   selectAll={selectAll} onSelectAllChange={onSelectAllChange} selectionMode="checkbox">
+                   onFilter={onFilter} loading={loading}>
             {
                 props.columns
                     .filter((c: any) => c.hidden === undefined || c.hidden === false)
                     .map((columnDefinition: any) => {
-                    let bodyTemplate = (rowData: any) => {
-                        if (columnDefinition.hidden !== undefined && columnDefinition.hidden === true) {
-                            return;
-                        } else if (columnDefinition.template) {
-                            return columnDefinition.template;
-                        } else if (columnDefinition.editLink) {
-                            return <span className={`cta ${columnDefinition.className ?? ''}`}
-                                         onClick={() => onEdit(rowData.id)}>{rowData[columnDefinition.field]}</span>
-                        } else {
-                            return <div
-                                className={columnDefinition.className ?? ''}>{rowData[columnDefinition.field]}</div>;
-                        }
-                    };
-                    return <Column key={columnDefinition.field}
-                                   field={columnDefinition.field}
-                                   header={columnDefinition.header}
-                                   className={columnDefinition.className ?? ''}
-                                   body={bodyTemplate}/>
-                })
+                        let bodyTemplate = (rowData: any) => {
+                            if (columnDefinition.hidden !== undefined && columnDefinition.hidden === true) {
+                                return;
+                            } else if (columnDefinition.template) {
+                                return columnDefinition.template;
+                            } else if (columnDefinition.editLink) {
+                                return <span className={`cta ${columnDefinition.className ?? ''}`}
+                                             onClick={() => onEdit(rowData.id)}>{rowData[columnDefinition.field]}</span>
+                            } else {
+                                return <div
+                                    className={columnDefinition.className ?? ''}>{rowData[columnDefinition.field]}</div>;
+                            }
+                        };
+                        return <Column key={columnDefinition.field}
+                                       field={columnDefinition.field}
+                                       header={columnDefinition.header}
+                                       className={columnDefinition.className ?? ''}
+                                       body={bodyTemplate}/>
+                    })
             }
         </DataTable>
+
+        <Sidebar visible={filtersPanelVisible} onHide={() => setFiltersPanelVisible(false)} position="right">
+            Filter by TODO
+        </Sidebar>
+
+        <OverlayPanel ref={sortContainerRef} dismissable>
+            Sort by
+            TODO
+        </OverlayPanel>
+
+        <OverlayPanel ref={configurationContainerRef} dismissable>
+            Grid configuration
+            TODO
+        </OverlayPanel>
     </>;
 }
 
 GridComponent.propTypes = {
+    showHeader: PropTypes.bool,
+    gridTitle: PropTypes.string,
+    gridActions: PropTypes.object,
+
+    filtersEnabled: PropTypes.bool,
+    sortingEnabled: PropTypes.bool,
+    configurationEnabled: PropTypes.bool,
+
     resourceLabel: PropTypes.string,
     filters: PropTypes.object,
     columns: PropTypes.arrayOf(PropTypes.shape({
@@ -225,6 +278,14 @@ GridComponent.propTypes = {
     triggerReload: PropTypes.bool,
     hqlQuery: PropTypes.string,
     onEdit: PropTypes.func
+}
+
+GridComponent.defaultProps = {
+    showHeader: true,
+    gridTitle: 'Title',
+    filtersEnabled: true,
+    sortingEnabled: true,
+    configurationEnabled: true,
 }
 
 export default GridComponent

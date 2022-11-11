@@ -3,10 +3,12 @@ import Layout from "../../layout/layout";
 import {gql, GraphQLClient} from "graphql-request";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faCirclePlus, faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {useEffect, useState} from "react";
 import {InputText} from "primereact/inputtext";
 import {useForm} from "react-hook-form";
+import GridComponent from "../../components/GridComponent";
+import {BreadCrumb} from "primereact/breadcrumb";
 
 function ContactGroupEdit() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -110,12 +112,20 @@ function ContactGroupEdit() {
 
     })
 
+    const items = [
+        {label: 'Contact groups', url: '/contactGroup'}
+    ];
+    const home = { icon: 'pi pi-home', url: '/' }
+
     return (
         <Layout>
 
             <div className="flex p-5">
 
-                <div>
+                <div className="flex-grow-0 mr-5">
+
+                    <BreadCrumb model={items} home={home} className="pl-1" />
+
                     <div className="card-fieldset" style={{width: '25rem'}}>
                         <div className="card-header">
                             <div className="flex flex-row w-full">
@@ -156,7 +166,8 @@ function ContactGroupEdit() {
                                     </form>
 
                                     <div className="flex justify-content-end">
-                                        <Button onClick={(e: any) => setEditDetails(e.value)} className='p-button-link text-gray-600'
+                                        <Button onClick={(e: any) => setEditDetails(e.value)}
+                                                className='p-button-link text-gray-600'
                                                 label="Cancel"/>
                                         <Button onClick={() => onSubmit()} label="Save"/>
                                     </div>
@@ -175,6 +186,44 @@ function ContactGroupEdit() {
                         </div>
                     }
                 </div>
+
+                {
+                    contactGroup.id &&
+                    <div className="flex-grow-1">
+                        <GridComponent resourceLabel={'contact'}
+                                       hqlQuery="contacts"
+                                       columns={
+                                           [
+                                               {
+                                                   field: 'title',
+                                                   hidden: true
+                                               },
+                                               {
+                                                   field: 'firstName',
+                                                   header: 'First name',
+                                                   className: 'w50',
+                                                   editLink: true
+                                               },
+                                               {
+                                                   field: 'lastName',
+                                                   header: 'Last name',
+                                                   className: 'w50',
+                                                   editLink: false
+                                               }
+                                           ]
+                                       }
+                                       gridTitle="Contacts in group"
+                                       onEdit={(id: any) => router.push(`/contact/${id}`)}
+                                       gridActions={
+                                           <div>
+                                               <Button onClick={(e: any) => alert('TODO')} className='p-button-link'>
+                                                   <FontAwesomeIcon icon={faCirclePlus} className="mr-2"/>Add contacts to group
+                                               </Button>
+                                           </div>
+                                       }
+                        />
+                    </div>
+                }
 
             </div>
 
