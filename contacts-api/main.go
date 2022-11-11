@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/openline-ai/openline-contacts/api/config"
+	"github.com/openline-ai/openline-contacts/contacts-api/config"
 	"log"
 	"net/http"
 	"net/http/httputil"

@@ -1,4 +1,4 @@
-module github.com/openline-ai/openline-contacts/api
+module github.com/openline-ai/openline-contacts/contacts-api
 
 go 1.19
 

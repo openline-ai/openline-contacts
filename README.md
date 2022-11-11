@@ -42,12 +42,13 @@
 
 TBD
 
+
+
 ## 🚀 Installation
 
-Download the Openline Contacts app using the following command
-
+After you check out the code, execute the next script to isntall and run contacts app
 ```
-TBD
+./deployment/full-install.sh
 ```
 
 ## 🙌 Features
@@ -87,6 +88,7 @@ A massive thank you goes out to all these wonderful people ([emoji key][emoji]):
 [apache2]: https://www.apache.org/licenses/LICENSE-2.0
 [call]: https://meetings-eu1.hubspot.com/matt2/customer-demos
 [contacts-repo]: https://github.com/openline-ai/openline-contacts/
+[customer-os-api-repo]: https://github.com/openline-ai/openline-customer-os/tree/otter/packages/server/customer-os-api
 [contributions]: https://github.com/openline-ai/community/blob/main/README.md
 [docs]: https://openline.ai
 [emoji]: https://allcontributors.org/docs/en/emoji-key

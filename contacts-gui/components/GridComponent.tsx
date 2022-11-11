@@ -19,8 +19,8 @@ const GridComponent = (props: any) => {
     const [data, setData] = useState([] as any);
 
     const [filtersPanelVisible, setFiltersPanelVisible] = useState(false);
-    const sortContainerRef = useRef(null);
-    const configurationContainerRef = useRef(null);
+    const sortContainerRef = useRef<OverlayPanel>(null);
+    const configurationContainerRef = useRef<OverlayPanel>(null);
 
     const onEdit = function (id: any) {
         props.onEdit(id);
@@ -185,7 +185,7 @@ const GridComponent = (props: any) => {
 
                     {
                         props.sortingEnabled &&
-                        <Button onClick={(e) => sortContainerRef.current.toggle(e)} className='p-button-text'>
+                        <Button onClick={(e: any) => sortContainerRef?.current?.toggle(e)} className='p-button-text'>
                             <FontAwesomeIcon icon={faArrowDownShortWide} className="mr-2"/>
                             <span>Sorting</span>
                         </Button>
@@ -198,7 +198,7 @@ const GridComponent = (props: any) => {
 
                     {
                         props.configurationEnabled &&
-                        <Button onClick={(e) => configurationContainerRef.current.toggle(e)} className='p-button-text mr-1'>
+                        <Button onClick={(e: any) => configurationContainerRef?.current?.toggle(e)} className='p-button-text mr-1'>
                             <FontAwesomeIcon icon={faColumns} className="mr-2"/>
                             <span>Columns</span>
                         </Button>
