@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contacts-gui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contacts-gui
+  template:
+    metadata:
+      labels:
+        app: contacts-gui
+    spec:
+      containers:
+        - image: ghcr.io/openline-ai/openline-contacts/contacts-gui:otter
+          name: contacts-gui
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
+              name: http-port

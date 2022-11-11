@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contacts-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: contacts-api
+  template:
+    metadata:
+      labels:
+        app: contacts-api
+    spec:
+      containers:
+        - image: ghcr.io/openline-ai/openline-contacts/contacts-api:otter
+          name: contacts-api
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 9999
+              name: http-port
+          env:
+            - name: CUSTOMER_OS_URL
+              value: "http://customer-os-api-service.openline.svc.cluster.local:10010"
