@@ -46,9 +46,26 @@ TBD
 
 ## 🚀 Installation
 
-After you check out the code, execute the next script to isntall and run contacts app
+After you check out the code, execute the next script to install and run contacts app
 ```
 ./deployment/full-install.sh
+```
+
+## 🚀 Debugging
+
+After you check out the code, execute the next script to install and run the prerequisites of contacts applications
+```
+./deployment/debug-install.sh
+```
+
+Start contacts-api app
+```
+cd contacts-api && go build main.go && go run main.go
+```
+
+Start contacts-gui app
+```
+cd .. && cd contacts-gui && yarn install && npm run dev
 ```
 
 ## 🙌 Features
