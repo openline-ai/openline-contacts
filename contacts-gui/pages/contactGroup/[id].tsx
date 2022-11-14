@@ -9,6 +9,7 @@ import {InputText} from "primereact/inputtext";
 import {useForm} from "react-hook-form";
 import GridComponent from "../../components/GridComponent";
 import {BreadCrumb} from "primereact/breadcrumb";
+import {Dialog} from "primereact/dialog";
 
 function ContactGroupEdit() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -47,6 +48,7 @@ function ContactGroupEdit() {
 
     }, [id]);
 
+    const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
     const deleteContactGroup = () => {
         const query = gql`mutation DeleteContactGroup($id: ID!) {
 
@@ -115,7 +117,7 @@ function ContactGroupEdit() {
     const items = [
         {label: 'Contact groups', url: '/contactGroup'}
     ];
-    const home = { icon: 'pi pi-home', url: '/' }
+    const home = {icon: 'pi pi-home', url: '/'}
 
     return (
         <Layout>
@@ -124,7 +126,7 @@ function ContactGroupEdit() {
 
                 <div className="flex-grow-0 mr-5">
 
-                    <BreadCrumb model={items} home={home} className="pl-1" />
+                    <BreadCrumb model={items} home={home} className="pl-1"/>
 
                     <div className="card-fieldset" style={{width: '25rem'}}>
                         <div className="card-header">
@@ -179,11 +181,26 @@ function ContactGroupEdit() {
 
                     {
                         !editDetails &&
-                        <div className="flex align-items-center mt-2 ml-1">
-                            <FontAwesomeIcon icon={faTrashCan} className="text-gray-600" style={{color: 'black'}}/>
-                            <Button onClick={(e: any) => deleteContactGroup()} className='p-button-link text-gray-600'
-                                    label="Delete"/>
-                        </div>
+                        <>
+                            <div className="flex align-items-center mt-2 ml-1">
+                                <FontAwesomeIcon icon={faTrashCan} className="text-gray-600" style={{color: 'black'}}/>
+                                <Button onClick={(e: any) => setDeleteConfirmationModalVisible(true)} className='p-button-link text-gray-600'
+                                        label="Delete"/>
+                            </div>
+                            <Dialog header="Contact group delete confirmation"
+                                    draggable={false}
+                                    visible={deleteConfirmationModalVisible}
+                                    footer={
+                                        <div className="flex flex-grow-1 justify-content-between align-items-center">
+                                            <Button label="Delete the contact group" icon="pi pi-check" onClick={() => deleteContactGroup()} autoFocus/>
+                                            <Button label="Cancel" icon="pi pi-times" onClick={() => setDeleteConfirmationModalVisible(false)} className="p-button-text"/>
+                                        </div>
+                                    }
+                                    onHide={() => setDeleteConfirmationModalVisible(false)}>
+                                <p>Please confirm that you want to delete this contact group.</p>
+                                <p>The contacts will not be changed, but the associations to this group will be removed.</p>
+                            </Dialog>
+                        </>
                     }
                 </div>
 
