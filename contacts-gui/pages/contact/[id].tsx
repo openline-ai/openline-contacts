@@ -2,15 +2,17 @@ import {useRouter} from "next/router";
 import Layout from "../../layout/layout";
 import {gql, GraphQLClient} from "graphql-request";
 import {InputText} from "primereact/inputtext";
-import {classNames} from "primereact/utils";
-import {Toolbar} from "primereact/toolbar";
-import {Fragment} from "preact";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faPlus, faRemove, faSave} from "@fortawesome/free-solid-svg-icons";
+import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {useEffect, useState} from "react";
 import {Dropdown} from "primereact/dropdown";
-import {Checkbox} from "primereact/checkbox";
+import {BreadCrumb} from "primereact/breadcrumb";
+import {Controller, useForm} from "react-hook-form";
+import {getEnumLabel} from "../../model/enums";
+import {ContactTitleEnum} from "../../model/enum-contactTitle";
+import {ContactTypeEnum} from "../../model/enum-contactType";
+import {InputTextarea} from "primereact/inputtextarea";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -18,60 +20,113 @@ function ContactDetails() {
     const router = useRouter();
     const {id} = router.query;
 
-    // const formikContactDetails = useFormik({
-    //     enableReinitialize: true,
-    //     initialValues: {
-    //         id: undefined,
-    //         firstName: '',
-    //         lastName: '',
-    //         emails: []
-    //     },
-    //     validate: (data) => {
-    //         let errors = {} as any;
-    //
-    //         if (!data.firstName) {
-    //             errors.firstName = 'First name is required.';
-    //         }
-    //         if (!data.lastName) {
-    //             errors.lastName = 'Last name is required.';
-    //         }
-    //
-    //         return errors;
-    //     },
-    //     onSubmit: (data) => {
-    //         let query = undefined;
-    //
-    //         if (!data.id) {
-    //             query = gql`mutation CreateContact($contact: ContactInput!) {
-    //                 createContact(input: $contact) {
-    //                     id
-    //                 }
-    //             }`
-    //         } else {
-    //             query = gql`mutation UpdateContact($contact: ContactUpdateInput!) {
-    //                 updateContact(input: $contact) {
-    //                     id
-    //                 }
-    //             }`
-    //         }
-    //
-    //         client.request(query, {
-    //             contact: {...data, ...{emails: undefined}}
-    //         }).then(() => {
-    //                 router.push('/contact');
-    //             }
-    //         ).catch((reason) => {
-    //             if (reason.response.status === 400) {
-    //                 reason.response.data.errors.forEach((error: any) => {
-    //                     formikContactDetails.setFieldError(error.field, error.message);
-    //                 })
-    //             } else {
-    //                 alert('error');
-    //             }
-    //         });
-    //
-    //     }
-    // });
+    const [contact, setContact] = useState({
+        id: undefined,
+        title: '',
+        firstName: '',
+        lastName: '',
+        label: '',
+        contactType: '',
+        notes: ''
+    });
+    const {register, handleSubmit, setValue, control} = useForm({
+        defaultValues: contact
+    });
+
+    const [editDetails, setEditDetails] = useState(false);
+
+    useEffect(() => {
+
+        if (id !== undefined && id === 'new') {
+            setEditDetails(true);
+        } else if (id !== undefined && id !== 'new') {
+
+            const query = gql`query GetContactById($id: ID!) {
+                contact(id: $id) {
+                    id
+                    title
+                    firstName
+                    lastName
+                    label
+                    contactType
+                    notes
+                    emails{
+                        id
+                        email
+                        label
+                        primary
+                    }
+                }
+            }`
+
+            client.request(query, {id: id}).then((response: any) => {
+                setValue('id', response.contact.id);
+                setValue('title', response.contact.title);
+                setValue('firstName', response.contact.firstName);
+                setValue('lastName', response.contact.lastName);
+                setValue('label', response.contact.label);
+                setValue('contactType', response.contact.contactType);
+                setValue('notes', response.contact.notes);
+                setContact(response.contact);
+            });
+
+        }
+
+    }, [id]);
+
+    const onSubmit = handleSubmit(data => {
+
+        let query = undefined;
+
+        if (!data.id) {
+            query = gql`mutation CreateContact($contact: ContactInput!) {
+                createContact(input: $contact) {
+                    id
+                    title
+                    firstName
+                    lastName
+                    label
+                    contactType
+                    notes
+                }
+            }`
+        } else {
+            query = gql`mutation UpdateContact($contact: ContactUpdateInput!) {
+                updateContact(input: $contact) {
+                    id
+                    title
+                    firstName
+                    lastName
+                    label
+                    contactType
+                    notes
+                }
+            }`
+        }
+
+
+        client.request(query, {
+            contact: data
+        }).then((response) => {
+                if (!data.id) {
+                    setContact(response.createContact);
+                } else {
+                    setContact(response.updateContact);
+                }
+                setEditDetails(false);
+            }
+        ).catch((reason) => {
+            if (reason.response.status === 400) {
+                // reason.response.data.errors.forEach((error: any) => {
+                //     formik.setFieldError(error.field, error.message);
+                // })
+                //todo show errors on form
+            } else {
+                alert('error');
+            }
+        });
+
+    })
 
     // const formikEmail = useFormik({
     //     enableReinitialize: true,
@@ -143,34 +198,6 @@ function ContactDetails() {
     //     }
     // });
 
-    useEffect(() => {
-
-        if (id !== undefined && id !== 'new') {
-
-            const query = gql`query GetContactById($id: ID!) {
-                contact(id: $id) {
-                    id
-                    firstName
-                    lastName
-                    emails{
-                        id
-                        email
-                        label
-                        primary
-                    }
-                }
-            }`
-
-            client.request(query, {id: id}).then((response: any) => {
-                // formikContactDetails.setValues(response.contact);
-
-                setEmails(response.contact.emails);
-            });
-
-        }
-
-    }, [id]);
-
     const deleteContact = () => {
         const query = gql`mutation DeleteContact($id: ID!) {
 
@@ -189,173 +216,186 @@ function ContactDetails() {
         });
     }
 
-    const deleteContactEmail = (email: string) => {
-        const query = gql`mutation DeleteEmailForContact($contactId: ID!, $email: String!) {
-            removeEmailFromContact(contactId: $contactId, email: $email) {
-                result
-            }
-        }`
-
-        client.request(query, {
-            contactId: id,
-            email: email
-        }).then((response: any) => {
-            if (response.removeEmailFromContact.result) {
-                //todo notification
-            } else {
-                //TODO throw error
-            }
-        });
-    }
-
-    // const formikDetailsTouched: any = formikContactDetails.touched;
-    // const formikDetailsErrors: any = formikContactDetails.errors;
-    // const isFormFieldValidDetails = (property: any) => !!(formikDetailsTouched[property] && formikDetailsErrors[property]);
-    // const getFormErrorMessageDetails = (property: string) => {
-    //     return isFormFieldValidDetails(property) && <small className="p-error">{formikDetailsErrors[property]}</small>;
-    // };
+    // const deleteContactEmail = (email: string) => {
+    //     const query = gql`mutation DeleteEmailForContact($contactId: ID!, $email: String!) {
+    //         removeEmailFromContact(contactId: $contactId, email: $email) {
+    //             result
+    //         }
+    //     }`
     //
-    // const formikEmailTouched: any = formikContactDetails.touched;
-    // const formikEmailErrors: any = formikContactDetails.errors;
-    // const isFormFieldValidEmail = (property: any) => !!(formikEmailTouched[property] && formikEmailErrors[property]);
-    // const getFormErrorMessageEmail = (property: string) => {
-    //     return isFormFieldValidEmail(property) && <small className="p-error">{formikEmailErrors[property]}</small>;
+    //     client.request(query, {
+    //         contactId: id,
+    //         email: email
+    //     }).then((response: any) => {
+    //         if (response.removeEmailFromContact.result) {
+    //             //todo notification
+    //         } else {
+    //             //TODO throw error
+    //         }
+    //     });
+    // }
+
+    // const [emails, setEmails] = useState([] as any);
+    // const emailTemplateRow = (email: any) => {
+    //     return <div style={{border: 'solid 1px red'}}>Email: {email.email}; Label: {email.label};
+    //         Primary: {email.primary ? 'Yes' : 'No'}
+    //
+    //         <Button onClick={() => {
+    //             // formikEmail.setValues(email);
+    //         }} className='p-button-text'>
+    //             <FontAwesomeIcon icon={faEdit} style={{color: 'black'}}/>&nbsp;&nbsp;Edit
+    //         </Button>
+    //
+    //         <Button onClick={() => {
+    //             deleteContactEmail(email.email)
+    //         }} className='p-button-text'>
+    //             <FontAwesomeIcon icon={faRemove} style={{color: 'black'}}/>&nbsp;&nbsp;Delete
+    //         </Button>
+    //
+    //     </div>
     // };
 
-    const [emails, setEmails] = useState([] as any);
-    const emailTemplateRow = (email: any) => {
-        return <div style={{border: 'solid 1px red'}}>Email: {email.email}; Label: {email.label};
-            Primary: {email.primary ? 'Yes' : 'No'}
+    //
+    //
+    // const [emailLabels] = useState([
+    //     {
+    //         value: 'MAIN',
+    //         label: 'Main'
+    //     },
+    //     {
+    //         value: 'WORK',
+    //         label: 'Work'
+    //     },
+    //     {
+    //         value: 'HOME',
+    //         label: 'Home'
+    //     },
+    //     {
+    //         value: 'OTHER',
+    //         label: 'Other'
+    //     }
+    // ]);
 
-            <Button onClick={() => {
-                // formikEmail.setValues(email);
-            }} className='p-button-text'>
-                <FontAwesomeIcon icon={faEdit} style={{color: 'black'}}/>&nbsp;&nbsp;Edit
-            </Button>
 
-            <Button onClick={() => {
-                deleteContactEmail(email.email)
-            }} className='p-button-text'>
-                <FontAwesomeIcon icon={faRemove} style={{color: 'black'}}/>&nbsp;&nbsp;Delete
-            </Button>
-
-        </div>
-    };
-
-    const leftContents = (
-        <Fragment>
-            {/*<Button onClick={() => formikContactDetails.handleSubmit()} className='p-button-text'>*/}
-            {/*    <FontAwesomeIcon icon={faSave} style={{color: 'black'}}/>&nbsp;&nbsp;Save*/}
-            {/*</Button>*/}
-            <Button onClick={() => deleteContact()} className='p-button-text'>
-                <FontAwesomeIcon icon={faRemove} style={{color: 'black'}}/>&nbsp;&nbsp;Delete
-            </Button>
-        </Fragment>
-    );
-
-    const [emailLabels] = useState([
-        {
-            value: 'MAIN',
-            label: 'Main'
-        },
-        {
-            value: 'WORK',
-            label: 'Work'
-        },
-        {
-            value: 'HOME',
-            label: 'Home'
-        },
-        {
-            value: 'OTHER',
-            label: 'Other'
-        }
-    ]);
+    const items = [
+        {label: 'Contacts', url: '/contact'}
+    ];
+    const home = {icon: 'pi pi-home', url: '/'}
 
     return (
         <Layout>
 
-            <Toolbar left={leftContents} style={{marginBottom: '50px'}}/>
+            <div className="flex p-5">
 
-            <div className="flex">
-                <div className="card">
+                <div className="flex-grow-0 mr-5">
 
-                    {/*<form onSubmit={formikContactDetails.handleSubmit} className="p-fluid">*/}
+                    <BreadCrumb model={items} home={home} className="pl-1"/>
 
-                    {/*    <div>*/}
-                    {/*        <span className="p-float-label">*/}
-                    {/*            <InputText id="firstName" name="firstName" value={formikContactDetails.values.firstName}*/}
-                    {/*                       onChange={formikContactDetails.handleChange} autoFocus*/}
-                    {/*                       className={classNames({'p-invalid': isFormFieldValidDetails('firstName')})}/>*/}
-                    {/*            <label htmlFor="firstName"*/}
-                    {/*                   className={classNames({'p-error': isFormFieldValidDetails('firstName')})}>First name *</label>*/}
-                    {/*        </span>*/}
-                    {/*        {getFormErrorMessageDetails('firstName')}*/}
-                    {/*    </div>*/}
-                    {/*    <div>*/}
-                    {/*        <span className="p-float-label">*/}
-                    {/*            <InputText id="lastName" name="lastName" value={formikContactDetails.values.lastName}*/}
-                    {/*                       onChange={formikContactDetails.handleChange} autoFocus*/}
-                    {/*                       className={classNames({'p-invalid': isFormFieldValidDetails('lastName')})}/>*/}
-                    {/*            <label htmlFor="lastName"*/}
-                    {/*                   className={classNames({'p-error': isFormFieldValidDetails('lastName')})}>Last name *</label>*/}
-                    {/*        </span>*/}
-                    {/*        {getFormErrorMessageDetails('lastName')}*/}
-                    {/*    </div>*/}
-                    {/*</form>*/}
+                    <div className="card-fieldset" style={{width: '25rem'}}>
+                        <div className="card-header">
+                            <div className="flex flex-row w-full">
+                                <div className="flex-grow-1">Contact group details</div>
+                                <div className="flex">
+                                    {
+                                        !editDetails &&
+                                        <Button className="p-button-text p-0" onClick={() => {
+                                            setEditDetails(true);
+                                        }}>
+                                            <FontAwesomeIcon size="xs" icon={faEdit} style={{color: 'black'}}/>
+                                        </Button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div className="card-body">
+
+                            {
+                                !editDetails &&
+                                <div className="display">
+                                    <div className="grid grid-nogutter">
+                                        <div className="col-4">Title</div>
+                                        <div className="col-8 overflow-hidden text-overflow-ellipsis">{getEnumLabel(ContactTitleEnum, contact.title)}</div>
+                                    </div>
+                                    <div className="grid grid-nogutter mt-3">
+                                        <div className="col-4">First name</div>
+                                        <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.firstName}</div>
+                                    </div>
+                                    <div className="grid grid-nogutter mt-3">
+                                        <div className="col-4">Last name</div>
+                                        <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.lastName}</div>
+                                    </div>
+                                    <div className="grid grid-nogutter mt-3">
+                                        <div className="col-4">Label</div>
+                                        <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.label}</div>
+                                    </div>
+                                    <div className="grid grid-nogutter mt-3">
+                                        <div className="col-4">Type</div>
+                                        <div className="col-8 overflow-hidden text-overflow-ellipsis">{getEnumLabel(ContactTypeEnum, contact.contactType)}</div>
+                                    </div>
+                                    <div className="grid grid-nogutter mt-3">
+                                        <div className="col-4">Notes</div>
+                                        <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.notes}</div>
+                                    </div>
+                                </div>
+                            }
+
+                            {
+                                editDetails &&
+                                <div className="content">
+                                    <form onSubmit={onSubmit}>
+                                        <div className="field w-full">
+                                            <label htmlFor="lastName" className="block">Title *</label>
+                                            <Controller name="title" control={control} render={({field}) => (
+                                                <Dropdown id={field.name} value={field.value} onChange={(e) => field.onChange(e.value)} options={ContactTitleEnum}
+                                                          optionValue="value" optionLabel="label" className="w-full"/>
+                                            )}/>
+                                        </div>
+                                        <div className="field w-full">
+                                            <label htmlFor="firstName" className="block">First name *</label>
+                                            <InputText id="firstName" {...register("firstName")} className="w-full"/>
+                                        </div>
+                                        <div className="field w-full">
+                                            <label htmlFor="lastName" className="block">Last name *</label>
+                                            <InputText id="lastName" {...register("lastName")} className="w-full"/>
+                                        </div>
+                                        <div className="field w-full">
+                                            <label htmlFor="label" className="block">Label</label>
+                                            <InputText id="label" {...register("label")} className="w-full"/>
+                                        </div>
+                                        <div className="field w-full">
+                                            <label htmlFor="contactType" className="block">Type *</label>
+                                            <Controller name="contactType" control={control} render={({field}) => (
+                                                <Dropdown id={field.name} value={field.value} onChange={(e) => field.onChange(e.value)} options={ContactTypeEnum}
+                                                          optionValue="value" optionLabel="label" className="w-full"/>
+                                            )}/>
+                                        </div>
+                                        <div className="field w-full">
+                                            <label htmlFor="notes" className="block">Notes</label>
+                                            <InputTextarea id="notes" rows={2} {...register("notes")} autoResize  className="w-full" />
+                                        </div>
+                                    </form>
+
+                                    <div className="flex justify-content-end">
+                                        <Button onClick={(e: any) => setEditDetails(e.value)} className='p-button-link text-gray-600' label="Cancel"/>
+                                        <Button onClick={() => onSubmit()} label="Save"/>
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+
+                    {
+                        !editDetails &&
+                        <div className="flex align-items-center mt-2 ml-1">
+                            <FontAwesomeIcon icon={faTrashCan} className="text-gray-600" style={{color: 'black'}}/>
+                            <Button onClick={(e: any) => deleteContact()} className='p-button-link text-gray-600'
+                                    label="Delete"/>
+                        </div>
+                    }
                 </div>
-            </div>
-
-            <div className="flex" style={{marginTop: '50px'}}>
-                <div className="card">
-
-                    {/*<form onSubmit={formikEmail.handleSubmit} className="p-fluid">*/}
-
-                    {/*    <div>*/}
-                    {/*        Add email<br/><br/><br/>*/}
-                    {/*        <span className="p-float-label">*/}
-                    {/*            <InputText id="email" name="email" value={formikEmail.values.email}*/}
-                    {/*                       onChange={formikEmail.handleChange} autoFocus*/}
-                    {/*                       className={classNames({'p-invalid': isFormFieldValidEmail('email')})}/>*/}
-                    {/*            <label htmlFor="email"*/}
-                    {/*                   className={classNames({'p-error': isFormFieldValidEmail('firstName')})}>Email *</label>*/}
-                    {/*        </span>*/}
-                    {/*        {getFormErrorMessageEmail('email')}*/}
-                    {/*    </div>*/}
-                    {/*    <div>*/}
-                    {/*        <span className="p-float-label">*/}
-                    {/*            <Dropdown id="label" name="label" value={formikEmail.values.label}*/}
-                    {/*                      onChange={formikEmail.handleChange} options={emailLabels} optionLabel="label"*/}
-                    {/*                      className={classNames({'p-invalid': isFormFieldValidEmail('label')})}*/}
-                    {/*                      optionValue="value"/>*/}
-                    {/*            <label htmlFor="label">Label *</label>*/}
-                    {/*        </span>*/}
-                    {/*        {getFormErrorMessageEmail('label')}*/}
-                    {/*    </div>*/}
-                    {/*    <div>*/}
-                    {/*        <span className="p-float-label">*/}
-                    {/*            <Checkbox inputId="primary" name="primary"*/}
-                    {/*                      onChange={formikEmail.handleChange}*/}
-                    {/*                      checked={formikEmail.values.primary}/>*/}
-                    {/*             <label htmlFor="label">Primary</label>*/}
-                    {/*        </span>*/}
-                    {/*    </div>*/}
-
-                    {/*    <Button onClick={() => formikEmail.handleSubmit()} className='p-button-text'>*/}
-                    {/*        <FontAwesomeIcon icon={faPlus} style={{color: 'black'}}/>&nbsp;&nbsp;add email*/}
-                    {/*    </Button>*/}
-                    {/*</form>*/}
-                </div>
-            </div>
-
-            <div>
-
-                {emails && emails.map((e: any) => {
-                    return emailTemplateRow(e)
-                })}
 
             </div>
-
 
         </Layout>
     );
