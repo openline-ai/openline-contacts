@@ -5,7 +5,7 @@ import "primeicons/primeicons.css";
 
 import '../styles/globals.css'
 import '../styles/theme-override.css'
-import '../styles/menu.css'
+import '../styles/layout.css'
 import '../styles/card-fieldset.css'
 
 export default function App({Component, pageProps}: any) {
