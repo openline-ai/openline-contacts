@@ -13,6 +13,7 @@ import {getEnumLabel} from "../../model/enums";
 import {ContactTitleEnum} from "../../model/enum-contactTitle";
 import {ContactTypeEnum} from "../../model/enum-contactType";
 import {InputTextarea} from "primereact/inputtextarea";
+import {Dialog} from "primereact/dialog";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -198,6 +199,7 @@ function ContactDetails() {
     //     }
     // });
 
+    const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
     const deleteContact = () => {
         const query = gql`mutation DeleteContact($id: ID!) {
 
@@ -387,11 +389,25 @@ function ContactDetails() {
 
                     {
                         !editDetails &&
-                        <div className="flex align-items-center mt-2 ml-1">
-                            <FontAwesomeIcon icon={faTrashCan} className="text-gray-600" style={{color: 'black'}}/>
-                            <Button onClick={(e: any) => deleteContact()} className='p-button-link text-gray-600'
-                                    label="Delete"/>
-                        </div>
+                        <>
+                            <div className="flex align-items-center mt-2 ml-1">
+                                <FontAwesomeIcon icon={faTrashCan} className="text-gray-600" style={{color: 'black'}}/>
+                                <Button onClick={(e: any) => setDeleteConfirmationModalVisible(true)} className='p-button-link text-gray-600'
+                                        label="Delete"/>
+                            </div>
+                            <Dialog header="Contact delete confirmation"
+                                    draggable={false}
+                                    visible={deleteConfirmationModalVisible}
+                                    footer={
+                                        <div className="flex flex-grow-1 justify-content-between align-items-center">
+                                            <Button label="Delete the contact" icon="pi pi-check" onClick={() => deleteContact()} autoFocus/>
+                                            <Button label="Cancel" icon="pi pi-times" onClick={() => setDeleteConfirmationModalVisible(false)} className="p-button-text"/>
+                                        </div>
+                                    }
+                                    onHide={() => setDeleteConfirmationModalVisible(false)}>
+                                <p>Please confirm that you want to delete this contact.</p>
+                            </Dialog>
+                        </>
                     }
                 </div>
 
