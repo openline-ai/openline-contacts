@@ -8,6 +8,7 @@ import {OverlayPanel} from "primereact/overlaypanel";
 import {Menu} from "primereact/menu";
 import ContactEmailTemplate from "./contactEmailTemplate";
 import {uuidv4} from "../../utils/uuid-generator";
+import ContactPhoneNumberTemplate from "./contactPhoneNumberTemplate";
 
 function ContactCommunication(props: any) {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -15,6 +16,7 @@ function ContactCommunication(props: any) {
     const addCommunicationChannelContainerRef = useRef<OverlayPanel>(null);
 
     const [emails, setEmails] = useState([] as any);
+    const [phoneNumbers, setPhoneNumbers] = useState([] as any);
 
     useEffect(() => {
 
@@ -28,6 +30,12 @@ function ContactCommunication(props: any) {
                         label
                         primary
                     }
+                    phoneNumbers{
+                        id
+                        e164
+                        label
+                        primary
+                    }
                 }
             }`
 
@@ -37,12 +45,18 @@ function ContactCommunication(props: any) {
                     e.newItem = false;
                 });
                 setEmails(response.contact.emails);
+
+                response.contact.phoneNumbers.forEach((e: any) => {
+                    e.uiKey = uuidv4(); //TODO make sure the ID is unique in the array
+                    e.newItem = false;
+                });
+                setPhoneNumbers(response.contact.phoneNumbers);
             });
         }
 
     }, [props.contactId]);
 
-    const itemSaved = (data: any) => {
+    const emailSaved = (data: any) => {
         setEmails(emails.map((e: any) => {
             if (e.uiKey !== data.uiKey) {
                 //if the saved email is marked as primary, we unmark the others
@@ -61,8 +75,39 @@ function ContactCommunication(props: any) {
         }));
     }
 
-    const cancelEdit = (uiKey: string) => {
+    const emailCancelEdit = (uiKey: string) => {
         setEmails(emails.filter((e: any) => {
+            if (e.uiKey !== uiKey) {
+                return e;
+            } else {
+                if (!e.newItem) {
+                    return e;
+                }
+            }
+        }));
+    }
+
+    const phoneNumberSaved = (data: any) => {
+        setPhoneNumbers(phoneNumbers.map((e: any) => {
+            if (e.uiKey !== data.uiKey) {
+                //if the saved email is marked as primary, we unmark the others
+                return data.primary ? {...e, ...{primary: false}} : e;
+            } else {
+                return {...data, ...{newItem: false}};
+            }
+        }));
+    }
+
+    const phoneNumberDeleted = (uiKey: string) => {
+        setPhoneNumbers(phoneNumbers.filter((e: any) => {
+            if (e.uiKey !== uiKey) {
+                return e;
+            }
+        }));
+    }
+
+    const phoneNumberCancelEdit = (uiKey: string) => {
+        setPhoneNumbers(phoneNumbers.filter((e: any) => {
             if (e.uiKey !== uiKey) {
                 return e;
             } else {
@@ -93,7 +138,7 @@ function ContactCommunication(props: any) {
                                             id: undefined,
                                             email: '',
                                             label: '',
-                                            primary: false,
+                                            primary: emails.length === 0,
                                             uiKey: uuidv4(), //TODO make sure the ID is unique in the array
                                             newItem: true // this is used to remove the item from the emails array in case of cancel new item
                                         }]);
@@ -103,7 +148,14 @@ function ContactCommunication(props: any) {
                                 {
                                     label: 'Phone number',
                                     command: () => {
-                                        console.log('new phone number');
+                                        setPhoneNumbers([...phoneNumbers, {
+                                            id: undefined,
+                                            e164: '',
+                                            label: '',
+                                            primary: phoneNumbers.length === 0,
+                                            uiKey: uuidv4(), //TODO make sure the ID is unique in the array
+                                            newItem: true // this is used to remove the item from the phone numbers array in case of cancel new item
+                                        }]);
                                         addCommunicationChannelContainerRef?.current?.hide();
                                     }
                                 }
@@ -127,9 +179,22 @@ function ContactCommunication(props: any) {
                                                      contactId={props.contactId}
                                                      email={e}
                                                      initialEditState={e.newItem}
-                                                     notifySave={(e: any) => itemSaved(e)}
+                                                     notifySave={(e: any) => emailSaved(e)}
                                                      notifyDelete={(uiKey: string) => emailDeleted(uiKey)}
-                                                     notifyCancelEdit={(uiKey: string) => cancelEdit(uiKey)}
+                                                     notifyCancelEdit={(uiKey: string) => emailCancelEdit(uiKey)}
+                        />
+                    })
+                }
+
+                {
+                    phoneNumbers.map((e: any) => {
+                        return <ContactPhoneNumberTemplate key={e.uiKey}
+                                                     contactId={props.contactId}
+                                                     phoneNumber={e}
+                                                     initialEditState={e.newItem}
+                                                     notifySave={(e: any) => phoneNumberSaved(e)}
+                                                     notifyDelete={(uiKey: string) => phoneNumberDeleted(uiKey)}
+                                                     notifyCancelEdit={(uiKey: string) => phoneNumberCancelEdit(uiKey)}
                         />
                     })
                 }
