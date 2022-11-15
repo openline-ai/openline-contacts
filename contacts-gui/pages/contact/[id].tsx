@@ -4,14 +4,13 @@ import {gql, GraphQLClient} from "graphql-request";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCirclePlus, faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {useEffect, useState} from "react";
 import {Dropdown} from "primereact/dropdown";
 import {BreadCrumb} from "primereact/breadcrumb";
 import {Controller, useForm} from "react-hook-form";
 import {getEnumLabel} from "../../model/enums";
 import {ContactTitleEnum} from "../../model/enum-contactTitle";
-import {ContactTypeEnum} from "../../model/enum-contactType";
 import {InputTextarea} from "primereact/inputtextarea";
 import {Dialog} from "primereact/dialog";
 import ContactCommunicationSection from "./contactCommunications";
@@ -28,16 +27,31 @@ function ContactDetails() {
         firstName: '',
         lastName: '',
         label: '',
-        contactType: '',
+        contactTypeId: '',
+        contactTypeName: '',
         notes: ''
     });
     const {register, handleSubmit, setValue, control} = useForm({
         defaultValues: contact
     });
 
+    const [contactTypeList, setContactTypeList] = useState([] as any);
     const [editDetails, setEditDetails] = useState(false);
 
     useEffect(() => {
+
+        if (id !== undefined) {
+            const query = gql`query GetContactTypeList {
+                contactTypes {
+                    id
+                    name
+                }
+            }`
+
+            client.request(query).then((response: any) => {
+                setContactTypeList(response.contactTypes);
+            });
+        }
 
         if (id !== undefined && id === 'new') {
             setEditDetails(true);
@@ -50,24 +64,34 @@ function ContactDetails() {
                     firstName
                     lastName
                     label
-                    contactType
-                    notes
-                    emails{
+                    contactType{
                         id
-                        email
-                        label
-                        primary
+                        name
                     }
+                    notes
                 }
             }`
 
             client.request(query, {id: id}).then((response: any) => {
-                setContact(response.contact);
+                setContact(getContactObjectFromResponse(response.contact));
             });
 
         }
 
     }, [id]);
+
+    const getContactObjectFromResponse = (contact: any) => {
+        return {
+            id: contact.id,
+            title: contact.title,
+            firstName: contact.firstName,
+            lastName: contact.lastName,
+            label: contact.label,
+            contactTypeId: contact.contactType?.id ?? '',
+            contactTypeName: contact.contactType?.name ?? '',
+            notes: contact.notes
+        };
+    }
 
     const onSubmit = handleSubmit(data => {
 
@@ -81,7 +105,10 @@ function ContactDetails() {
                     firstName
                     lastName
                     label
-                    contactType
+                    contactType{
+                        id
+                        name
+                    }
                     notes
                 }
             }`
@@ -93,7 +120,10 @@ function ContactDetails() {
                     firstName
                     lastName
                     label
-                    contactType
+                    contactType{
+                        id
+                        name
+                    }
                     notes
                 }
             }`
@@ -101,12 +131,20 @@ function ContactDetails() {
 
 
         client.request(query, {
-            contact: data
+            contact: {
+                id: data.id,
+                title: data.title,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                label: data.label,
+                contactTypeId: data.contactTypeId,
+                notes: data.notes,
+            }
         }).then((response) => {
                 if (!data.id) {
-                    setContact(response.createContact);
+                    setContact(getContactObjectFromResponse(response.createContact));
                 } else {
-                    setContact(response.updateContact);
+                    setContact(getContactObjectFromResponse(response.updateContact));
                 }
                 setEditDetails(false);
             }
@@ -169,7 +207,7 @@ function ContactDetails() {
                                             setValue('firstName', contact.firstName);
                                             setValue('lastName', contact.lastName);
                                             setValue('label', contact.label);
-                                            setValue('contactType', contact.contactType);
+                                            setValue('contactTypeId', contact.contactTypeId);
                                             setValue('notes', contact.notes);
                                             setEditDetails(true);
                                         }}>
@@ -202,7 +240,7 @@ function ContactDetails() {
                                     </div>
                                     <div className="grid grid-nogutter mt-3">
                                         <div className="col-4">Type</div>
-                                        <div className="col-8 overflow-hidden text-overflow-ellipsis">{getEnumLabel(ContactTypeEnum, contact.contactType)}</div>
+                                        <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.contactTypeName}</div>
                                     </div>
                                     <div className="grid grid-nogutter mt-3">
                                         <div className="col-4">Notes</div>
@@ -235,10 +273,10 @@ function ContactDetails() {
                                             <InputText id="label" {...register("label")} className="w-full"/>
                                         </div>
                                         <div className="field w-full">
-                                            <label htmlFor="contactType" className="block">Type *</label>
-                                            <Controller name="contactType" control={control} render={({field}) => (
-                                                <Dropdown id={field.name} value={field.value} onChange={(e) => field.onChange(e.value)} options={ContactTypeEnum}
-                                                          optionValue="value" optionLabel="label" className="w-full"/>
+                                            <label htmlFor="contactTypeId" className="block">Type</label>
+                                            <Controller name="contactTypeId" control={control} render={({field}) => (
+                                                <Dropdown id={field.name} value={field.value} onChange={(e) => field.onChange(e.value)} options={contactTypeList}
+                                                          optionValue="id" optionLabel="name" className="w-full"/>
                                             )}/>
                                         </div>
                                         <div className="field w-full">
