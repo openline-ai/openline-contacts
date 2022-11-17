@@ -14,6 +14,7 @@ import {ContactTitleEnum} from "../../model/enum-contactTitle";
 import {InputTextarea} from "primereact/inputtextarea";
 import {Dialog} from "primereact/dialog";
 import ContactCommunicationSection from "./contactCommunications";
+import ContactCompaniesPositions from "./contactCompaniesPositions";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -297,6 +298,11 @@ function ContactDetails() {
                     {
                         id && id !== 'new' &&
                         <ContactCommunicationSection contactId={id}/>
+                    }
+
+                    {
+                        id && id !== 'new' &&
+                        <ContactCompaniesPositions contactId={id}/>
                     }
 
                     {
