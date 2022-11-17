@@ -15,6 +15,7 @@ import {InputTextarea} from "primereact/inputtextarea";
 import {Dialog} from "primereact/dialog";
 import ContactCommunicationSection from "./contactCommunications";
 import ContactCompaniesPositions from "./contactCompaniesPositions";
+import SearchComponent from "../../components/SearchComponent";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -27,9 +28,11 @@ function ContactDetails() {
         title: '',
         firstName: '',
         lastName: '',
-        label: '',
+        ownerId: undefined,
+        ownerFullName: '',
         contactTypeId: undefined,
         contactTypeName: '',
+        label: '',
         notes: ''
     });
     const {register, handleSubmit, setValue, control} = useForm({
@@ -64,11 +67,16 @@ function ContactDetails() {
                     title
                     firstName
                     lastName
-                    label
+                    owner{
+                        id
+                        firstName
+                        lastName
+                    }
                     contactType{
                         id
                         name
                     }
+                    label
                     notes
                 }
             }`
@@ -87,9 +95,11 @@ function ContactDetails() {
             title: contact.title,
             firstName: contact.firstName,
             lastName: contact.lastName,
-            label: contact.label,
+            ownerId: contact.owner?.id ?? undefined,
+            ownerFullName: contact.owner ? contact.owner.firstName + ' ' + contact.owner.lastName : '',
             contactTypeId: contact.contactType?.id ?? undefined,
             contactTypeName: contact.contactType?.name ?? '',
+            label: contact.label,
             notes: contact.notes
         };
     }
@@ -105,11 +115,16 @@ function ContactDetails() {
                     title
                     firstName
                     lastName
-                    label
+                    owner{
+                        id
+                        firstName
+                        lastName
+                    }
                     contactType{
                         id
                         name
                     }
+                    label
                     notes
                 }
             }`
@@ -120,11 +135,16 @@ function ContactDetails() {
                     title
                     firstName
                     lastName
-                    label
+                    owner{
+                        id
+                        firstName
+                        lastName
+                    }
                     contactType{
                         id
                         name
                     }
+                    label
                     notes
                 }
             }`
@@ -137,8 +157,9 @@ function ContactDetails() {
                 title: data.title,
                 firstName: data.firstName,
                 lastName: data.lastName,
-                label: data.label,
                 contactTypeId: data.contactTypeId,
+                ownerId: data.ownerId,
+                label: data.label,
                 notes: data.notes,
             }
         }).then((response) => {
@@ -180,6 +201,44 @@ function ContactDetails() {
         });
     }
 
+    const searchOwner = function (name: string, maxResults: string) {
+        return new Promise((resolve, reject) => {
+
+            const query = gql`query SearchOwner ($pagination: PaginationFilter!) {
+                users(paginationFilter: $pagination){
+                    content{
+                        id
+                        firstName
+                        lastName
+                        email
+                    }
+                    totalPages
+                    totalElements
+                }
+            }`
+
+            //TODO https://github.com/openline-ai/openline-contacts/issues/77
+            //when filters are available on BE
+            client.request(query, {
+                pagination: {
+                    "page": 0,
+                    "limit": 25
+                }
+            }).then((response: any) => {
+                if (response.users.content) {
+                    resolve({
+                        content: response.users.content,
+                        totalElements: response.users.totalElements
+                    });
+                } else {
+                    resolve({
+                        error: response
+                    });
+                }
+            });
+        });
+    }
+
     const items = [
         {label: 'Contacts', url: '/contact'}
     ];
@@ -206,8 +265,10 @@ function ContactDetails() {
                                             setValue('title', contact.title);
                                             setValue('firstName', contact.firstName);
                                             setValue('lastName', contact.lastName);
-                                            setValue('label', contact.label);
+                                            setValue('ownerId', contact.ownerId);
+                                            setValue('ownerFullName', contact.ownerFullName);
                                             setValue('contactTypeId', contact.contactTypeId);
+                                            setValue('label', contact.label);
                                             setValue('notes', contact.notes);
                                             setEditDetails(true);
                                         }}>
@@ -235,12 +296,16 @@ function ContactDetails() {
                                         <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.lastName}</div>
                                     </div>
                                     <div className="grid grid-nogutter mt-3">
-                                        <div className="col-4">Label</div>
-                                        <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.label}</div>
+                                        <div className="col-4">Owner</div>
+                                        <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.ownerFullName}</div>
                                     </div>
                                     <div className="grid grid-nogutter mt-3">
                                         <div className="col-4">Type</div>
                                         <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.contactTypeName}</div>
+                                    </div>
+                                    <div className="grid grid-nogutter mt-3">
+                                        <div className="col-4">Label</div>
+                                        <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.label}</div>
                                     </div>
                                     <div className="grid grid-nogutter mt-3">
                                         <div className="col-4">Notes</div>
@@ -269,8 +334,25 @@ function ContactDetails() {
                                             <InputText id="lastName" {...register("lastName")} className="w-full"/>
                                         </div>
                                         <div className="field w-full">
-                                            <label htmlFor="label" className="block">Label</label>
-                                            <InputText id="label" {...register("label")} className="w-full"/>
+                                            <label htmlFor="ownerFullName" className="block">Owner</label>
+                                            <Controller name="ownerFullName" control={control} render={({field}) => (
+                                                <SearchComponent
+                                                    value={field.value}
+                                                    searchData={(name: string, maxResults: string) => {
+                                                        return searchOwner(name, maxResults);
+                                                    }}
+                                                    itemTemplate={(e: any) => {
+                                                        return <span>
+                                                            <span className="mr-3">{e.firstName} {e.lastName}</span>
+                                                            <span className="mr-3">{e.email}</span>
+                                                        </span>
+                                                    }}
+                                                    onItemSelected={(e: any) => {
+                                                        setValue('ownerId', !e ? undefined : e.id);
+                                                        setValue('ownerFullName', !e ? 'empty' : (e.firstName + ' ' + e.lastName));
+                                                    }}
+                                                    maxResults={2}/>
+                                            )}/>
                                         </div>
                                         <div className="field w-full">
                                             <label htmlFor="contactTypeId" className="block">Type</label>
@@ -278,6 +360,10 @@ function ContactDetails() {
                                                 <Dropdown id={field.name} value={field.value} onChange={(e) => field.onChange(e.value)} options={contactTypeList}
                                                           optionValue="id" optionLabel="name" className="w-full"/>
                                             )}/>
+                                        </div>
+                                        <div className="field w-full">
+                                            <label htmlFor="label" className="block">Label</label>
+                                            <InputText id="label" {...register("label")} className="w-full"/>
                                         </div>
                                         <div className="field w-full">
                                             <label htmlFor="notes" className="block">Notes</label>
