@@ -27,7 +27,7 @@ function ContactDetails() {
         firstName: '',
         lastName: '',
         label: '',
-        contactTypeId: '',
+        contactTypeId: undefined,
         contactTypeName: '',
         notes: ''
     });
@@ -87,7 +87,7 @@ function ContactDetails() {
             firstName: contact.firstName,
             lastName: contact.lastName,
             label: contact.label,
-            contactTypeId: contact.contactType?.id ?? '',
+            contactTypeId: contact.contactType?.id ?? undefined,
             contactTypeName: contact.contactType?.name ?? '',
             notes: contact.notes
         };
@@ -99,7 +99,7 @@ function ContactDetails() {
 
         if (!data.id) {
             query = gql`mutation CreateContact($contact: ContactInput!) {
-                createContact(input: $contact) {
+                contact_Create(input: $contact) {
                     id
                     title
                     firstName
@@ -114,7 +114,7 @@ function ContactDetails() {
             }`
         } else {
             query = gql`mutation UpdateContact($contact: ContactUpdateInput!) {
-                updateContact(input: $contact) {
+                contact_Update(input: $contact) {
                     id
                     title
                     firstName
@@ -142,13 +142,14 @@ function ContactDetails() {
             }
         }).then((response) => {
                 if (!data.id) {
-                    setContact(getContactObjectFromResponse(response.createContact));
+                    router.push('/contact/' + response.contact_Create.id)
                 } else {
-                    setContact(getContactObjectFromResponse(response.updateContact));
+                    setContact(getContactObjectFromResponse(response.contact_Update));
                 }
                 setEditDetails(false);
             }
         ).catch((reason) => {
+            console.log(reason);
             if (reason.response.status === 400) {
                 // reason.response.data.errors.forEach((error: any) => {
                 //     formik.setFieldError(error.field, error.message);
@@ -164,15 +165,13 @@ function ContactDetails() {
     const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
     const deleteContact = () => {
         const query = gql`mutation DeleteContact($id: ID!) {
-
-            softDeleteContact(contactId: $id) {
+            contact_SoftDelete(contactId: $id) {
                 result
             }
-
         }`
 
         client.request(query, {id: id}).then((response: any) => {
-            if (response.softDeleteContact.result) {
+            if (response.contact_SoftDelete.result) {
                 router.push('/contact');
             } else {
                 //TODO throw error
