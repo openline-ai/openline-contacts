@@ -1,0 +1,14 @@
+.sort-button {
+    color: black !important;
+    background: var(--background-color) !important;
+    border: var(--gray-color-1) !important;
+}
+
+.sort-button:not(.selected):hover {
+    background: var(--gray-color-2) !important;
+}
+
+.sort-button.selected {
+    background: var(--gray-color-2) !important;
+}
+

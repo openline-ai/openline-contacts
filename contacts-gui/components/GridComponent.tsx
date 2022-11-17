@@ -4,13 +4,14 @@ import {Column} from "primereact/column";
 import {Button} from "primereact/button";
 import {Fragment} from "preact";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowDownShortWide, faColumns, faFilter} from "@fortawesome/free-solid-svg-icons";
+import {faArrowDownWideShort, faArrowUpShortWide, faColumns, faFilter} from "@fortawesome/free-solid-svg-icons";
 import {Dropdown} from "primereact/dropdown";
 import PropTypes from "prop-types";
 import {gql, GraphQLClient} from 'graphql-request'
 import {Sidebar} from "primereact/sidebar";
 import {OverlayPanel} from "primereact/overlaypanel";
 import {Divider} from "primereact/divider";
+import {Checkbox} from "primereact/checkbox";
 
 
 const GridComponent = (props: any) => {
@@ -21,6 +22,15 @@ const GridComponent = (props: any) => {
     const [filtersPanelVisible, setFiltersPanelVisible] = useState(false);
     const sortContainerRef = useRef<OverlayPanel>(null);
     const configurationContainerRef = useRef<OverlayPanel>(null);
+
+    const [sort, setSort] = useState(props.columns.filter((c: any) => c.sortFieldName).map((c: any) => {
+        return {
+            label: c.header,
+            sortFieldName: c.sortFieldName,
+            dir: 'ASC',
+            active: false
+        }
+    }));
 
     const onEdit = function (id: any) {
         props.onEdit(id);
@@ -77,26 +87,27 @@ const GridComponent = (props: any) => {
                 page: lazyParams.page,
                 limit: lazyParams.limit
             },
-            sortOrder: lazyParams.sortOrderBE,
-            sortField: lazyParams.sortField,
+            sort: sort.filter((s: any) => s.active).map((s: any) => {
+                return {
+                    by: s.sortFieldName,
+                    direction: s.dir,
+                    caseSensitive: false
+                }
+            })
         } as any;
 
         var fieldsForQuery = props.columns.map((p: any) => p.field).join("\n");
         fieldsForQuery += "\nid\n";
 
-        const query = gql`
-            query GetList($pagination: PaginationFilter){
-
-                ${props.hqlQuery}(paginationFilter: $pagination){
-                content {
-                    ${fieldsForQuery}
-                }
-                totalPages
-                totalElements
+        const query = gql`query GetList($pagination: PaginationFilter, $sort: [SortBy!]){
+            ${props.hqlQuery}(paginationFilter: $pagination, sort: $sort){
+            content {
+                ${fieldsForQuery}
             }
-
-            }
-        `
+            totalPages
+            totalElements
+        }
+        }`
 
         client.request(query, params).then((response: any) => {
             setData(response[props.hqlQuery].content);
@@ -112,7 +123,7 @@ const GridComponent = (props: any) => {
 
     useEffect(() => {
         loadLazyData();
-    }, [lazyParams, props.triggerReload]);
+    }, [lazyParams, props.triggerReload, sort]);
 
     const onPage = (event: any) => {
         console.log(event);
@@ -125,18 +136,7 @@ const GridComponent = (props: any) => {
             };
         });
     }
-    const onSort = (event: any) => {
-        setLazyParams((prevLazyParams: any) => {
-            return {
-                ...prevLazyParams, ...{
-                    page: prevLazyParams.page,
-                    sortField: event.sortField,
-                    sortOrder: event.sortOrder,
-                    sortOrderBE: event.sortOrder == 1 ? 'ASC' : 'DESC',
-                }
-            };
-        });
-    }
+
     const onFilter = (event: any) => {
         setLazyParams((prevLazyParams: any) => {
             return {
@@ -186,7 +186,7 @@ const GridComponent = (props: any) => {
                     {
                         props.sortingEnabled &&
                         <Button onClick={(e: any) => sortContainerRef?.current?.toggle(e)} className='p-button-text'>
-                            <FontAwesomeIcon icon={faArrowDownShortWide} className="mr-2"/>
+                            <FontAwesomeIcon icon={faArrowUpShortWide} className="mr-2"/>
                             <span>Sorting</span>
                         </Button>
                     }
@@ -244,8 +244,66 @@ const GridComponent = (props: any) => {
         </Sidebar>
 
         <OverlayPanel ref={sortContainerRef} dismissable>
-            Sort by
-            TODO
+            <div className="flex align-items-center">
+                <div className="flex flex-grow-1  flex-column mr-5">
+                    {
+                        sort.map((c: any) => {
+                            return <>
+                                <div className="flex flex-row align-items-center">
+                                    <Checkbox
+                                        onChange={(e: any) => {
+                                            setSort(sort.map((s: any) => {
+                                                if (s.sortFieldName === c.sortFieldName) {
+                                                    s.active = e.checked;
+                                                }
+                                                return s;
+                                            }))
+                                        }}
+                                        checked={c.active}
+                                        className="mr-2"/>
+                                    <label>{c.label}</label>
+                                </div>
+                            </>
+                        })
+                    }
+                </div>
+
+                <div className="flex flex-column">
+                    {
+                        sort.map((c: any) => {
+                            return <>
+                                <div key={c.sortFieldName}>
+                                    <Button
+                                        onClick={(e: any) => {
+                                            setSort(sort.map((s: any) => {
+                                                if (s.sortFieldName === c.sortFieldName) {
+                                                    s.dir = "ASC";
+                                                }
+                                                return s;
+                                            }))
+                                        }}
+                                        className={'sort-button mr-2' + (c.dir === "ASC" ? ' selected' : '')}>
+                                        <FontAwesomeIcon icon={faArrowUpShortWide} className="mr-2"/>ASC
+                                    </Button>
+                                    <Button
+                                        onClick={(e: any) => {
+                                            setSort(sort.map((s: any) => {
+                                                if (s.sortFieldName === c.sortFieldName) {
+                                                    s.dir = "DESC";
+                                                }
+                                                return s;
+                                            }))
+                                        }}
+                                        className={'sort-button mr-2' + (c.dir === "DESC" ? ' selected' : '')}>
+                                        <FontAwesomeIcon icon={faArrowDownWideShort}/>DESC
+                                    </Button>
+                                </div>
+                            </>
+                        })
+                    }
+                </div>
+
+            </div>
         </OverlayPanel>
 
         <OverlayPanel ref={configurationContainerRef} dismissable>
@@ -274,6 +332,7 @@ GridComponent.propTypes = {
         template: PropTypes.func,
         editLink: PropTypes.bool,
         filterPlaceholder: PropTypes.string,
+        sortFieldName: PropTypes.string
     })),
     triggerReload: PropTypes.bool,
     hqlQuery: PropTypes.string,

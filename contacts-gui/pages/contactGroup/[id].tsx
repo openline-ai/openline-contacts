@@ -30,12 +30,10 @@ function ContactGroupEdit() {
         } else if (id !== undefined && id !== 'new') {
 
             const query = gql`query GetContactGroupById($id: ID!) {
-
                 contactGroup(id: $id) {
                     id
                     name
                 }
-
             }`
 
             client.request(query, {id: id}).then((response: any) => {
@@ -51,15 +49,13 @@ function ContactGroupEdit() {
     const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
     const deleteContactGroup = () => {
         const query = gql`mutation DeleteContactGroup($id: ID!) {
-
-            deleteContactGroupAndUnlinkAllContacts(id: $id) {
+            contactGroupDeleteAndUnlinkAllContacts(id: $id) {
                 result
             }
-
         }`
 
         client.request(query, {id: id}).then((response: any) => {
-            if (response.deleteContactGroupAndUnlinkAllContacts.result) {
+            if (response.contactGroupDeleteAndUnlinkAllContacts.result) {
                 router.push('/contactGroup');
             } else {
                 //TODO throw error
@@ -77,14 +73,14 @@ function ContactGroupEdit() {
 
         if (!data.id) {
             query = gql`mutation CreateContactGroup($contactGroup: ContactGroupInput!) {
-                createContactGroup(input: $contactGroup) {
+                contactGroupCreate(input: $contactGroup) {
                     id
                     name
                 }
             }`;
         } else {
             query = gql`mutation UpdateContact($contactGroup: ContactGroupUpdateInput!) {
-                updateContactGroup(input: $contactGroup) {
+                contactGroupUpdate(input: $contactGroup) {
                     id
                     name
                 }
@@ -95,9 +91,9 @@ function ContactGroupEdit() {
             contactGroup: data
         }).then((response) => {
                 if (!data.id) {
-                    setContactGroup(response.createContactGroup);
+                    setContactGroup(response.contactGroupCreate);
                 } else {
-                    setContactGroup(response.updateContactGroup);
+                    setContactGroup(response.contactGroupUpdate);
                 }
                 setEditDetails(false);
             }
