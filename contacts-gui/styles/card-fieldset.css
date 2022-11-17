@@ -1,11 +1,11 @@
 .card-fieldset {
-    border: solid 1px var(--border-color);
+    border: solid 1px var(--gray-color-1);
     border-radius: 5px;
 }
 
 .card-fieldset .card-header {
     padding: 15px;
-    border-bottom: solid 1px var(--border-color);
+    border-bottom: solid 1px var(--gray-color-1);
     font-weight: bold;
     font-size: 15px;
 }
