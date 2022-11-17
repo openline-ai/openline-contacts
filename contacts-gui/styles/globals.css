@@ -32,3 +32,7 @@ div#__next > div {
 .text-black {
     color: black !important;
 }
+
+ul li {
+    list-style-type: none;
+}
