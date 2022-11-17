@@ -24,7 +24,7 @@ function ContactPhoneNumberTemplate(props: any) {
 
         if (!data.id) {
             query = gql`mutation AddPhoneNumberToContact($contactId: ID!, $phoneNumber: PhoneNumberInput!) {
-                mergePhoneNumberToContact(contactId: $contactId, input: $phoneNumber) {
+                phoneNumberMergeToContact(contactId: $contactId, input: $phoneNumber) {
                     id
                     e164
                     label
@@ -33,7 +33,7 @@ function ContactPhoneNumberTemplate(props: any) {
             }`
         } else {
             query = gql`mutation UpdatePhoneNumberForContact($contactId: ID!, $phoneNumber: PhoneNumberUpdateInput!) {
-                updatePhoneNumberInContact(contactId: $contactId, input: $phoneNumber) {
+                phoneNumberUpdateInContact(contactId: $contactId, input: $phoneNumber) {
                     id
                     e164
                     label
@@ -52,9 +52,9 @@ function ContactPhoneNumberTemplate(props: any) {
             }
         }).then((response) => {
                 if (!data.id) {
-                    props.notifySave({...response.mergePhoneNumberToContact, ...{uiKey: data.uiKey}});
+                    props.notifySave({...response.phoneNumberMergeToContact, ...{uiKey: data.uiKey}});
                 } else {
-                    props.notifySave({...response.updatePhoneNumberInContact, ...{uiKey: data.uiKey}});
+                    props.notifySave({...response.phoneNumberUpdateInContact, ...{uiKey: data.uiKey}});
                 }
                 setEditDetails(false);
             }
@@ -75,7 +75,7 @@ function ContactPhoneNumberTemplate(props: any) {
     const deletePhoneNumber = () => {
         //todo show loading
         const query = gql`mutation DeletePhoneNumberForContact($contactId: ID!, $e164: String!) {
-            removePhoneNumberFromContact(contactId: $contactId, e164: $e164) {
+            phoneNumberDeleteFromContact(contactId: $contactId, e164: $e164) {
                 result
             }
         }`
@@ -84,7 +84,7 @@ function ContactPhoneNumberTemplate(props: any) {
             contactId: props.contactId,
             e164: props.phoneNumber.e164
         }).then((response: any) => {
-            if (response.removePhoneNumberFromContact.result) {
+            if (response.phoneNumberDeleteFromContact.result) {
                 //todo show notification
 
                 props.notifyDelete(props.phoneNumber.uiKey);

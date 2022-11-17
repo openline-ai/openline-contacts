@@ -24,7 +24,7 @@ function ContactEmailTemplate(props: any) {
 
         if (!data.id) {
             query = gql`mutation AddEmailToContact($contactId: ID!, $email: EmailInput!) {
-                mergeEmailToContact(contactId: $contactId, input: $email) {
+                emailMergeToContact(contactId: $contactId, input: $email) {
                     id
                     email
                     label
@@ -33,7 +33,7 @@ function ContactEmailTemplate(props: any) {
             }`
         } else {
             query = gql`mutation UpdateEmailForContact($contactId: ID!, $email: EmailUpdateInput!) {
-                updateEmailInContact(contactId: $contactId, input: $email) {
+                emailUpdateInContact(contactId: $contactId, input: $email) {
                     id
                     email
                     label
@@ -52,9 +52,9 @@ function ContactEmailTemplate(props: any) {
             }
         }).then((response) => {
                 if (!data.id) {
-                    props.notifySave({...response.mergeEmailToContact, ...{uiKey: data.uiKey}});
+                    props.notifySave({...response.emailMergeToContact, ...{uiKey: data.uiKey}});
                 } else {
-                    props.notifySave({...response.updateEmailInContact, ...{uiKey: data.uiKey}});
+                    props.notifySave({...response.emailUpdateInContact, ...{uiKey: data.uiKey}});
                 }
                 setEditDetails(false);
             }
@@ -75,7 +75,7 @@ function ContactEmailTemplate(props: any) {
     const deleteEmail = () => {
         //todo show loading
         const query = gql`mutation DeleteEmail($contactId: ID!, $email: String!) {
-            removeEmailFromContact(contactId: $contactId, email: $email) {
+            emailRemoveFromContact(contactId: $contactId, email: $email) {
                 result
             }
         }`
@@ -84,7 +84,7 @@ function ContactEmailTemplate(props: any) {
             contactId: props.contactId,
             email: props.email.email
         }).then((response: any) => {
-            if (response.removeEmailFromContact.result) {
+            if (response.emailRemoveFromContact.result) {
                 //todo show notification
 
                 props.notifyDelete(props.email.uiKey);
