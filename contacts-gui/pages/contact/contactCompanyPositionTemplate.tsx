@@ -169,10 +169,6 @@ function ContactCompanyPositionTemplate(props: any) {
                                 setValue('id', props.companyPosition.id);
                                 setValue('companyId', props.companyPosition.companyId);
                                 setValue('companyName', props.companyPosition.companyName);
-                                setValue('companyNameAutocomplete', {
-                                    companyId: props.companyPosition.companyId,
-                                    companyName: props.companyPosition.companyName
-                                });
                                 setValue('jobTitle', props.companyPosition.jobTitle);
                                 setEditDetails(true);
                             }}>
