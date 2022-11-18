@@ -2,14 +2,16 @@ import type {NextPage} from 'next'
 import {useRouter} from "next/router";
 import Layout from "../../layout/layout";
 import GridComponent from "../../components/GridComponent";
-import {gql} from "graphql-request";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCirclePlus} from "@fortawesome/free-solid-svg-icons";
+import {getEnumLabel} from "../../model/enums";
+import {ContactTitleEnum} from "../../model/enum-contactTitle";
 
 const ContactList: NextPage = () => {
     const router = useRouter();
 
+    let onEdit = (id: any) => router.push(`/contact/${id}`);
     return (
         <>
             <Layout>
@@ -19,20 +21,45 @@ const ContactList: NextPage = () => {
                                    [
                                        {
                                            field: 'title',
-                                           hidden: true
+                                           label: 'Title',
+                                           hidden: true,
+                                           sortFieldName: "TITLE"
                                        },
                                        {
                                            field: 'firstName',
-                                           header: 'First name',
-                                           className: 'w50',
-                                           editLink: true
+                                           label: 'First name',
+                                           hidden: true,
+                                           sortFieldName: "FIRST_NAME"
                                        },
                                        {
                                            field: 'lastName',
-                                           header: 'Last name',
+                                           label: 'Last name',
+                                           hidden: true,
+                                           sortFieldName: "LAST_NAME"
+                                       },
+                                       {
+                                           field: 'label',
+                                           label: 'Label',
+                                           hidden: true,
+                                           sortFieldName: "LABEL"
+                                       },
+                                       {
+                                           editLink: true,
                                            className: 'w50',
-                                           editLink: false
-                                       }
+                                           label: 'Contact',
+                                           template: (c: any) => {
+                                               return <div className="cta" onClick={() => onEdit(c.id)}>
+                                                   {getEnumLabel(ContactTitleEnum, c.title)}&nbsp;{c.firstName}&nbsp;{c.lastName}
+                                               </div>
+                                           }
+                                       },
+                                       {
+                                           field: 'contactType{name}',
+                                           label: 'Type',
+                                           template: (c: any) => {
+                                               return <div>{c.contactType ? c.contactType.name : ''}</div>
+                                           }
+                                       },
                                    ]
                                }
                                gridTitle="Contacts"
@@ -43,7 +70,7 @@ const ContactList: NextPage = () => {
                                        </Button>
                                    </div>
                                }
-                               onEdit={(id: any) => router.push(`/contact/${id}`)}
+                               onEdit={onEdit}
                 />
             </Layout>
         </>
