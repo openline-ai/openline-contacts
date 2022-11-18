@@ -18,7 +18,7 @@ const ContactGroupList: NextPage = () => {
                                    [
                                        {
                                            field: 'name',
-                                           header: 'Name',
+                                           label: 'Name',
                                            className: 'w100',
                                            editLink: true,
                                            sortFieldName: "NAME"

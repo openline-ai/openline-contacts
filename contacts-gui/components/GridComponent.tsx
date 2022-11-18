@@ -25,7 +25,7 @@ const GridComponent = (props: any) => {
 
     const [sort, setSort] = useState(props.columns.filter((c: any) => c.sortFieldName).map((c: any) => {
         return {
-            label: c.header,
+            label: c.label,
             sortFieldName: c.sortFieldName,
             dir: 'ASC',
             active: false
@@ -96,7 +96,7 @@ const GridComponent = (props: any) => {
             })
         } as any;
 
-        var fieldsForQuery = props.columns.map((p: any) => p.field).join("\n");
+        var fieldsForQuery = props.columns.filter((p: any) => p.field).map((p: any) => p.field).join("\n");
         fieldsForQuery += "\nid\n";
 
         const query = gql`query GetList($pagination: PaginationFilter, $sort: [SortBy!]){
@@ -221,7 +221,7 @@ const GridComponent = (props: any) => {
                             if (columnDefinition.hidden !== undefined && columnDefinition.hidden === true) {
                                 return;
                             } else if (columnDefinition.template) {
-                                return columnDefinition.template;
+                                return columnDefinition.template(rowData);
                             } else if (columnDefinition.editLink) {
                                 return <span className={`cta ${columnDefinition.className ?? ''}`}
                                              onClick={() => onEdit(rowData.id)}>{rowData[columnDefinition.field]}</span>
@@ -232,7 +232,7 @@ const GridComponent = (props: any) => {
                         };
                         return <Column key={columnDefinition.field}
                                        field={columnDefinition.field}
-                                       header={columnDefinition.header}
+                                       header={columnDefinition.label}
                                        className={columnDefinition.className ?? ''}
                                        body={bodyTemplate}/>
                     })
@@ -244,12 +244,13 @@ const GridComponent = (props: any) => {
         </Sidebar>
 
         <OverlayPanel ref={sortContainerRef} dismissable>
-            <div className="flex align-items-center">
-                <div className="flex flex-grow-1  flex-column mr-5">
-                    {
-                        sort.map((c: any) => {
-                            return <>
-                                <div className="flex flex-row align-items-center">
+            <div className="mb-3 font-bold">Select the fields you want to sort by</div>
+            <div className="flex flex-column">
+                {
+                    sort.map((c: any) => {
+                        return <>
+                            <div className="flex flex-row mb-3">
+                                <div className="flex flex-grow-1 align-items-center mr-5">
                                     <Checkbox
                                         onChange={(e: any) => {
                                             setSort(sort.map((s: any) => {
@@ -263,16 +264,7 @@ const GridComponent = (props: any) => {
                                         className="mr-2"/>
                                     <label>{c.label}</label>
                                 </div>
-                            </>
-                        })
-                    }
-                </div>
-
-                <div className="flex flex-column">
-                    {
-                        sort.map((c: any) => {
-                            return <>
-                                <div key={c.sortFieldName}>
+                                <div key={c.sortFieldName} className="flex">
                                     <Button
                                         onClick={(e: any) => {
                                             setSort(sort.map((s: any) => {
@@ -298,10 +290,10 @@ const GridComponent = (props: any) => {
                                         <FontAwesomeIcon icon={faArrowDownWideShort}/>DESC
                                     </Button>
                                 </div>
-                            </>
-                        })
-                    }
-                </div>
+                            </div>
+                        </>
+                    })
+                }
 
             </div>
         </OverlayPanel>
@@ -325,9 +317,9 @@ GridComponent.propTypes = {
     resourceLabel: PropTypes.string,
     filters: PropTypes.object,
     columns: PropTypes.arrayOf(PropTypes.shape({
-        field: PropTypes.string.isRequired,
+        field: PropTypes.string,
         hidden: PropTypes.bool,
-        header: PropTypes.string,
+        label: PropTypes.string,
         className: PropTypes.string,
         template: PropTypes.func,
         editLink: PropTypes.bool,
