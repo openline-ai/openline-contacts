@@ -96,29 +96,40 @@ const GridComponent = (props: any) => {
             })
         } as any;
 
-        var fieldsForQuery = props.columns.filter((p: any) => p.field).map((p: any) => p.field).join("\n");
-        fieldsForQuery += "\nid\n";
+        if(props.queryData) {
+            props.queryData(params).then((response: any) => {
+                setData(response.content);
+                setTotalRecords(response.totalElements);
+                setLoading(false);
+            }).catch((e: any) => {
+                setTotalRecords(0);
+                setLoading(false);
+                //TODO show error
+            });
+        } else {
+            var fieldsForQuery = props.columns.filter((p: any) => p.field).map((p: any) => p.field).join("\n");
+            fieldsForQuery += "\nid\n";
 
-        const query = gql`query GetList($pagination: PaginationFilter, $sort: [SortBy!]){
-            ${props.hqlQuery}(paginationFilter: $pagination, sort: $sort){
-            content {
-                ${fieldsForQuery}
+            const query = gql`query GetList($pagination: PaginationFilter, $sort: [SortBy!]){
+                ${props.hqlQuery}(paginationFilter: $pagination, sort: $sort){
+                content {
+                    ${fieldsForQuery}
+                }
+                totalPages
+                totalElements
             }
-            totalPages
-            totalElements
+            }`
+
+            client.request(query, params).then((response: any) => {
+                setData(response[props.hqlQuery].content);
+                setTotalRecords(response[props.hqlQuery].totalElements);
+                setLoading(false);
+            }).catch((e) => {
+                setTotalRecords(0);
+                setLoading(false);
+                //TODO show error
+            });
         }
-        }`
-
-        client.request(query, params).then((response: any) => {
-            setData(response[props.hqlQuery].content);
-            setTotalRecords(response[props.hqlQuery].totalElements);
-            setLoading(false);
-        }).catch((e) => {
-            setTotalRecords(0);
-            setLoading(false);
-            //TODO show error
-        });
-
     }
 
     useEffect(() => {
@@ -249,7 +260,7 @@ const GridComponent = (props: any) => {
                 {
                     sort.map((c: any) => {
                         return <>
-                            <div className="flex flex-row mb-3">
+                            <div className="flex flex-row mb-3" key={c.field}>
                                 <div className="flex flex-grow-1 align-items-center mr-5">
                                     <Checkbox
                                         onChange={(e: any) => {
@@ -314,7 +325,6 @@ GridComponent.propTypes = {
     sortingEnabled: PropTypes.bool,
     configurationEnabled: PropTypes.bool,
 
-    resourceLabel: PropTypes.string,
     filters: PropTypes.object,
     columns: PropTypes.arrayOf(PropTypes.shape({
         field: PropTypes.string,
@@ -327,7 +337,10 @@ GridComponent.propTypes = {
         sortFieldName: PropTypes.string
     })),
     triggerReload: PropTypes.bool,
-    hqlQuery: PropTypes.string,
+
+    queryData: PropTypes.func, //you can load data in your component
+    hqlQuery: PropTypes.string, //or the grid can load it for you
+
     onEdit: PropTypes.func
 }
 
