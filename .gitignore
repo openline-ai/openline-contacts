@@ -2,10 +2,9 @@
 .idea
 *.iml
 
-contacts-gui/node_modules
-contacts-gui/.next
+node_modules
+.next
 
-contacts-api/main
 
 /.pnp
 .pnp.js
