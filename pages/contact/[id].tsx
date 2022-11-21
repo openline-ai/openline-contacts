@@ -204,8 +204,8 @@ function ContactDetails() {
     const searchOwner = function (name: string, maxResults: string) {
         return new Promise((resolve, reject) => {
 
-            const query = gql`query SearchOwner ($pagination: PaginationFilter!) {
-                users(paginationFilter: $pagination){
+            const query = gql`query SearchOwner ($pagination: Pagination!) {
+                users(pagination: $pagination){
                     content{
                         id
                         firstName

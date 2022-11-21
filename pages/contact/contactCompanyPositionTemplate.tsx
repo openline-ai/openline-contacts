@@ -121,8 +121,8 @@ function ContactCompanyPositionTemplate(props: any) {
     const searchCompany = function (name: string, maxResults: string) {
         return new Promise((resolve, reject) => {
 
-            const query = gql`query SearchCompanyByName ($pagination: PaginationFilter!, $name: String!) {
-                companies_ByNameLike(paginationFilter: $pagination, companyName: $name){
+            const query = gql`query SearchCompanyByName ($pagination: Pagination!, $name: String!) {
+                companies_ByNameLike(pagination: $pagination, companyName: $name){
                     content{
                         id
                         name

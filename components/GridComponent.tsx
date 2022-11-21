@@ -110,8 +110,8 @@ const GridComponent = (props: any) => {
             var fieldsForQuery = props.columns.filter((p: any) => p.field).map((p: any) => p.field).join("\n");
             fieldsForQuery += "\nid\n";
 
-            const query = gql`query GetList($pagination: PaginationFilter, $sort: [SortBy!]){
-                ${props.hqlQuery}(paginationFilter: $pagination, sort: $sort){
+            const query = gql`query GetList($pagination: Pagination, $sort: [SortBy!]){
+                ${props.hqlQuery}(pagination: $pagination, sort: $sort){
                 content {
                     ${fieldsForQuery}
                 }

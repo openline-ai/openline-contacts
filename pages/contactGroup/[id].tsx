@@ -163,8 +163,8 @@ function ContactGroupEdit() {
 
     const searchContactForAddingInGroup = function () {
         return new Promise((resolve, reject) => {
-            const query = gql`query GetContacts($pagination: PaginationFilter){
-                contacts(paginationFilter: $pagination){
+            const query = gql`query GetContacts($pagination: Pagination){
+                contacts(pagination: $pagination){
                     content {
                         id
                         firstName
