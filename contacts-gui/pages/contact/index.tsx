@@ -15,7 +15,7 @@ const ContactList: NextPage = () => {
     return (
         <>
             <Layout>
-                <GridComponent resourceLabel={'contact'}
+                <GridComponent gridTitle="Contacts"
                                hqlQuery="contacts"
                                columns={
                                    [
@@ -62,7 +62,6 @@ const ContactList: NextPage = () => {
                                        },
                                    ]
                                }
-                               gridTitle="Contacts"
                                gridActions={
                                    <div className="flex align-items-center">
                                        <Button onClick={(e: any) => router.push(`/contact/new`)} className='p-button-text'>

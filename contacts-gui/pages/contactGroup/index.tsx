@@ -12,8 +12,7 @@ const ContactGroupList: NextPage = () => {
     return (
         <>
             <Layout>
-                <GridComponent resourceLabel={'contact group'}
-                               hqlQuery="contactGroups"
+                <GridComponent hqlQuery="contactGroups"
                                columns={
                                    [
                                        {
