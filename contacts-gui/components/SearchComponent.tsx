@@ -3,8 +3,9 @@ import PropTypes from "prop-types";
 import {OverlayPanel} from "primereact/overlaypanel";
 import {Skeleton} from "primereact/skeleton";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCirclePlus, faTimes} from "@fortawesome/free-solid-svg-icons";
+import {faCirclePlus, faSearchPlus, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {Button} from "primereact/button";
+import {InputText} from "primereact/inputtext";
 
 const SearchComponent = (props: any) => {
 
@@ -55,18 +56,28 @@ const SearchComponent = (props: any) => {
 
     return <>
 
-        <div ref={containerRef} className={currentContainerClassName} onClick={onClick}>
-            <span ref={labelRef} className={selectedItemClassName}>{inputValue}</span>
+        {
+            props.triggerType === "dropdown" &&
+            <div ref={containerRef} className={currentContainerClassName} onClick={onClick}>
+                <span ref={labelRef} className={selectedItemClassName}>{inputValue}</span>
 
-            {
-                inputValue !== 'empty' &&
-                <span className="flex align-items-center pl-2 pr-2" style={{color: 'black'}} onClick={onClear}><FontAwesomeIcon icon={faTimes}/></span>
-            }
+                {
+                    inputValue !== 'empty' &&
+                    <span className="flex align-items-center pl-2 pr-2" style={{color: 'black'}} onClick={onClear}><FontAwesomeIcon icon={faTimes}/></span>
+                }
 
-            <div className="flex align-items-center p-dropdown-trigger" onClick={(e: any) => labelRef?.current?.click()}>
-                <span className="p-dropdown-trigger-icon p-clickable pi pi-chevron-down"></span>
+                <div className="flex align-items-center p-dropdown-trigger" onClick={(e: any) => labelRef?.current?.click()}>
+                    <span className="p-dropdown-trigger-icon p-clickable pi pi-chevron-down"></span>
+                </div>
             </div>
-        </div>
+        }
+
+        {
+            props.triggerType === "button" &&
+            <Button onClick={onClick} className='p-button-text'>
+                <FontAwesomeIcon icon={props.buttonIcon} className="mr-2"/>{props.buttonLabel}
+            </Button>
+        }
 
         <OverlayPanel ref={overlayRef} style={{width: '500px'}} onHide={() => setCurrentContainerClassName(initialContainerClassName)}>
 
@@ -97,6 +108,18 @@ const SearchComponent = (props: any) => {
             {
                 !loadingData &&
                 <div className="mb-3">
+
+                    <div>
+                        {props.searchBy?.map((f: any) => {
+                            return (
+                                <>
+                                    {f.label} <InputText/> <Button className="p-button-text p-0">
+                                    <FontAwesomeIcon size="xs" icon={faSearchPlus} style={{color: 'black'}}/>Search
+                                </Button>
+                                </>
+                            )
+                        })}
+                    </div>
 
                     {
                         searchResultList.map((c: any) => {
@@ -135,7 +158,19 @@ const SearchComponent = (props: any) => {
 }
 
 SearchComponent.propTypes = {
+    triggerType: PropTypes.oneOf(["dropdown", "button"]),
+
+    //search with button
+    buttonLabel: PropTypes.string,
+    buttonIcon: PropTypes.any,
+    searchBy: PropTypes.arrayOf(PropTypes.shape({
+        label: PropTypes.string,
+        field: PropTypes.string
+    })),
+
+    //search with dropdown
     value: PropTypes.string,
+
     searchData: PropTypes.func,
     itemTemplate: PropTypes.func,
     maxResults: PropTypes.number,
@@ -143,6 +178,7 @@ SearchComponent.propTypes = {
 }
 
 SearchComponent.defaultProps = {
+    triggerType: "dropdown",
     maxResults: 25,
     value: 'empty'
 }
