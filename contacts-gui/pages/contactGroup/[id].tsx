@@ -10,6 +10,9 @@ import {useForm} from "react-hook-form";
 import GridComponent from "../../components/GridComponent";
 import {BreadCrumb} from "primereact/breadcrumb";
 import {Dialog} from "primereact/dialog";
+import {getEnumLabel} from "../../model/enums";
+import {ContactTitleEnum} from "../../model/enum-contactTitle";
+import SearchComponent from "../../components/SearchComponent";
 
 function ContactGroupEdit() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -33,6 +36,16 @@ function ContactGroupEdit() {
                 contactGroup(id: $id) {
                     id
                     name
+                    contacts{
+                        content{
+                            id
+                            firstName
+                            lastName
+                            title
+                        }
+                        totalPages
+                        totalElements
+                    }
                 }
             }`
 
@@ -108,7 +121,126 @@ function ContactGroupEdit() {
             }
         });
 
-    })
+    });
+
+    const [contactsInGroupReload, setContactsInGroupReload] = useState(false);
+    const loadContactsInGroup = function (params: any) {
+        return new Promise((resolve, reject) => {
+
+            //TODO add pagination
+            //https://github.com/openline-ai/openline-customer-os/issues/288
+            const query = gql`query GetContactInGroup($id: ID!) {
+                contactGroup(id: $id) {
+                    contacts{
+                        content{
+                            id
+                            firstName
+                            lastName
+                            title
+                        }
+                        totalPages
+                        totalElements
+                    }
+                }
+            }`
+
+            client.request(query, {
+                id: id
+            }).then((response: any) => {
+                if (response.contactGroup) {
+                    resolve({
+                        content: response.contactGroup.contacts.content,
+                        totalElements: response.contactGroup.contacts.totalElements
+                    });
+                } else {
+                    resolve({
+                        error: response
+                    });
+                }
+            });
+        });
+    }
+
+    const searchContactForAddingInGroup = function () {
+        return new Promise((resolve, reject) => {
+            const query = gql`query GetContacts($pagination: PaginationFilter){
+                contacts(paginationFilter: $pagination){
+                    content {
+                        id
+                        firstName
+                        lastName
+                        title
+                    }
+                    totalPages
+                    totalElements
+                }
+            }`
+
+            client.request(query, {
+                pagination: {
+                    "page": 0,
+                    "limit": 25
+                }
+            }).then((response: any) => {
+                if (response.contacts.content) {
+                    resolve({
+                        content: response.contacts.content,
+                        totalElements: response.contacts.totalElements
+                    });
+                } else {
+                    resolve({
+                        error: response
+                    });
+                }
+            });
+        });
+    }
+
+    const addContactToGroup = function (contact: any) {
+        return new Promise((resolve, reject) => {
+            const query = gql`mutation AddContactToGroup($groupId: ID!, $contactId:ID!) {
+                contactGroupAddContact(groupId: $groupId, contactId: $contactId) {
+                    result
+                }
+            }`
+
+            client.request(query, {
+                groupId: id,
+                contactId: contact.id
+            }).then((response: any) => {
+                if (response.contactGroupAddContact) {
+                    setContactsInGroupReload(!contactsInGroupReload);
+                } else {
+                    resolve({
+                        error: response
+                    });
+                }
+            });
+        });
+    }
+
+    const removeContactFromGroup = function (contact: any) {
+        return new Promise((resolve, reject) => {
+            const query = gql`mutation RemoveContactFromGroup($groupId: ID!, $contactId:ID!) {
+                contactGroupRemoveContact(groupId: $groupId, contactId: $contactId) {
+                    result
+                }
+            }`
+
+            client.request(query, {
+                groupId: id,
+                contactId: contact.id
+            }).then((response: any) => {
+                if (response.contactGroupRemoveContact) {
+                    setContactsInGroupReload(!contactsInGroupReload);
+                } else {
+                    resolve({
+                        error: response
+                    });
+                }
+            });
+        });
+    }
 
     const items = [
         {label: 'Contact groups', url: '/contactGroup'}
@@ -203,37 +335,51 @@ function ContactGroupEdit() {
                 {
                     contactGroup.id &&
                     <div className="flex-grow-1">
-                        <GridComponent resourceLabel={'contact'}
-                                       hqlQuery="contacts"
-                                       columns={
-                                           [
-                                               {
-                                                   field: 'title',
-                                                   hidden: true
-                                               },
-                                               {
-                                                   field: 'firstName',
-                                                   header: 'First name',
-                                                   className: 'w50',
-                                                   editLink: true
-                                               },
-                                               {
-                                                   field: 'lastName',
-                                                   header: 'Last name',
-                                                   className: 'w50',
-                                                   editLink: false
-                                               }
-                                           ]
-                                       }
-                                       gridTitle="Contacts in group"
-                                       onEdit={(id: any) => router.push(`/contact/${id}`)}
-                                       gridActions={
-                                           <div>
-                                               <Button onClick={(e: any) => alert('TODO')} className='p-button-link'>
-                                                   <FontAwesomeIcon icon={faCirclePlus} className="mr-2"/>Add contacts to group
-                                               </Button>
-                                           </div>
-                                       }
+                        <GridComponent
+                            gridTitle="Contacts in group"
+                            sortingEnabled={false}
+                            filtersEnabled={false}
+                            configurationEnabled={false}
+                            columns={
+                                [
+                                    {
+                                        className: 'w50',
+                                        label: 'Contact',
+                                        template: (c: any) => {
+                                            return <div key={c.id}>
+                                                {getEnumLabel(ContactTitleEnum, c.title)}&nbsp;{c.firstName}&nbsp;{c.lastName}
+
+                                                &nbsp;&nbsp;
+                                                <FontAwesomeIcon icon={faTrashCan} className="text-gray-600" style={{color: 'black'}} onClick={() => removeContactFromGroup(c)}/>
+                                            </div>
+                                        }
+                                    }
+                                ]
+                            }
+                            queryData={(params: any) => loadContactsInGroup(params)}
+                            triggerReload={contactsInGroupReload}
+                            gridActions={
+                                <div className="flex align-items-center">
+
+                                    <SearchComponent
+                                        triggerType={"button"}
+                                        buttonLabel="Add a contact to group"
+                                        buttonIcon={faCirclePlus}
+                                        searchBy={[{label: 'Name', field: 'firstName'}]}
+                                        searchData={(name: string, maxResults: string) => {
+                                            return searchContactForAddingInGroup();
+                                        }}
+                                        itemTemplate={(e: any) => {
+                                            return <span>
+                                                            <span className="mr-3">{e.firstName} {e.lastName}</span>
+                                                            <span className="mr-3">{e.email}</span>
+                                                        </span>
+                                        }}
+                                        onItemSelected={(e: any) => addContactToGroup(e)}
+                                        maxResults={2}/>
+
+                                </div>
+                            }
                         />
                     </div>
                 }
