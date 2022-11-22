@@ -3,7 +3,8 @@ import PropTypes from "prop-types";
 import {OverlayPanel} from "primereact/overlaypanel";
 import {Skeleton} from "primereact/skeleton";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCirclePlus, faSearchPlus, faTimes} from "@fortawesome/free-solid-svg-icons";
+import {faSearch, faSearchPlus, faTimes} from "@fortawesome/free-solid-svg-icons";
+import {faSquarePlus} from "@fortawesome/free-regular-svg-icons";
 import {Button} from "primereact/button";
 import {InputText} from "primereact/inputtext";
 
@@ -27,10 +28,13 @@ const SearchComponent = (props: any) => {
     const [searchResultList, setSearchResultList] = useState([] as any);
     const [totalElements, setTotalElements] = useState([] as any);
 
-    const [inputValue, setInputValue] = useState(props.value);
+    const [displayValue, setDisplayValue] = useState(props.value);
+    const [filters, setFilters] = useState(props.searchBy.map((sb: any) => {
+
+    }));
 
     useEffect(() => {
-        setInputValue(props.value === '' ? 'empty' : props.value);
+        setDisplayValue(props.value === '' ? 'empty' : props.value);
     }, [props.value]);
 
     let onClick = (e: any) => {
@@ -40,7 +44,7 @@ const SearchComponent = (props: any) => {
 
         setLoadingData(true);
         setTimeout(() => {
-            props.searchData(e.target.value, props.maxResults).then((response: any) => {
+            props.searchData(filters, props.maxResults).then((response: any) => {
                 setSearchResultList(response.content);
                 setTotalElements(response.totalElements);
                 setLoadingData(false);
@@ -59,10 +63,10 @@ const SearchComponent = (props: any) => {
         {
             props.triggerType === "dropdown" &&
             <div ref={containerRef} className={currentContainerClassName} onClick={onClick}>
-                <span ref={labelRef} className={selectedItemClassName}>{inputValue}</span>
+                <span ref={labelRef} className={selectedItemClassName}>{displayValue}</span>
 
                 {
-                    inputValue !== 'empty' &&
+                    displayValue !== 'empty' &&
                     <span className="flex align-items-center pl-2 pr-2" style={{color: 'black'}} onClick={onClear}><FontAwesomeIcon icon={faTimes}/></span>
                 }
 
@@ -79,7 +83,7 @@ const SearchComponent = (props: any) => {
             </Button>
         }
 
-        <OverlayPanel ref={overlayRef} style={{width: '500px'}} onHide={() => setCurrentContainerClassName(initialContainerClassName)}>
+        <OverlayPanel ref={overlayRef} style={{width: props.overlayWidth}} onHide={() => setCurrentContainerClassName(initialContainerClassName)}>
 
             {
                 loadingData &&
@@ -107,34 +111,64 @@ const SearchComponent = (props: any) => {
 
             {
                 !loadingData &&
-                <div className="mb-3">
+                <div className="p-2 mb-3 w-full">
 
-                    <div>
-                        {props.searchBy?.map((f: any) => {
-                            return (
-                                <>
-                                    {f.label} <InputText/> <Button className="p-button-text p-0">
-                                    <FontAwesomeIcon size="xs" icon={faSearchPlus} style={{color: 'black'}}/>Search
-                                </Button>
-                                </>
-                            )
-                        })}
-                    </div>
+                    {
+                        props.searchBy.length === 0 &&
+                        <div className="font-bold uppercase w-full mb-3">{props.resourceLabel}</div>
+                    }
+
+                    {
+                        props.searchBy.length > 0 &&
+                        <div>
+
+                            <div className="w-full mb-3">Search <span className="font-bold lowercase">{props.resourceLabel}</span> by</div>
+
+                            <div className="flex flex-row">
+
+                                <div className="flex flex-grow-1 flex-column">
+                                    {
+                                        props.searchBy?.map((f: any) => {
+                                            return (
+                                                <>
+                                                    <div className="flex flex-row mb-3">
+
+                                                        <span className="flex flex-grow-0 mr-3">
+                                                            {f.label}
+                                                        </span>
+                                                        <span className="flex flex-grow-1 mr-3">
+                                                            <InputText className="w-full" onChange={(e: any) => {
+                                                            }}/>
+                                                        </span>
+
+                                                    </div>
+                                                </>
+                                            )
+                                        })
+                                    }
+                                </div>
+                                <div className="flex align-items-center">
+                                    <Button className="p-button-text">
+                                        <FontAwesomeIcon size="sm" icon={faSearch}/>
+                                    </Button>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
 
                     {
                         searchResultList.map((c: any) => {
                             return (
-                                <div key={c.id}>
+                                <div key={c.id} className="flex search-component-row p-2">
+                                    <div className="flex flex-grow-1">
                                     {
                                         props.itemTemplate(c)
                                     }
-                                    <Button className="p-button-text p-0" onClick={() => {
-                                        props.onItemSelected(c);
-                                        overlayRef?.current?.hide();
-                                        setSelectedItemClassName(initialSelectedItemClassName);
-                                    }}>
-                                        <FontAwesomeIcon size="xs" icon={faCirclePlus} style={{color: 'black'}}/>
-                                    </Button>
+                                    </div>
+                                    <div className="flex pr-2">
+                                         <FontAwesomeIcon size="lg" icon={faSquarePlus}/>
+                                    </div>
                                 </div>
                             );
 
@@ -145,7 +179,7 @@ const SearchComponent = (props: any) => {
             }
 
             {
-                !loadingData && (totalElements >= props.maxResults) &&
+                !loadingData && (totalElements > props.maxResults) &&
                 <>
                     <div>{totalElements} elements match your search term</div>
                     <div>Improve your search term to narrow down the results</div>
@@ -158,6 +192,8 @@ const SearchComponent = (props: any) => {
 }
 
 SearchComponent.propTypes = {
+    resourceLabel: PropTypes.string,
+    overlayWidth: PropTypes.string,
     triggerType: PropTypes.oneOf(["dropdown", "button"]),
 
     //search with button
@@ -178,6 +214,7 @@ SearchComponent.propTypes = {
 }
 
 SearchComponent.defaultProps = {
+    overlayWidth: "400px",
     triggerType: "dropdown",
     maxResults: 25,
     value: 'empty'

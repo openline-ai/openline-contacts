@@ -4,7 +4,7 @@ import {useState} from "react";
 import {gql, GraphQLClient} from "graphql-request";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faBriefcase, faEdit, faTrashCan, faUserNinja} from "@fortawesome/free-solid-svg-icons";
 import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
 import SearchOrAddComponent from "../../components/SearchOrAddComponent";
@@ -135,7 +135,7 @@ function ContactCompanyPositionTemplate(props: any) {
             client.request(query, {
                 pagination: {
                     "page": 0,
-                    "limit": 25
+                    "limit": maxResults
                 },
                 name: name
             }).then((response: any) => {
@@ -204,12 +204,16 @@ function ContactCompanyPositionTemplate(props: any) {
                             <label htmlFor="companyName" className="block">Company *</label>
                             <Controller name="companyName" control={control} render={({field}) => (
                                 <SearchOrAddComponent
+                                    resourceLabel="companies"
                                     value={field.value}
                                     searchData={(name: string, maxResults: string) => {
                                         return searchCompany(name, maxResults);
                                     }}
                                     searchItemTemplate={(e: any) => {
-                                        return <span className="mr-3">{e.name}</span>
+                                        return <>
+                                            <span className="mr-3"><FontAwesomeIcon icon={faBriefcase}/></span>
+                                            <span className="mr-3">{e.name}</span>
+                                        </>
                                     }}
                                     onInputValueChanged={(c: any) => {
                                         setValue('companyId', undefined);
@@ -219,7 +223,7 @@ function ContactCompanyPositionTemplate(props: any) {
                                         setValue('companyId', e.id);
                                         setValue('companyName', e.name);
                                     }}
-                                    maxResults={2}/>
+                                    maxResults={5}/>
                             )}/>
                         </div>
                         <div className="field w-full">
