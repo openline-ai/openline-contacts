@@ -16,6 +16,7 @@ import {Dialog} from "primereact/dialog";
 import ContactCommunicationSection from "./contactCommunications";
 import ContactCompaniesPositions from "./contactCompaniesPositions";
 import SearchComponent from "../../components/SearchComponent";
+import ContactExtension from "./contactExtension";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -45,14 +46,14 @@ function ContactDetails() {
     useEffect(() => {
 
         if (id !== undefined) {
-            const query = gql`query GetContactTypeList {
+            const queryContactTypes = gql`query GetContactTypeList {
                 contactTypes {
                     id
                     name
                 }
             }`
 
-            client.request(query).then((response: any) => {
+            client.request(queryContactTypes).then((response: any) => {
                 setContactTypeList(response.contactTypes);
             });
         }
@@ -182,7 +183,7 @@ function ContactDetails() {
             }
         });
 
-    })
+    });
 
     const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
     const deleteContact = () => {
@@ -392,6 +393,11 @@ function ContactDetails() {
                         id && id !== 'new' &&
                         <ContactCompaniesPositions contactId={id}/>
                     }
+
+                    {/*{*/}
+                    {/*    id && id !== 'new' &&*/}
+                    {/*    <ContactExtension contactId={id}/>*/}
+                    {/*}*/}
 
                     {
                         !editDetails &&
