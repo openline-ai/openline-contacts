@@ -202,11 +202,11 @@ function ContactDetails() {
         });
     }
 
-    const searchOwner = function (filters: any, maxResults: string) {
+    const searchOwner = function (where: any, maxResults: string) {
         return new Promise((resolve, reject) => {
 
-            const query = gql`query SearchOwner ($pagination: Pagination!) {
-                users(pagination: $pagination){
+            const query = gql`query SearchOwner ($pagination: Pagination!, $where: Filter) {
+                users(pagination: $pagination, where: $where){
                     content{
                         id
                         firstName
@@ -224,7 +224,8 @@ function ContactDetails() {
                 pagination: {
                     "page": 0,
                     "limit": maxResults
-                }
+                },
+                where: where
             }).then((response: any) => {
                 if (response.users.content) {
                     resolve({
@@ -340,9 +341,9 @@ function ContactDetails() {
                                                 <SearchComponent
                                                     resourceLabel="users"
                                                     value={field.value}
-                                                    searchBy={[{label: 'First name', field: 'firstName'}, {label: 'Last name', field: 'lastName'}]}
-                                                    searchData={(filters: any, maxResults: string) => {
-                                                        return searchOwner(filters, maxResults);
+                                                    searchBy={[{label: 'First name', field: 'FIRST_NAME'}, {label: 'Last name', field: 'LAST_NAME'}]}
+                                                    searchData={(where: any, maxResults: string) => {
+                                                        return searchOwner(where, maxResults);
                                                     }}
                                                     itemTemplate={(e: any) => {
                                                         return <>
