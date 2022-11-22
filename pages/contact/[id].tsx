@@ -13,10 +13,10 @@ import {getEnumLabel} from "../../model/enums";
 import {ContactTitleEnum} from "../../model/enum-contactTitle";
 import {InputTextarea} from "primereact/inputtextarea";
 import {Dialog} from "primereact/dialog";
-import ContactCommunicationSection from "./contactCommunications";
-import ContactCompaniesPositions from "./contactCompaniesPositions";
-import SearchComponent from "../../components/SearchComponent";
-import ContactExtension from "./contactExtension";
+import ContactCommunicationSection from "../../components/contact/contactCommunications";
+import ContactCompaniesPositions from "../../components/contact/contactCompaniesPositions";
+import SearchComponent from "../../components/generic/SearchComponent";
+import ContactExtension from "../../components/contact/contactExtension";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -44,7 +44,6 @@ function ContactDetails() {
     const [editDetails, setEditDetails] = useState(false);
 
     useEffect(() => {
-
         if (id !== undefined) {
             const queryContactTypes = gql`query GetContactTypeList {
                 contactTypes {
@@ -202,11 +201,11 @@ function ContactDetails() {
         });
     }
 
-    const searchOwner = function (filters: any, maxResults: string) {
+    const searchOwner = function (where: any, maxResults: string) {
         return new Promise((resolve, reject) => {
 
-            const query = gql`query SearchOwner ($pagination: Pagination!) {
-                users(pagination: $pagination){
+            const query = gql`query SearchOwner ($pagination: Pagination!, $where: Filter) {
+                users(pagination: $pagination, where: $where){
                     content{
                         id
                         firstName
@@ -224,7 +223,8 @@ function ContactDetails() {
                 pagination: {
                     "page": 0,
                     "limit": maxResults
-                }
+                },
+                where: where
             }).then((response: any) => {
                 if (response.users.content) {
                     resolve({
@@ -340,9 +340,9 @@ function ContactDetails() {
                                                 <SearchComponent
                                                     resourceLabel="users"
                                                     value={field.value}
-                                                    searchBy={[{label: 'First name', field: 'firstName'}, {label: 'Last name', field: 'lastName'}]}
-                                                    searchData={(filters: any, maxResults: string) => {
-                                                        return searchOwner(filters, maxResults);
+                                                    searchBy={[{label: 'First name', field: 'FIRST_NAME'}, {label: 'Last name', field: 'LAST_NAME'}]}
+                                                    searchData={(where: any, maxResults: string) => {
+                                                        return searchOwner(where, maxResults);
                                                     }}
                                                     itemTemplate={(e: any) => {
                                                         return <>

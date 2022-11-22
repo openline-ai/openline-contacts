@@ -1,7 +1,7 @@
 import type {NextPage} from 'next'
 import {useRouter} from "next/router";
 import Layout from "../../layout/layout";
-import GridComponent from "../../components/GridComponent";
+import GridComponent from "../../components/generic/GridComponent";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCirclePlus} from "@fortawesome/free-solid-svg-icons";

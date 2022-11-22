@@ -7,12 +7,12 @@ import {faCirclePlus, faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icon
 import {useEffect, useState} from "react";
 import {InputText} from "primereact/inputtext";
 import {useForm} from "react-hook-form";
-import GridComponent from "../../components/GridComponent";
+import GridComponent from "../../components/generic/GridComponent";
 import {BreadCrumb} from "primereact/breadcrumb";
 import {Dialog} from "primereact/dialog";
 import {getEnumLabel} from "../../model/enums";
 import {ContactTitleEnum} from "../../model/enum-contactTitle";
-import SearchComponent from "../../components/SearchComponent";
+import SearchComponent from "../../components/generic/SearchComponent";
 
 function ContactGroupEdit() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);

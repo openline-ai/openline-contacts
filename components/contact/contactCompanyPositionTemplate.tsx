@@ -7,7 +7,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBriefcase, faEdit, faTrashCan, faUserNinja} from "@fortawesome/free-solid-svg-icons";
 import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
-import SearchOrAddComponent from "../../components/SearchOrAddComponent";
+import SearchOrAddComponent from "../generic/SearchOrAddComponent";
 
 function ContactCompanyPositionTemplate(props: any) {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);

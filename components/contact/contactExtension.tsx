@@ -27,6 +27,8 @@ function ContactExtension(props: any) {
     });
 
     useEffect(() => {
+        if (!client) return;
+
         if (props.contactId !== undefined) {
             const contactExtensionQuery = gql`query GetContactExtension {
                 entityDefinitions(extends: CONTACT) {
@@ -68,7 +70,7 @@ function ContactExtension(props: any) {
                     response.entityDefinitions[0].customFields.forEach((f: any) => sortedData.push(f));
                     response.entityDefinitions[0].fieldSets.forEach((f: any) => sortedData.push(f));
 
-                    sortedData = sortedData.sort(function (a, b) {
+                    sortedData = sortedData.sort(function (a: any, b: any) {
                         return a.order - b.order;
                     });
 
@@ -141,7 +143,7 @@ function ContactExtension(props: any) {
             // });
         }
 
-    }, [props.contactId]);
+    }, [props.contactId, client]);
 
     const onSubmit = handleSubmit(data => {
 
@@ -149,9 +151,7 @@ function ContactExtension(props: any) {
 
         let query = gql``;
 
-        client.request(query, {
-
-        }).then((response) => {
+        client.request(query, {}).then((response) => {
                 setEditDetails(false);
             }
         ).catch((reason) => {
@@ -224,7 +224,7 @@ function ContactExtension(props: any) {
                             {
                                 contactExtensionData.id &&
                                 <div className="grid grid-nogutter">
-                                   afiseaza fieldurile salvate
+                                    afiseaza fieldurile salvate
                                 </div>
                             }
 
@@ -247,7 +247,7 @@ function ContactExtension(props: any) {
                                     <div className="grid grid-nogutter">
                                         {
                                             contactExtensionData.fields.map((field: any) => {
-                                                return <div>abc</div>
+                                                return <div key={field.name}>abc</div>
                                             })
                                         }
                                     </div>
