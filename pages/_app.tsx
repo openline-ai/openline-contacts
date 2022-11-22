@@ -8,6 +8,7 @@ import '../styles/theme-override.css'
 import '../styles/layout.css'
 import '../styles/card-fieldset.css'
 import '../styles/button.css'
+import '../styles/search-component.css'
 
 export default function App({Component, pageProps}: any) {
     return <Component {...pageProps} />

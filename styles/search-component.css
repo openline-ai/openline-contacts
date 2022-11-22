@@ -1,0 +1,11 @@
+.search-component-row {
+    border: solid 1px #fff;
+    border-radius: 3px;
+}
+.search-component-row:hover {
+    border: solid 1px var(--gray-color-5);
+    cursor: pointer;
+}
+.search-component-row:hover svg{
+    color: var(--gray-color-5);
+}

@@ -4,7 +4,7 @@ import {gql, GraphQLClient} from "graphql-request";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faEdit, faTrashCan, faUser, faUserNinja} from "@fortawesome/free-solid-svg-icons";
 import {useEffect, useState} from "react";
 import {Dropdown} from "primereact/dropdown";
 import {BreadCrumb} from "primereact/breadcrumb";
@@ -201,7 +201,7 @@ function ContactDetails() {
         });
     }
 
-    const searchOwner = function (name: string, maxResults: string) {
+    const searchOwner = function (filters: any, maxResults: string) {
         return new Promise((resolve, reject) => {
 
             const query = gql`query SearchOwner ($pagination: Pagination!) {
@@ -222,7 +222,7 @@ function ContactDetails() {
             client.request(query, {
                 pagination: {
                     "page": 0,
-                    "limit": 25
+                    "limit": maxResults
                 }
             }).then((response: any) => {
                 if (response.users.content) {
@@ -337,21 +337,23 @@ function ContactDetails() {
                                             <label htmlFor="ownerFullName" className="block">Owner</label>
                                             <Controller name="ownerFullName" control={control} render={({field}) => (
                                                 <SearchComponent
+                                                    resourceLabel="users"
                                                     value={field.value}
-                                                    searchData={(name: string, maxResults: string) => {
-                                                        return searchOwner(name, maxResults);
+                                                    searchBy={[{label: 'First name', field: 'firstName'}, {label: 'Last name', field: 'lastName'}]}
+                                                    searchData={(filters: any, maxResults: string) => {
+                                                        return searchOwner(filters, maxResults);
                                                     }}
                                                     itemTemplate={(e: any) => {
-                                                        return <span>
+                                                        return <>
+                                                            <span className="mr-3"><FontAwesomeIcon icon={faUserNinja}/></span>
                                                             <span className="mr-3">{e.firstName} {e.lastName}</span>
-                                                            <span className="mr-3">{e.email}</span>
-                                                        </span>
+                                                        </>
                                                     }}
                                                     onItemSelected={(e: any) => {
                                                         setValue('ownerId', !e ? undefined : e.id);
                                                         setValue('ownerFullName', !e ? 'empty' : (e.firstName + ' ' + e.lastName));
                                                     }}
-                                                    maxResults={2}/>
+                                                    maxResults={5}/>
                                             )}/>
                                         </div>
                                         <div className="field w-full">
