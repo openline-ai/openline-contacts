@@ -126,12 +126,9 @@ function ContactGroupEdit() {
     const [contactsInGroupReload, setContactsInGroupReload] = useState(false);
     const loadContactsInGroup = function (params: any) {
         return new Promise((resolve, reject) => {
-
-            //TODO add pagination
-            //https://github.com/openline-ai/openline-customer-os/issues/288
-            const query = gql`query GetContactInGroup($id: ID!) {
+            const query = gql`query GetContactInGroup($id: ID!, $pagination: Pagination!) {
                 contactGroup(id: $id) {
-                    contacts{
+                    contacts(pagination: $pagination){
                         content{
                             id
                             firstName
@@ -145,7 +142,11 @@ function ContactGroupEdit() {
             }`
 
             client.request(query, {
-                id: id
+                id: id,
+                pagination: {
+                    page: params.pagination.page,
+                    limit: params.pagination.limit
+                }
             }).then((response: any) => {
                 if (response.contactGroup) {
                     resolve({
