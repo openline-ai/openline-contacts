@@ -13,10 +13,10 @@ import {getEnumLabel} from "../../model/enums";
 import {ContactTitleEnum} from "../../model/enum-contactTitle";
 import {InputTextarea} from "primereact/inputtextarea";
 import {Dialog} from "primereact/dialog";
-import ContactCommunicationSection from "./contactCommunications";
-import ContactCompaniesPositions from "./contactCompaniesPositions";
-import SearchComponent from "../../components/SearchComponent";
-import ContactExtension from "./contactExtension";
+import ContactCommunicationSection from "../../components/contact/contactCommunications";
+import ContactCompaniesPositions from "../../components/contact/contactCompaniesPositions";
+import SearchComponent from "../../components/generic/SearchComponent";
+import ContactExtension from "../../components/contact/contactExtension";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -44,7 +44,6 @@ function ContactDetails() {
     const [editDetails, setEditDetails] = useState(false);
 
     useEffect(() => {
-
         if (id !== undefined) {
             const queryContactTypes = gql`query GetContactTypeList {
                 contactTypes {

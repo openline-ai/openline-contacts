@@ -19,8 +19,7 @@ function ContactCommunication(props: any) {
     const [phoneNumbers, setPhoneNumbers] = useState([] as any);
 
     useEffect(() => {
-
-        if (props.contactId !== undefined) {
+        if (props.contactId) {
 
             const query = gql`query LoadCommunicationsChannelsForContactWithId($id: ID!) {
                 contact(id: $id) {
