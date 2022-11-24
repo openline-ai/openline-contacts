@@ -12,12 +12,10 @@ COPY --from=deps /app/node_modules ./node_modules
 
 COPY . .
 
-RUN npm run-script "build" # TODO set the environment as external
+RUN yarn build
 
 FROM node:16.16-alpine AS runner
 WORKDIR /app
-
-ENV NODE_ENV local # TODO set the environment as external
 
 RUN addgroup --system --gid 1001 openlinegroup
 RUN adduser --system --uid 1001 openlineuser
