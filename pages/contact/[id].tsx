@@ -18,7 +18,8 @@ import ContactCompaniesPositions from "../../components/contact/contactCompanies
 import SearchComponent from "../../components/generic/SearchComponent";
 import ContactExtension from "../../components/contact/contactExtension";
 import {GetContactDetails} from "../../services/contact";
-import {Contact} from "../../models/contact";
+import {Contact, ContactType} from "../../models/contact";
+import {GetContactTypes} from "../../services/contactType";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -47,15 +48,11 @@ function ContactDetails() {
 
     useEffect(() => {
         if (id !== undefined) {
-            const queryContactTypes = gql`query GetContactTypeList {
-                contactTypes {
-                    id
-                    name
-                }
-            }`
-
-            client.request(queryContactTypes).then((response: any) => {
-                setContactTypeList(response.contactTypes);
+            GetContactTypes(client).then((contactTypes: ContactType[]) => {
+                setContactTypeList(contactTypes);
+            }).catch((reason: any) => {
+                // TODO throw error
+                console.log(reason);
             });
         }
 
@@ -67,7 +64,7 @@ function ContactDetails() {
             }).catch((reason: any) => {
                 // TODO throw error
                 console.log(reason);
-            })
+            });
         }
 
     }, [id]);
