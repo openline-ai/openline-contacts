@@ -17,6 +17,8 @@ import ContactCommunicationSection from "../../components/contact/contactCommuni
 import ContactCompaniesPositions from "../../components/contact/contactCompaniesPositions";
 import SearchComponent from "../../components/generic/SearchComponent";
 import ContactExtension from "../../components/contact/contactExtension";
+import {GetContactDetails} from "../../services/contact";
+import {Contact} from "../../models/contact";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -35,7 +37,7 @@ function ContactDetails() {
         contactTypeName: '',
         label: '',
         notes: ''
-    });
+    }) as any;
     const {register, handleSubmit, setValue, control} = useForm({
         defaultValues: contact
     });
@@ -60,36 +62,17 @@ function ContactDetails() {
         if (id !== undefined && id === 'new') {
             setEditDetails(true);
         } else if (id !== undefined && id !== 'new') {
-
-            const query = gql`query GetContactById($id: ID!) {
-                contact(id: $id) {
-                    id
-                    title
-                    firstName
-                    lastName
-                    owner{
-                        id
-                        firstName
-                        lastName
-                    }
-                    contactType{
-                        id
-                        name
-                    }
-                    label
-                    notes
-                }
-            }`
-
-            client.request(query, {id: id}).then((response: any) => {
-                setContact(getContactObjectFromResponse(response.contact));
-            });
-
+            GetContactDetails(client, id as string).then((contact: Contact) => {
+                setContact(getContactObjectFromResponse(contact));
+            }).catch((reason: any) => {
+                // TODO throw error
+                console.log(reason);
+            })
         }
 
     }, [id]);
 
-    const getContactObjectFromResponse = (contact: any) => {
+    const getContactObjectFromResponse = (contact: Contact) => {
         return {
             id: contact.id,
             title: contact.title,
