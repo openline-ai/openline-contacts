@@ -17,9 +17,9 @@ import ContactCommunicationSection from "../../components/contact/contactCommuni
 import ContactCompaniesPositions from "../../components/contact/contactCompaniesPositions";
 import SearchComponent from "../../components/generic/SearchComponent";
 import ContactExtension from "../../components/contact/contactExtension";
-import {GetContactDetails} from "../../services/contact";
+import {GetContactDetails} from "../../services/contactService";
 import {Contact, ContactType} from "../../models/contact";
-import {GetContactTypes} from "../../services/contactType";
+import {GetContactTypes} from "../../services/contactTypeService";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
