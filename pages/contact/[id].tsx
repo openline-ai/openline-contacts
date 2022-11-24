@@ -19,6 +19,9 @@ import SearchComponent from "../../components/generic/SearchComponent";
 import {CreateContact, DeleteContact, GetContactDetails, UpdateContact} from "../../services/contactService";
 import {Contact, ContactType} from "../../models/contact";
 import {GetContactTypes} from "../../services/contactTypeService";
+import {GetUsersPage} from "../../services/userService";
+import {Page, PaginationOf} from "../../models/pagination";
+import {User} from "../../models/user";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -121,39 +124,12 @@ function ContactDetails() {
 
     const searchOwner = function (where: any, maxResults: string) {
         return new Promise((resolve, reject) => {
-
-            const query = gql`query SearchOwner ($pagination: Pagination!, $where: Filter) {
-                users(pagination: $pagination, where: $where){
-                    content{
-                        id
-                        firstName
-                        lastName
-                        email
-                    }
-                    totalPages
-                    totalElements
-                }
-            }`
-
-            //TODO https://github.com/openline-ai/openline-contacts/issues/77
-            //when filters are available on BE
-            client.request(query, {
-                pagination: {
-                    "page": 0,
-                    "limit": maxResults
-                },
-                where: where
-            }).then((response: any) => {
-                if (response.users.content) {
-                    resolve({
-                        content: response.users.content,
-                        totalElements: response.users.totalElements
-                    });
-                } else {
-                    resolve({
-                        error: response
-                    });
-                }
+            GetUsersPage(client, PaginationOf(), where).then((response: Page<User>) => {
+                resolve(response);
+            }).catch((reason: any) => {
+                // TODO throw error
+                console.log(reason);
+                reject(reason);
             });
         });
     }
