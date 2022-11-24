@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import {OverlayPanel} from "primereact/overlaypanel";
 import {Skeleton} from "primereact/skeleton";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faSearch, faSearchPlus, faTimes} from "@fortawesome/free-solid-svg-icons";
+import {faSearch, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {faSquarePlus} from "@fortawesome/free-regular-svg-icons";
 import {Button} from "primereact/button";
 import {InputText} from "primereact/inputtext";

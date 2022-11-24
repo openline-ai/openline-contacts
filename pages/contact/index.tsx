@@ -62,6 +62,22 @@ const ContactList: NextPage = () => {
                                        },
                                    ]
                                }
+                               filters={[
+                                   {
+                                       fieldName: "TITLE",
+                                       label: "Title",
+                                       type: "DROPDOWN",
+                                       options: ContactTitleEnum
+                                   },
+                                   {
+                                       fieldName: "FIRST_NAME",
+                                       label: "First name"
+                                   },
+                                   {
+                                       fieldName: "LAST_NAME",
+                                       label: "Last name"
+                                   }
+                               ]}
                                gridActions={
                                    <div className="flex align-items-center">
                                        <Button onClick={(e: any) => router.push(`/contact/new`)} className='p-button-text'>
