@@ -1,5 +1,7 @@
 on:
   push: { branches: [otter] }
+  release:
+    types: [ created, edited ]
 
 env:
   REGISTRY: ghcr.io
