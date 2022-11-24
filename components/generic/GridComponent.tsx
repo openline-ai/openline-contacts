@@ -4,7 +4,7 @@ import {Column} from "primereact/column";
 import {Button} from "primereact/button";
 import {Fragment} from "preact";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowDownWideShort, faArrowUpShortWide, faColumns, faFilter} from "@fortawesome/free-solid-svg-icons";
+import {faArrowDownWideShort, faArrowUpShortWide, faColumns, faFilter, faSearch} from "@fortawesome/free-solid-svg-icons";
 import {Dropdown} from "primereact/dropdown";
 import PropTypes from "prop-types";
 import {gql, GraphQLClient} from 'graphql-request'
@@ -12,6 +12,7 @@ import {Sidebar} from "primereact/sidebar";
 import {OverlayPanel} from "primereact/overlaypanel";
 import {Divider} from "primereact/divider";
 import {Checkbox} from "primereact/checkbox";
+import {InputText} from "primereact/inputtext";
 
 
 const GridComponent = (props: any) => {
@@ -30,6 +31,17 @@ const GridComponent = (props: any) => {
             dir: 'ASC',
             active: false
         }
+    }));
+    const [filters, setFilters] = useState(props.filters.map((sb: any) => {
+        return {
+            type: sb.type ?? "TEXT",
+            label: sb.label,
+            fieldName: sb.fieldName,
+            operation: "CONTAINS", //todo this needs to be changed when we are going to have types
+            value: undefined,
+            options: sb.options,
+            operations: sb.operations ?? ["CONTAINS", "EQUALS"]
+        };
     }));
 
     const onEdit = function (id: any) {
@@ -82,7 +94,41 @@ const GridComponent = (props: any) => {
     const loadLazyData = () => {
         setLoading(true);
 
+        const wh = [] as any;
+
+        filters.filter((f: any) => f.value).forEach((f: any) => {
+            wh.push({
+                "property": f.fieldName,
+                "value": f.value,
+                "operation": f.operation
+            });
+        });
+        var where = undefined as any;
+        switch (wh.length) {
+            case 0: {
+                where = undefined;
+                break;
+            }
+            case 1: {
+                where = {
+                    "filter": wh[0]
+                };
+                break;
+            }
+            default: {
+                where = {
+                    "AND": []
+                };
+                wh.forEach((f: any) => {
+                    where["AND"].push({
+                        "filter": f
+                    })
+                })
+            }
+        }
+
         const params = {
+            where: where,
             pagination: {
                 page: lazyParams.page,
                 limit: lazyParams.limit
@@ -96,7 +142,7 @@ const GridComponent = (props: any) => {
             })
         } as any;
 
-        if(props.queryData) {
+        if (props.queryData) {
             props.queryData(params).then((response: any) => {
                 setData(response.content);
                 setTotalRecords(response.totalElements);
@@ -110,8 +156,8 @@ const GridComponent = (props: any) => {
             var fieldsForQuery = props.columns.filter((p: any) => p.field).map((p: any) => p.field).join("\n");
             fieldsForQuery += "\nid\n";
 
-            const query = gql`query GetList($pagination: Pagination, $sort: [SortBy!]){
-                ${props.hqlQuery}(pagination: $pagination, sort: $sort){
+            const query = gql`query GetList($pagination: Pagination, $where: Filter, $sort: [SortBy!]){
+                ${props.hqlQuery}(pagination: $pagination, where: $where, sort: $sort){
                 content {
                     ${fieldsForQuery}
                 }
@@ -250,8 +296,70 @@ const GridComponent = (props: any) => {
             }
         </DataTable>
 
-        <Sidebar visible={filtersPanelVisible} onHide={() => setFiltersPanelVisible(false)} position="right">
-            Filter by TODO
+        <Sidebar visible={filtersPanelVisible} style={{width: '500px'}} onHide={() => setFiltersPanelVisible(false)} position="right">
+            Filter by
+
+            <Button className="p-button-text" onClick={() => loadLazyData()}>
+                <FontAwesomeIcon size="sm" icon={faSearch}/>
+            </Button>
+
+            {
+                filters?.map((f: any) => {
+                    return (
+                        <>
+                            <div className="flex flex-row mb-3" key={f.field}>
+
+                                <span className="flex flex-grow-0 mr-3">
+                                    {f.label}
+                                </span>
+                                <span className="flex flex-grow-1 mr-3 align-items-center">
+
+                                    {
+                                        f.type === "TEXT" &&
+                                        <>
+                                            <InputText className="w-full mr-3" onChange={(e: any) => {
+                                                setFilters(filters.map((fv: any) => {
+                                                    if (fv.fieldName === f.fieldName) {
+                                                        fv.value = e.target.value;
+                                                    }
+                                                    return fv;
+                                                }));
+                                            }}/>
+
+                                            <Dropdown options={f.operations} value={f.operation} onChange={(e: any) => {
+                                                setFilters(filters.map((fv: any) => {
+                                                    if (fv.fieldName === f.fieldName) {
+                                                        fv.operation = e.target.value;
+                                                    }
+                                                    return fv;
+                                                }));
+                                            }}/>
+                                        </>
+                                    }
+
+                                    {
+                                        f.type === "DROPDOWN" &&
+                                        <Dropdown options={f.options}
+                                                  optionValue="value" optionLabel="label"
+                                                  value={f.value} onChange={(e: any) => {
+                                            setFilters(filters.map((fv: any) => {
+                                                if (fv.fieldName === f.fieldName) {
+                                                    fv.value = e.target.value;
+                                                }
+                                                return fv;
+                                            }));
+                                        }}/>
+                                    }
+
+
+                                </span>
+
+                            </div>
+                        </>
+                    )
+                })
+            }
+
         </Sidebar>
 
         <OverlayPanel ref={sortContainerRef} dismissable>
@@ -325,7 +433,20 @@ GridComponent.propTypes = {
     sortingEnabled: PropTypes.bool,
     configurationEnabled: PropTypes.bool,
 
-    filters: PropTypes.object,
+    filters: PropTypes.arrayOf(PropTypes.shape({
+        label: PropTypes.string.isRequired,
+        fieldName: PropTypes.string.isRequired,
+
+        type: PropTypes.oneOf(["TEXT", "DROPDOWN"]),
+
+        //dropdown options
+        options: PropTypes.arrayOf(PropTypes.shape({
+            label: PropTypes.string.isRequired,
+            value: PropTypes.string.isRequired
+        })),
+
+        operations: PropTypes.arrayOf(PropTypes.oneOf(["CONTAINS", "EQUALS"]))
+    })),
     columns: PropTypes.arrayOf(PropTypes.shape({
         field: PropTypes.string,
         hidden: PropTypes.bool,
@@ -336,6 +457,7 @@ GridComponent.propTypes = {
         filterPlaceholder: PropTypes.string,
         sortFieldName: PropTypes.string
     })),
+
     triggerReload: PropTypes.bool,
 
     queryData: PropTypes.func, //you can load data in your component
@@ -345,11 +467,12 @@ GridComponent.propTypes = {
 }
 
 GridComponent.defaultProps = {
+    filters: [],
     showHeader: true,
     gridTitle: 'Title',
     filtersEnabled: true,
     sortingEnabled: true,
-    configurationEnabled: true,
+    configurationEnabled: true
 }
 
 export default GridComponent
