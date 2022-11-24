@@ -24,8 +24,6 @@ export function GetContactDetails(client: GraphQLClient, id: string): Promise<Co
             }
         }`
 
-        //getting and building the entity definitions
-        //the custom fields and sets are ordered by the order property
         client.request(query, {id: id}).then((response: any) => {
             if (response.contact) {
                 resolve(response.contact);
@@ -48,8 +46,6 @@ export function CreateContact(client: GraphQLClient, data: any): Promise<Contact
             }
         }`
 
-        //getting and building the entity definitions
-        //the custom fields and sets are ordered by the order property
         client.request(query, {
                 contact: {
                     title: data.title,
@@ -83,8 +79,6 @@ export function UpdateContact(client: GraphQLClient, data: any): Promise<Contact
             }
         }`
 
-        //getting and building the entity definitions
-        //the custom fields and sets are ordered by the order property
         client.request(query, {
                 contact: {
                     id: data.id,
@@ -100,6 +94,28 @@ export function UpdateContact(client: GraphQLClient, data: any): Promise<Contact
         ).then((response: any) => {
             if (response.contact_Update) {
                 resolve(response.contact_Update);
+            } else {
+                reject(response.error);
+            }
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
+
+}
+
+export function DeleteContact(client: GraphQLClient, id: any): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+
+        const query = gql`mutation DeleteContact($contactId: ID!) {
+            contact_SoftDelete(contactId: $contactId) {
+                result
+            }
+        }`
+
+        client.request(query, { contactId: id }).then((response: any) => {
+            if (response.contact_SoftDelete.result) {
+                resolve(true);
             } else {
                 reject(response.error);
             }

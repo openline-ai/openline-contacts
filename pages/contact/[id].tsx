@@ -16,7 +16,7 @@ import {Dialog} from "primereact/dialog";
 import ContactCommunicationSection from "../../components/contact/contactCommunications";
 import ContactCompaniesPositions from "../../components/contact/contactCompaniesPositions";
 import SearchComponent from "../../components/generic/SearchComponent";
-import {CreateContact, GetContactDetails, UpdateContact} from "../../services/contactService";
+import {CreateContact, DeleteContact, GetContactDetails, UpdateContact} from "../../services/contactService";
 import {Contact, ContactType} from "../../models/contact";
 import {GetContactTypes} from "../../services/contactTypeService";
 
@@ -107,18 +107,15 @@ function ContactDetails() {
 
     const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
     const deleteContact = () => {
-        const query = gql`mutation DeleteContact($id: ID!) {
-            contact_SoftDelete(contactId: $id) {
-                result
-            }
-        }`
-
-        client.request(query, {id: id}).then((response: any) => {
-            if (response.contact_SoftDelete.result) {
+        DeleteContact(client, id).then((result: boolean) => {
+            if(result) {
                 router.push('/contact');
             } else {
-                //TODO throw error
+                // TODO throw error
             }
+        }).catch((reason: any) => {
+            // TODO throw error
+            console.log(reason);
         });
     }
 
