@@ -1,3 +1,5 @@
+import {CustomField, FieldSet} from "./customFields";
+
 export type Contact = {
     id: string;
     title: string;
@@ -7,6 +9,9 @@ export type Contact = {
     contactType: ContactType;
     notes: string;
     label: string;
+
+    customFields: CustomField[];
+    fieldSets: FieldSet[];
 }
 
 export type Owner = {

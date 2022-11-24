@@ -3,7 +3,15 @@ export type CustomField = {
     name: string;
     datatype: string;
     value: string;
-    definitionId: string;
+    definition: CustomFieldDefinition;
+}
+
+export type FieldSet = {
+    id: string;
+    name: string;
+
+    definition: CustomFieldDefinition;
+    customFields: CustomField[];
 }
 
 export type CustomFieldDefinition = {
