@@ -34,7 +34,67 @@ export function GetContactDetails(client: GraphQLClient, id: string): Promise<Co
             reject(reason);
         });
     });
+}
 
+export function GetContactCustomFields(client: GraphQLClient, id: string): Promise<Contact> {
+    return new Promise((resolve, reject) => {
+
+        const query = gql`query GetContactDetails($id: ID!) {
+            contact(id: $id) {
+                customFields {
+                    id
+                    name
+                    datatype
+                    value
+                    definition {
+                        id
+                        name
+                        type
+                        order
+                        mandatory
+                        length
+                        min
+                        max
+                    }
+                }
+                fieldSets {
+                    id
+                    name
+                    definition {
+                        id
+                        name
+                        order
+                    }
+                    customFields {
+                        id
+                        name
+                        datatype
+                        value
+                        definition {
+                            id
+                            name
+                            type
+                            order
+                            mandatory
+                            length
+                            min
+                            max
+                        }
+                    }
+                }
+            }
+        }`
+
+        client.request(query, {id: id}).then((response: any) => {
+            if (response.contact) {
+                resolve(response.contact);
+            } else {
+                resolve([]);
+            }
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
 }
 
 export function CreateContact(client: GraphQLClient, data: any): Promise<Contact> {
