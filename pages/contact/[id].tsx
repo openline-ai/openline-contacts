@@ -4,7 +4,7 @@ import {gql, GraphQLClient} from "graphql-request";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faTrashCan, faUser, faUserNinja} from "@fortawesome/free-solid-svg-icons";
+import {faEdit, faTrashCan, faUserNinja} from "@fortawesome/free-solid-svg-icons";
 import {useEffect, useState} from "react";
 import {Dropdown} from "primereact/dropdown";
 import {BreadCrumb} from "primereact/breadcrumb";
@@ -16,8 +16,7 @@ import {Dialog} from "primereact/dialog";
 import ContactCommunicationSection from "../../components/contact/contactCommunications";
 import ContactCompaniesPositions from "../../components/contact/contactCompaniesPositions";
 import SearchComponent from "../../components/generic/SearchComponent";
-import ContactExtension from "../../components/contact/contactExtension";
-import {GetContactDetails} from "../../services/contactService";
+import {CreateContact, GetContactDetails, UpdateContact} from "../../services/contactService";
 import {Contact, ContactType} from "../../models/contact";
 import {GetContactTypes} from "../../services/contactTypeService";
 
@@ -26,6 +25,7 @@ function ContactDetails() {
 
     const router = useRouter();
     const {id} = router.query;
+    const [reloadContactDetails, setReloadContactDetails] = useState(false);
 
     const [contact, setContact] = useState({
         id: undefined,
@@ -47,7 +47,10 @@ function ContactDetails() {
     const [editDetails, setEditDetails] = useState(false);
 
     useEffect(() => {
+        console.log('entered');
         if (id !== undefined) {
+            setEditDetails(false);
+
             GetContactTypes(client).then((contactTypes: ContactType[]) => {
                 setContactTypeList(contactTypes);
             }).catch((reason: any) => {
@@ -67,7 +70,7 @@ function ContactDetails() {
             });
         }
 
-    }, [id]);
+    }, [id, reloadContactDetails]);
 
     const getContactObjectFromResponse = (contact: Contact) => {
         return {
@@ -85,83 +88,21 @@ function ContactDetails() {
     }
 
     const onSubmit = handleSubmit(data => {
-
-        let query = undefined;
-
         if (!data.id) {
-            query = gql`mutation CreateContact($contact: ContactInput!) {
-                contact_Create(input: $contact) {
-                    id
-                    title
-                    firstName
-                    lastName
-                    owner{
-                        id
-                        firstName
-                        lastName
-                    }
-                    contactType{
-                        id
-                        name
-                    }
-                    label
-                    notes
-                }
-            }`
+            CreateContact(client, data).then((savedContact: Contact) => {
+                router.push('/contact/' + savedContact.id);
+            }).catch((reason: any) => {
+                // TODO throw error
+                console.log(reason);
+            });
         } else {
-            query = gql`mutation UpdateContact($contact: ContactUpdateInput!) {
-                contact_Update(input: $contact) {
-                    id
-                    title
-                    firstName
-                    lastName
-                    owner{
-                        id
-                        firstName
-                        lastName
-                    }
-                    contactType{
-                        id
-                        name
-                    }
-                    label
-                    notes
-                }
-            }`
+            UpdateContact(client, data).then((savedContact: Contact) => {
+                setReloadContactDetails(!reloadContactDetails);
+            }).catch((reason: any) => {
+                // TODO throw error
+                console.log(reason);
+            });
         }
-
-
-        client.request(query, {
-            contact: {
-                id: data.id,
-                title: data.title,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                contactTypeId: data.contactTypeId,
-                ownerId: data.ownerId,
-                label: data.label,
-                notes: data.notes,
-            }
-        }).then((response) => {
-                if (!data.id) {
-                    router.push('/contact/' + response.contact_Create.id)
-                } else {
-                    setContact(getContactObjectFromResponse(response.contact_Update));
-                }
-                setEditDetails(false);
-            }
-        ).catch((reason) => {
-            console.log(reason);
-            if (reason.response.status === 400) {
-                // reason.response.data.errors.forEach((error: any) => {
-                //     formik.setFieldError(error.field, error.message);
-                // })
-                //todo show errors on form
-            } else {
-                alert('error');
-            }
-        });
-
     });
 
     const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
