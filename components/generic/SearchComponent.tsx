@@ -149,13 +149,12 @@ const SearchComponent = (props: any) => {
                                 {
                                     filters?.map((f: any) => {
                                         return (
-                                            <>
-                                                <div className="flex flex-row mb-3" key={f.field}>
+                                            <div className="flex flex-row mb-3" key={f.field}>
 
                                                         <span className="flex flex-grow-0 mr-3">
                                                             {f.label}
                                                         </span>
-                                                    <span className="flex flex-grow-1 mr-3">
+                                                <span className="flex flex-grow-1 mr-3">
                                                             <InputText className="w-full" onChange={(e: any) => {
                                                                 setFilters(filters.map((fv: any) => {
                                                                     if (fv.field === f.field) {
@@ -166,8 +165,7 @@ const SearchComponent = (props: any) => {
                                                             }}/>
                                                         </span>
 
-                                                </div>
-                                            </>
+                                            </div>
                                         )
                                     })
                                 }

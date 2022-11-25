@@ -1,149 +1,94 @@
 import PropTypes, {string} from "prop-types";
-import {useEffect, useImperativeHandle, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import {gql, GraphQLClient} from "graphql-request";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCirclePlus, faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
-import {OverlayPanel} from "primereact/overlaypanel";
-import {Menu} from "primereact/menu";
-import ContactEmailTemplate from "./contactEmailTemplate";
-import {uuidv4} from "../../utils/uuid-generator";
-import ContactPhoneNumberTemplate from "./contactPhoneNumberTemplate";
-import {Dialog} from "primereact/dialog";
+import {faEdit} from "@fortawesome/free-solid-svg-icons";
 import {useForm} from "react-hook-form";
-import {getEnumLabel} from "../../model/enums";
-import {ContactTitleEnum} from "../../model/enum-contactTitle";
-import {InputText} from "primereact/inputtext";
+import {CustomFieldTemplateProps, EntityDefinitionTemplate, EntityDefinitionTemplateProps, FieldSetTemplateProps} from "../generic/entityExtensionTemplates";
+import {CustomField, CustomFieldDefinition, EntityDefinition, FieldSetDefinition} from "../../models/customFields";
+import {uuidv4} from "../../utils/uuid-generator";
+import {GetEntityDefinitions} from "../../services/entityDefinitionService";
+import {GetContactCustomFields} from "../../services/contactService";
+import {Contact} from "../../models/contact";
 
 function ContactExtension(props: any) {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
 
-    const [contactExtensionDefinition, setContactExtensionDefinition] = useState({} as any);
-    const [contactExtensionData, setContactExtensionData] = useState({} as any);
+    const [entityDefinition, setEntityDefinition] = useState({} as EntityDefinition);
+    const [entityDefinitionTemplateData, setEntityDefinitionTemplateData] = useState({} as EntityDefinitionTemplateProps);
 
     const [editDetails, setEditDetails] = useState(props.initialEditState ?? false);
-    const {register, setValue, handleSubmit, control} = useForm({
-        defaultValues: contactExtensionData
-    });
+    const {register, setValue, handleSubmit, control} = useForm();
+
+    /**
+     * New contact
+     * after you select the contact type, you load the custom fields definition for that contact type and show the fields
+     *
+     * View contact
+     * when you view a contact, you load the custom fields for a contact. if the fields have values, you show them, otherwise, you don't
+     *
+     * Editing a custom field
+     * edit a field -> if it's from a definition -> you edit the whole definition
+     * edit a field -> created manually -> edit just that field
+     *
+     * WARNING
+     * when there are no fields saved with a value, but we have the underlying fields saved, not sure how to put the edit button
+     */
+
 
     useEffect(() => {
         if (!client) return;
 
-        if (props.contactId !== undefined) {
-            const contactExtensionQuery = gql`query GetContactExtension {
-                entityDefinitions(extends: CONTACT) {
-                    id
-                    name
-                    fieldSets {
-                        id
-                        name
-                        order
-                        customFields {
-                            id
-                            name
-                            type
-                            order
-                            mandatory
-                            length
-                            min
-                            max
-                        }
+        if (props.contactId) {
+
+            const customFieldDefinitionToTemplateProps = (f: CustomFieldDefinition, fieldSetName: string | undefined = undefined, data: CustomField | undefined = undefined): CustomFieldTemplateProps => {
+                return {
+                    // key: uuidv4(),
+                    // definition: f,
+                    // data: data ?? {
+                    //     key: uuidv4(),
+                    //     name: f.name,
+                    //     datatype: f.type,
+                    //     definitionId: f.id,
+                    //     value: undefined
+                    // },
+                    // register: register
+                } as CustomFieldTemplateProps;
+            }
+
+            GetEntityDefinitions(client, "CONTACT").then((ed: EntityDefinition[]) => {
+                //todo show that we have multiple types
+                setEntityDefinition(ed[0]);
+
+                const obj = {} as EntityDefinitionTemplateProps;
+                obj.name = ed[0].name;
+                obj.register = register;
+                obj.fields = ed[0].fields.map((f: (CustomFieldDefinition | FieldSetDefinition)) => {
+                    if ((f as CustomFieldDefinition).type) {
+                        return customFieldDefinitionToTemplateProps(f as CustomFieldDefinition);
+                    } else {
+                        const fieldSet = f as FieldSetDefinition;
+                        return {
+                            // key: uuidv4(),
+                            // name: fieldSet.name,
+                            // customFields: fieldSet.customFields.map((f: CustomFieldDefinition) => customFieldDefinitionToTemplateProps(f as CustomFieldDefinition)),
+                            // register: register
+                        } as FieldSetTemplateProps;
                     }
-                    customFields {
-                        id
-                        name
-                        type
-                        order
-                        mandatory
-                        length
-                        min
-                        max
-                    }
-                }
-            }`
+                });
 
-            client.request(contactExtensionQuery).then((response: any) => {
-                if (!response.entityDefinitions || response.entityDefinitions.length != 1) {
-                    //todo show something to inform that we have multiple definitions
-                } else {
-                    var sortedData = [] as any;
-                    response.entityDefinitions[0].customFields.forEach((f: any) => sortedData.push(f));
-                    response.entityDefinitions[0].fieldSets.forEach((f: any) => sortedData.push(f));
-
-                    sortedData = sortedData.sort(function (a: any, b: any) {
-                        return a.order - b.order;
-                    });
-
-                    console.log(sortedData);
-
-                    setContactExtensionDefinition({
-                        id: response.entityDefinitions[0].id,
-                        fields: sortedData
-                    });
-                }
+                setEntityDefinitionTemplateData(obj);
             });
 
-            // const contactExtensionDataQuery = gql`query GetContactExtensionData($id: ID!) {
-            //     contact(id: $id) {
-            //         customFields {
-            //             id
-            //             name
-            //             datatype
-            //             value
-            //             definition {
-            //                 id
-            //                 name
-            //                 type
-            //                 order
-            //                 mandatory
-            //                 length
-            //                 min
-            //                 max
-            //             }
-            //         }
-            //         fieldSets {
-            //             id
-            //             name
-            //             definition {
-            //                 id
-            //                 name
-            //                 order
-            //             }
-            //             customFields {
-            //                 id
-            //                 name
-            //                 datatype
-            //                 value
-            //                 definition {
-            //                     id
-            //                     name
-            //                     type
-            //                     order
-            //                     mandatory
-            //                     length
-            //                     min
-            //                     max
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }`
+            GetContactCustomFields(client, props.contactId).then((response: Contact) => {
+                let customFields = response.customFields;
+                let fieldSets = response.fieldSets;
+            });
 
-            // client.request(contactExtensionDataQuery).then((response: any) => {
-            // var data = [];
-            // data.push(response.contact.customFields);
-            // data.push(response.contact.fieldSets);
-            //
-            // data = data.sort(function(a, b) {
-            //     return a.order - b.order;
-            // });
-            //
-            // console.log(data);
-            // setContactExtensionData(response.contact);
-            // });
         }
 
-    }, [props.contactId, client]);
+    }, [props.contactId]);
 
     const onSubmit = handleSubmit(data => {
 
@@ -168,120 +113,62 @@ function ContactExtension(props: any) {
 
     });
 
-    const fieldsetTemplate = (field: any) => {
-        return <div className="field w-full">
-            <div className="mb-3">{field.name}</div>
-            <div className="pl-3">
-                {
-                    field.customFields.map((c: any) => {
-                        return fieldTemplate(c);
-                    })
-                }
-            </div>
-        </div>
-    }
-
-    const fieldTemplate = (field: any) => {
-        return <div className="field w-full">
-            <label htmlFor={field.id} className="block">{field.name} {field.mandatory ? '*' : ''}</label>
-            <InputText id={field.id} {...register(field.id)} className="w-full"/>
-        </div>
-    }
-
     return <>
+        <div className='card-fieldset mt-3' style={{width: '25rem'}}>
+            <div className="card-header">
+                <div className="flex flex-row w-full">
+                    <div className="flex-grow-1">Custom fields</div>
+                    <div className="flex">
 
-        {
-            !contactExtensionDefinition.id &&
-            ''
-        }
+                        {
+                            !editDetails &&
+                            <Button className="p-button-text p-0" onClick={() => {
+                                setEditDetails(true);
+                            }}>
+                                <FontAwesomeIcon size="xs" icon={faEdit} style={{color: 'black'}}/>
+                            </Button>
+                        }
 
-        {
-            contactExtensionDefinition.id &&
-            <div className='card-fieldset mt-3' style={{width: '25rem'}}>
-                <div className="card-header">
-                    <div className="flex flex-row w-full">
-                        <div className="flex-grow-1">Custom fields</div>
-                        <div className="flex">
-
-                            {
-                                !editDetails &&
-                                <Button className="p-button-text p-0" onClick={() => {
-                                    setEditDetails(true);
-                                }}>
-                                    <FontAwesomeIcon size="xs" icon={faEdit} style={{color: 'black'}}/>
-                                </Button>
-                            }
-
-                        </div>
                     </div>
                 </div>
-                <div className="card-body">
-
-                    {
-                        !editDetails &&
-                        <div className="display">
-
-                            {
-                                contactExtensionData.id &&
-                                <div className="grid grid-nogutter">
-                                    afiseaza fieldurile salvate
-                                </div>
-                            }
-
-                            {
-                                !contactExtensionData.id &&
-                                <div>No fields defined</div>
-                            }
-
-                        </div>
-                    }
-
-                    {
-                        editDetails &&
-                        <div className="content">
-                            <form>
-
-                                {/*if I have data saved in customer, I show it*/}
-                                {
-                                    contactExtensionData.id &&
-                                    <div className="grid grid-nogutter">
-                                        {
-                                            contactExtensionData.fields.map((field: any) => {
-                                                return <div key={field.name}>abc</div>
-                                            })
-                                        }
-                                    </div>
-                                }
-
-                                {/*if I DON'T have data saved in customer, i show the latest definition*/}
-                                {
-                                    !contactExtensionData.id &&
-                                    <div className="grid grid-nogutter">
-                                        {
-                                            contactExtensionDefinition.fields.map((field: any) => {
-                                                if (field.customFields) {
-                                                    return fieldsetTemplate(field);
-                                                } else {
-                                                    return fieldTemplate(field);
-                                                }
-                                            })
-                                        }
-                                    </div>
-                                }
-
-                            </form>
-
-                            <div className="flex justify-content-end">
-                                <Button onClick={(e: any) => setEditDetails(e.value)} className='p-button-link text-gray-600' label="Cancel"/>
-                                <Button onClick={() => onSubmit()} label="Save"/>
-                            </div>
-                        </div>
-                    }
-
-
-                </div>
             </div>
-        }
+
+            <div className="card-body">
+
+                {
+                    !editDetails &&
+                    <div className="display">
+
+                        <div>custom fields salvate manual</div>
+                        <div>custom fields salvate prin definitie</div>
+
+                    </div>
+                }
+
+                {
+                    editDetails &&
+                    <div className="content">
+                        <form>
+
+                            <div className="grid grid-nogutter">
+                                <EntityDefinitionTemplate
+                                    name={entityDefinitionTemplateData.name}
+                                    fields={entityDefinitionTemplateData.fields}
+                                    register={register}
+                                />
+                            </div>
+
+                        </form>
+
+                        <div className="flex justify-content-end">
+                            <Button onClick={(e: any) => setEditDetails(e.value)} className='p-button-link text-gray-600' label="Cancel"/>
+                            <Button onClick={() => onSubmit()} label="Save"/>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
 
     </>
 }
