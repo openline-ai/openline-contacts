@@ -20,7 +20,7 @@ import {User} from "../../models/user";
 import PropTypes, {string} from "prop-types";
 import {GetEntityDefinitions} from "../../services/entityDefinitionService";
 import {CustomField, CustomFieldDefinition, EntityDefinition, FieldSet, FieldSetDefinition} from "../../models/customFields";
-import {CustomFieldTemplateProps, EntityDefinitionTemplate, EntityDefinitionTemplateProps, FieldSetTemplateProps} from "../generic/entityExtensionTemplates";
+import {CustomFieldTemplateProps, EntityDefinitionEditTemplate, EntityDefinitionTemplateProps, FieldSetTemplateProps} from "../generic/entityExtensionTemplates";
 
 export default function ContactDetailsSection(props: any) {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -374,7 +374,7 @@ export default function ContactDetailsSection(props: any) {
 
                             {
                                 props.contactId === 'new' && entityDefinitionTemplateData.name &&
-                                <EntityDefinitionTemplate name={entityDefinitionTemplateData.name} fields={entityDefinitionTemplateData.fields} register={register}/>
+                                <EntityDefinitionEditTemplate name={entityDefinitionTemplateData.name} fields={entityDefinitionTemplateData.fields} register={register}/>
                             }
 
                         </form>

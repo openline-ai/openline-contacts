@@ -1,5 +1,7 @@
 import {gql, GraphQLClient} from "graphql-request";
 import {Contact} from "../models/contact";
+import {CustomField, FieldSet} from "../models/customFields";
+import {string} from "prop-types";
 
 export function GetContactDetails(client: GraphQLClient, id: string): Promise<Contact> {
     return new Promise((resolve, reject) => {
@@ -36,10 +38,10 @@ export function GetContactDetails(client: GraphQLClient, id: string): Promise<Co
     });
 }
 
-export function GetContactCustomFields(client: GraphQLClient, id: string): Promise<Contact> {
+export function GetContactCustomFields(client: GraphQLClient, id: string): Promise<(CustomField | FieldSet)[]> {
     return new Promise((resolve, reject) => {
 
-        const query = gql`query GetContactDetails($id: ID!) {
+        const query = gql`query GetContactCustomFields($id: ID!) {
             contact(id: $id) {
                 customFields {
                     id
@@ -87,7 +89,20 @@ export function GetContactCustomFields(client: GraphQLClient, id: string): Promi
 
         client.request(query, {id: id}).then((response: any) => {
             if (response.contact) {
-                resolve(response.contact);
+                var sortedData = [] as any;
+                response.contact.customFields.forEach((f: any) => sortedData.push(f));
+                response.contact.fieldSets.forEach((f: any) => {
+                    f.customFields = f.customFields.sort(function (a: any, b: any) {
+                        return a.definition.order - b.definition.order;
+                    });
+                    sortedData.push(f);
+                });
+
+                sortedData = sortedData.sort(function (a: any, b: any) {
+                    return a.definition.order - b.definition.order;
+                });
+
+                resolve(sortedData);
             } else {
                 reject(response.errors);
             }
@@ -176,7 +191,7 @@ export function DeleteContact(client: GraphQLClient, id: any): Promise<boolean> 
             }
         }`
 
-        client.request(query, { contactId: id }).then((response: any) => {
+        client.request(query, {contactId: id}).then((response: any) => {
             if (response.contact_SoftDelete.result) {
                 resolve(true);
             } else {
