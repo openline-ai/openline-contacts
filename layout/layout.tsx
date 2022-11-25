@@ -5,6 +5,8 @@ import {useRef} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faArrowDownShortWide, faCaretDown, faIdCard, faUserSecret, faUsersRectangle} from "@fortawesome/free-solid-svg-icons";
 import {Menu} from "primereact/menu";
+import {useSession} from "next-auth/react";
+import AccessDenied from "../components/accessDenied";
 
 export default function Layout({children}: any) {
     const router = useRouter();
@@ -30,6 +32,14 @@ export default function Layout({children}: any) {
             }
         }
     ];
+
+    const { data } = useSession();
+
+    if (!data) {
+        return (
+                <AccessDenied />
+        )
+    }
 
     return (
         <div className="flex h-full w-full">

@@ -9,7 +9,17 @@ import '../styles/layout.css'
 import '../styles/card-fieldset.css'
 import '../styles/button.css'
 import '../styles/search-component.css'
+import {AppProps} from "next/app";
+import {Session} from "next-auth";
+import {SessionProvider} from "next-auth/react";
 
-export default function App({Component, pageProps}: any) {
-    return <Component {...pageProps} />
+export default function App({
+                                Component,
+                                pageProps: { session, ...pageProps },
+                            }: AppProps<{ session: Session }>) {
+    return (
+        <SessionProvider session={session}>
+            <Component {...pageProps} />
+        </SessionProvider>
+    )
 }
