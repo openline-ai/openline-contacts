@@ -27,10 +27,7 @@ export function GetUsersPage(client: GraphQLClient, pagination: Pagination, wher
             if (response.users) {
                 resolve(PageOf(response.users.content, response.totalElements));
             } else {
-                //TODO check here how we wrap the error back
-                // resolve({
-                //     error: response
-                // });
+                reject(response.errors);
             }
         }).catch(reason => {
             reject(reason);

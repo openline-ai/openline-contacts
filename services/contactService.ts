@@ -28,7 +28,7 @@ export function GetContactDetails(client: GraphQLClient, id: string): Promise<Co
             if (response.contact) {
                 resolve(response.contact);
             } else {
-                resolve([]);
+                reject(response.error);
             }
         }).catch(reason => {
             reject(reason);
@@ -89,7 +89,7 @@ export function GetContactCustomFields(client: GraphQLClient, id: string): Promi
             if (response.contact) {
                 resolve(response.contact);
             } else {
-                resolve([]);
+                reject(response.errors);
             }
         }).catch(reason => {
             reject(reason);
@@ -115,13 +115,16 @@ export function CreateContact(client: GraphQLClient, data: any): Promise<Contact
                     ownerId: data.ownerId,
                     label: data.label,
                     notes: data.notes,
+                    definitionId: data.definitionId,
+                    customFields: data.customFields,
+                    fieldSets: data.fieldSets,
                 }
             }
         ).then((response: any) => {
             if (response.contact_Create) {
                 resolve(response.contact_Create);
             } else {
-                reject(response.error);
+                reject(response.errors);
             }
         }).catch(reason => {
             reject(reason);
@@ -155,7 +158,7 @@ export function UpdateContact(client: GraphQLClient, data: any): Promise<Contact
             if (response.contact_Update) {
                 resolve(response.contact_Update);
             } else {
-                reject(response.error);
+                reject(response.errors);
             }
         }).catch(reason => {
             reject(reason);
@@ -177,7 +180,7 @@ export function DeleteContact(client: GraphQLClient, id: any): Promise<boolean> 
             if (response.contact_SoftDelete.result) {
                 resolve(true);
             } else {
-                reject(response.error);
+                reject(response.errors);
             }
         }).catch(reason => {
             reject(reason);

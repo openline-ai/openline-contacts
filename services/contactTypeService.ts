@@ -17,7 +17,7 @@ export function GetContactTypes(client: GraphQLClient): Promise<ContactType[]> {
             if (response.contactTypes) {
                 resolve(response.contactTypes);
             } else {
-                resolve([]);
+                reject(response.errors);
             }
         }).catch(reason => {
             reject(reason);

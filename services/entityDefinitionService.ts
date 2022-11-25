@@ -67,7 +67,7 @@ export function GetEntityDefinitions(client: GraphQLClient, type: String): Promi
 
                 resolve(definitions);
             } else {
-                resolve([]);
+                reject(response.errors);
             }
         }).catch(reason => {
             reject(reason);

@@ -18,6 +18,9 @@ import {GetUsersPage} from "../../services/userService";
 import {Page, PaginationOf} from "../../models/pagination";
 import {User} from "../../models/user";
 import PropTypes, {string} from "prop-types";
+import {GetEntityDefinitions} from "../../services/entityDefinitionService";
+import {CustomField, CustomFieldDefinition, EntityDefinition, FieldSet, FieldSetDefinition} from "../../models/customFields";
+import {CustomFieldTemplateProps, EntityDefinitionTemplate, EntityDefinitionTemplateProps, FieldSetTemplateProps} from "../generic/entityExtensionTemplates";
 
 export default function ContactDetailsSection(props: any) {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -26,6 +29,7 @@ export default function ContactDetailsSection(props: any) {
 
     const [reloadContactDetails, setReloadContactDetails] = useState(false);
     const [contact, setContact] = useState({
+        definitionId: undefined,
         title: '',
         firstName: '',
         lastName: '',
@@ -85,6 +89,62 @@ export default function ContactDetailsSection(props: any) {
     }
 
     const onSubmit = handleSubmit(data => {
+        const customFields = [] as any;
+        const fieldSets = [] as any;
+
+        const customFieldPrefix = 'customField_';
+        const fieldSetPrefix = 'fieldSet_';
+
+        Object.keys(data).forEach((k: string) => {
+            if (k.startsWith(customFieldPrefix)) {
+                const customFieldTemplateProps = entityDefinitionTemplateData.fields.filter((f: any) => f.id === k)[0] as CustomFieldTemplateProps;
+                const customFieldToPush = {} as CustomField;
+
+                customFieldToPush.id = customFieldTemplateProps.data.id;
+                customFieldToPush.value = data[k];
+                customFieldToPush.name = customFieldTemplateProps.data.name;
+                customFieldToPush.datatype = customFieldTemplateProps.data.datatype;
+                customFieldToPush.definitionId = customFieldTemplateProps.data.definitionId;
+
+                customFields.push(customFieldToPush);
+            } else if (k.startsWith(fieldSetPrefix)) {
+                const fieldSetId = k.substring(0, k.indexOf(customFieldPrefix) - 1);
+                const customFieldId = k.substring(fieldSetId.length + 1, k.length);
+                const fieldSetTemplateProps = entityDefinitionTemplateData.fields.filter((f: any) => f.id === fieldSetId)[0] as FieldSetTemplateProps;
+                const customFieldTemplateProps = fieldSetTemplateProps.customFields.filter((f: any) => f.id === fieldSetId + '_' + customFieldId)[0] as CustomFieldTemplateProps;
+
+                let indexOf = fieldSets.indexOf((f: any) => f.id === fieldSetId);
+                let fieldSet = undefined;
+                if (indexOf === -1) {
+                    fieldSet = {} as FieldSet;
+                    fieldSet.name = fieldSetTemplateProps.name;
+                    fieldSet.definitionId = fieldSetTemplateProps.definitionId
+                    fieldSet.customFields = [];
+                } else {
+                    fieldSet = fieldSets[indexOf];
+                }
+
+                const customFieldToPush = {} as CustomField;
+
+                customFieldToPush.id = customFieldTemplateProps.data.id;
+                customFieldToPush.value = data[k];
+                customFieldToPush.name = customFieldTemplateProps.data.name;
+                customFieldToPush.datatype = customFieldTemplateProps.data.datatype;
+                customFieldToPush.definitionId = customFieldTemplateProps.data.definitionId;
+
+                fieldSet.customFields.push(customFieldToPush);
+
+                if (indexOf === -1) {
+                    fieldSets.push(fieldSet);
+                } else {
+                    fieldSets[indexOf] = fieldSet;
+                }
+            }
+        });
+
+        data.customFields = customFields;
+        data.fieldSets = fieldSets;
+
         if (!data.id) {
             CreateContact(client, data).then((savedContact: Contact) => {
                 router.push('/contact/' + savedContact.id);
@@ -112,6 +172,81 @@ export default function ContactDetailsSection(props: any) {
                 reject(reason);
             });
         });
+    }
+
+    const [entityDefinition, setEntityDefinition] = useState({} as EntityDefinition);
+    const [entityDefinitionTemplateData, setEntityDefinitionTemplateData] = useState({} as EntityDefinitionTemplateProps);
+
+    const contactTypeChanged = (selectedContactTypeId: string) => {
+        if (props.contactId !== 'new') {
+            return;
+        }
+
+        let selectedContactType = contactTypeList.filter((f: ContactType) => f.id === selectedContactTypeId)[0].name;
+        console.log(selectedContactType);
+        let definitionName = '';
+        switch (selectedContactType) {
+            case 'Customer':
+                definitionName = "CONTACT_CUSTOMER";
+                break;
+            case 'Clinic':
+                definitionName = "CONTACT_CLINIC";
+                break;
+        }
+
+        if (selectedContactType !== '') {
+            GetEntityDefinitions(client, "CONTACT").then((ed: EntityDefinition[]) => {
+                let entityDefinitionsFiltered = ed.filter((e: EntityDefinition) => e.name === definitionName);
+                let entityDefinitionsSelected = undefined;
+                if (entityDefinitionsFiltered.length === 1) {
+                    entityDefinitionsSelected = entityDefinitionsFiltered[0];
+                    setEntityDefinition(entityDefinitionsSelected);
+
+                    setValue('definitionId', entityDefinitionsSelected.id);
+                } else {
+                    return;
+                }
+
+                const obj = {} as EntityDefinitionTemplateProps;
+                obj.name = entityDefinitionsSelected.name;
+                obj.register = register;
+                obj.fields = entityDefinitionsSelected.fields.map((f: (CustomFieldDefinition | FieldSetDefinition)) => {
+                    if ((f as CustomFieldDefinition).type) {
+                        return customFieldDefinitionToTemplateProps(f as CustomFieldDefinition);
+                    } else {
+                        const fieldSet = f as FieldSetDefinition;
+                        return {
+                            id: `fieldSet_${fieldSet.id}`,
+                            definitionId: fieldSet.id,
+                            name: fieldSet.name,
+                            customFields: fieldSet.customFields.map((f: CustomFieldDefinition) => customFieldDefinitionToTemplateProps(f as CustomFieldDefinition, fieldSet.id)),
+                            register: register
+                        } as FieldSetTemplateProps;
+                    }
+                });
+
+                setEntityDefinitionTemplateData(obj);
+            });
+        }
+    }
+
+    const customFieldDefinitionToTemplateProps = (
+        f: CustomFieldDefinition,
+        fieldSetId: string | undefined = undefined,
+        data: CustomField | undefined = undefined
+    ): CustomFieldTemplateProps => {
+        return {
+            id: fieldSetId ? `fieldSet_${fieldSetId}_customField_${data ? data.id : f.id}` : `customField_${data ? data.id : f.id}`,
+            definition: f,
+            data: data ?? {
+                id: undefined,
+                name: f.name,
+                datatype: f.type,
+                definitionId: f.id,
+                value: undefined
+            },
+            register: register
+        } as CustomFieldTemplateProps;
     }
 
     return (
@@ -221,7 +356,10 @@ export default function ContactDetailsSection(props: any) {
                             <div className="field w-full">
                                 <label htmlFor="contactTypeId" className="block">Type</label>
                                 <Controller name="contactTypeId" control={control} render={({field}) => (
-                                    <Dropdown id={field.name} value={field.value} onChange={(e) => field.onChange(e.value)} options={contactTypeList}
+                                    <Dropdown id={field.name} value={field.value} onChange={(e) => {
+                                        field.onChange(e.value);
+                                        contactTypeChanged(e.value);
+                                    }} options={contactTypeList}
                                               optionValue="id" optionLabel="name" className="w-full"/>
                                 )}/>
                             </div>
@@ -233,6 +371,12 @@ export default function ContactDetailsSection(props: any) {
                                 <label htmlFor="notes" className="block">Notes</label>
                                 <InputTextarea id="notes" rows={2} {...register("notes")} autoResize className="w-full"/>
                             </div>
+
+                            {
+                                props.contactId === 'new' && entityDefinitionTemplateData.name &&
+                                <EntityDefinitionTemplate name={entityDefinitionTemplateData.name} fields={entityDefinitionTemplateData.fields} register={register}/>
+                            }
+
                         </form>
 
                         <div className="flex justify-content-end">
