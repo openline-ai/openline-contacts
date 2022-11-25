@@ -5,8 +5,11 @@ import {useRef} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faArrowDownShortWide, faCaretDown, faIdCard, faUserSecret, faUsersRectangle} from "@fortawesome/free-solid-svg-icons";
 import {Menu} from "primereact/menu";
+import {useSession} from "next-auth/react";
+import AccessDenied from "../components/accessDenied";
 
 export default function Layout({children}: any) {
+    const { data: session } = useSession();
     const router = useRouter();
 
     const userSettingsContainerRef = useRef<OverlayPanel>(null);
@@ -30,6 +33,12 @@ export default function Layout({children}: any) {
             }
         }
     ];
+
+    if (!session) {
+        return (
+                <AccessDenied />
+        )
+    }
 
     return (
         <div className="flex h-full w-full">
