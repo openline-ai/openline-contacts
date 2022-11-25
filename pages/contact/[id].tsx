@@ -11,6 +11,7 @@ import ContactCommunicationSection from "../../components/contact/contactCommuni
 import ContactCompaniesPositions from "../../components/contact/contactCompaniesPositions";
 import {DeleteContact} from "../../services/contactService";
 import ContactDetailsSection from "../../components/contact/contactDetailsSection";
+import ContactExtensionSection from "../../components/contact/contactExtensionSection";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -58,10 +59,10 @@ function ContactDetails() {
                         <ContactCompaniesPositions contactId={id}/>
                     }
 
-                    {/*{*/}
-                    {/*    id && id !== 'new' &&*/}
-                    {/*    <ContactExtension contactId={id}/>*/}
-                    {/*}*/}
+                    {
+                        id && id !== 'new' &&
+                        <ContactExtensionSection contactId={id}/>
+                    }
 
                     {
                         id && id !== 'new' &&

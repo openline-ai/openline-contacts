@@ -5,15 +5,15 @@ import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEdit} from "@fortawesome/free-solid-svg-icons";
 import {useForm} from "react-hook-form";
-import {CustomFieldTemplateProps, EntityDefinitionTemplate, EntityDefinitionTemplateProps, FieldSetTemplateProps} from "../generic/entityExtensionTemplates";
-import {CustomField, CustomFieldDefinition, EntityDefinition, FieldSetDefinition} from "../../models/customFields";
-import {uuidv4} from "../../utils/uuid-generator";
-import {GetEntityDefinitions} from "../../services/entityDefinitionService";
+import {CustomFieldViewTemplateProps, EntityDefinitionEditTemplate, EntityDefinitionTemplateProps, EntityDefinitionViewTemplate, FieldSetViewTemplateProps} from "../generic/entityExtensionTemplates";
+import {CustomField, EntityDefinition, FieldSet} from "../../models/customFields";
 import {GetContactCustomFields} from "../../services/contactService";
-import {Contact} from "../../models/contact";
 
-function ContactExtension(props: any) {
+function ContactExtensionSection(props: any) {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
+
+    const [fields, setFields] = useState([] as ((CustomField | FieldSet)[]));
+    const [fieldsView, setFieldsView] = useState([] as ((CustomFieldViewTemplateProps | FieldSetViewTemplateProps)[]));
 
     const [entityDefinition, setEntityDefinition] = useState({} as EntityDefinition);
     const [entityDefinitionTemplateData, setEntityDefinitionTemplateData] = useState({} as EntityDefinitionTemplateProps);
@@ -42,48 +42,43 @@ function ContactExtension(props: any) {
 
         if (props.contactId) {
 
-            const customFieldDefinitionToTemplateProps = (f: CustomFieldDefinition, fieldSetName: string | undefined = undefined, data: CustomField | undefined = undefined): CustomFieldTemplateProps => {
+            const mapCustomFieldToCustomFieldViewTemplateProps = (c: CustomField) => {
                 return {
-                    // key: uuidv4(),
-                    // definition: f,
-                    // data: data ?? {
-                    //     key: uuidv4(),
-                    //     name: f.name,
-                    //     datatype: f.type,
-                    //     definitionId: f.id,
-                    //     value: undefined
-                    // },
-                    // register: register
-                } as CustomFieldTemplateProps;
+                    id: c.id,
+                    label: c.name,
+                    value: c.value
+                } as CustomFieldViewTemplateProps
             }
 
-            GetEntityDefinitions(client, "CONTACT").then((ed: EntityDefinition[]) => {
-                //todo show that we have multiple types
-                setEntityDefinition(ed[0]);
-
-                const obj = {} as EntityDefinitionTemplateProps;
-                obj.name = ed[0].name;
-                obj.register = register;
-                obj.fields = ed[0].fields.map((f: (CustomFieldDefinition | FieldSetDefinition)) => {
-                    if ((f as CustomFieldDefinition).type) {
-                        return customFieldDefinitionToTemplateProps(f as CustomFieldDefinition);
-                    } else {
-                        const fieldSet = f as FieldSetDefinition;
-                        return {
-                            // key: uuidv4(),
-                            // name: fieldSet.name,
-                            // customFields: fieldSet.customFields.map((f: CustomFieldDefinition) => customFieldDefinitionToTemplateProps(f as CustomFieldDefinition)),
-                            // register: register
-                        } as FieldSetTemplateProps;
-                    }
-                });
-
-                setEntityDefinitionTemplateData(obj);
-            });
-
-            GetContactCustomFields(client, props.contactId).then((response: Contact) => {
-                let customFields = response.customFields;
-                let fieldSets = response.fieldSets;
+            GetContactCustomFields(client, props.contactId).then((response: (CustomField | FieldSet)[]) => {
+                setFields(response);
+                setFieldsView(response
+                    .filter((c: CustomField | FieldSet) => {
+                        if ((c as CustomField).datatype) {
+                            let customField = c as CustomField;
+                            if (customField.value) {
+                                return c;
+                            }
+                        } else {
+                            let fieldSet = c as FieldSet;
+                            fieldSet.customFields = fieldSet.customFields.filter((f: CustomField) => f.value && f.value !== '');
+                            if (fieldSet.customFields.length > 0) {
+                                return fieldSet;
+                            }
+                        }
+                    })
+                    .map((c: CustomField | FieldSet) => {
+                        if ((c as CustomField).datatype) {
+                            return mapCustomFieldToCustomFieldViewTemplateProps(c as CustomField);
+                        } else {
+                            let fieldSet = c as FieldSet;
+                            return {
+                                id: c.id,
+                                label: c.name,
+                                fields: fieldSet.customFields.map((f: CustomField) => mapCustomFieldToCustomFieldViewTemplateProps(f))
+                            }
+                        }
+                    }));
             });
 
         }
@@ -138,10 +133,7 @@ function ContactExtension(props: any) {
                 {
                     !editDetails &&
                     <div className="display">
-
-                        <div>custom fields salvate manual</div>
-                        <div>custom fields salvate prin definitie</div>
-
+                        <EntityDefinitionViewTemplate fields={fieldsView}/>
                     </div>
                 }
 
@@ -151,7 +143,7 @@ function ContactExtension(props: any) {
                         <form>
 
                             <div className="grid grid-nogutter">
-                                <EntityDefinitionTemplate
+                                <EntityDefinitionEditTemplate
                                     name={entityDefinitionTemplateData.name}
                                     fields={entityDefinitionTemplateData.fields}
                                     register={register}
@@ -173,7 +165,7 @@ function ContactExtension(props: any) {
     </>
 }
 
-ContactExtension.propTypes = {
+ContactExtensionSection.propTypes = {
     contactId: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.arrayOf(string)
@@ -181,4 +173,4 @@ ContactExtension.propTypes = {
     className: PropTypes.arrayOf(string)
 }
 
-export default ContactExtension
+export default ContactExtensionSection
