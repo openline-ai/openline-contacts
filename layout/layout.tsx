@@ -9,7 +9,6 @@ import {useSession} from "next-auth/react";
 import AccessDenied from "../components/accessDenied";
 
 export default function Layout({children}: any) {
-    const { data: session } = useSession();
     const router = useRouter();
 
     const userSettingsContainerRef = useRef<OverlayPanel>(null);
@@ -34,7 +33,9 @@ export default function Layout({children}: any) {
         }
     ];
 
-    if (!session) {
+    const { data } = useSession();
+
+    if (!data) {
         return (
                 <AccessDenied />
         )
