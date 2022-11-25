@@ -9,7 +9,7 @@ export const authOptions: NextAuthOptions = {
             clientId: process.env.CLIENT_ID as string,
             clientSecret: process.env.CLIENT_SECRET as string,
             tenantId: process.env.TENANT_ID,
-            issuer: "openline.ninja",
+            issuer: "https://auth.openline.ninja",
             client: {
                 authorization_signed_response_alg: 'HS256',
                 id_token_signed_response_alg: 'HS256'
