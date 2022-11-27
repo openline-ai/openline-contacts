@@ -48,7 +48,7 @@ const ContactList: NextPage = () => {
                                            className: 'w50',
                                            label: 'Contact',
                                            template: (c: any) => {
-                                               return <div className="cta" onClick={() => onEdit(c.id)}>
+                                               return <div key={c.id} className="cta" onClick={() => onEdit(c.id)}>
                                                    {getEnumLabel(ContactTitleEnum, c.title)}&nbsp;{c.firstName}&nbsp;{c.lastName}
                                                </div>
                                            }
@@ -57,7 +57,7 @@ const ContactList: NextPage = () => {
                                            field: 'contactType{name}',
                                            label: 'Type',
                                            template: (c: any) => {
-                                               return <div>{c.contactType ? c.contactType.name : ''}</div>
+                                               return <div key={c.id} >{c.contactType ? c.contactType.name : ''}</div>
                                            }
                                        },
                                    ]

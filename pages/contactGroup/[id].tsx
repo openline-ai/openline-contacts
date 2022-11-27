@@ -36,16 +36,6 @@ function ContactGroupEdit() {
                 contactGroup(id: $id) {
                     id
                     name
-                    contacts{
-                        content{
-                            id
-                            firstName
-                            lastName
-                            title
-                        }
-                        totalPages
-                        totalElements
-                    }
                 }
             }`
 
@@ -135,7 +125,6 @@ function ContactGroupEdit() {
                             lastName
                             title
                         }
-                        totalPages
                         totalElements
                     }
                 }
@@ -154,9 +143,7 @@ function ContactGroupEdit() {
                         totalElements: response.contactGroup.contacts.totalElements
                     });
                 } else {
-                    resolve({
-                        error: response
-                    });
+                    resolve(response.errors);
                 }
             });
         });
@@ -172,7 +159,6 @@ function ContactGroupEdit() {
                         lastName
                         title
                     }
-                    totalPages
                     totalElements
                 }
             }`

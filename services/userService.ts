@@ -13,7 +13,6 @@ export function GetUsersPage(client: GraphQLClient, pagination: Pagination, wher
                     lastName
                     email
                 }
-                totalPages
                 totalElements
             }
         }`
