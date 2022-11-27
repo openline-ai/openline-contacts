@@ -5,21 +5,31 @@ import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEdit} from "@fortawesome/free-solid-svg-icons";
 import {useForm} from "react-hook-form";
-import {CustomFieldViewTemplateProps, EntityDefinitionEditTemplate, EntityDefinitionTemplateProps, EntityDefinitionViewTemplate, FieldSetViewTemplateProps} from "../generic/entityExtensionTemplates";
-import {CustomField, EntityDefinition, FieldSet} from "../../models/customFields";
+import {
+    CustomFieldTemplateProps,
+    CustomFieldViewTemplateProps,
+    EntityDefinitionEditTemplate,
+    EntityDefinitionTemplateProps,
+    EntityDefinitionViewTemplate,
+    FieldSetTemplateProps,
+    FieldSetViewTemplateProps,
+    mapEntityExtensionDataFromFormData
+} from "../generic/entityExtensionTemplates";
+import {CustomField, FieldSet} from "../../models/customFields";
 import {GetContactCustomFields} from "../../services/contactService";
+import {Contact} from "../../models/contact";
 
 function ContactExtensionSection(props: any) {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
 
+    const [reloadCustomFields, setReloadCustomFields] = useState(false);
+    const [definitionId, setDefinitionId] = useState('');
     const [fields, setFields] = useState([] as ((CustomField | FieldSet)[]));
     const [fieldsView, setFieldsView] = useState([] as ((CustomFieldViewTemplateProps | FieldSetViewTemplateProps)[]));
-
-    const [entityDefinition, setEntityDefinition] = useState({} as EntityDefinition);
+    const [fieldsEdit, setFieldsEdit] = useState([] as ((CustomFieldTemplateProps | FieldSetTemplateProps)[]));
     const [entityDefinitionTemplateData, setEntityDefinitionTemplateData] = useState({} as EntityDefinitionTemplateProps);
 
     const [editDetails, setEditDetails] = useState(props.initialEditState ?? false);
-    const {register, setValue, handleSubmit, control} = useForm();
 
     /**
      * New contact
@@ -50,9 +60,19 @@ function ContactExtensionSection(props: any) {
                 } as CustomFieldViewTemplateProps
             }
 
-            GetContactCustomFields(client, props.contactId).then((response: (CustomField | FieldSet)[]) => {
-                setFields(response);
-                setFieldsView(response
+            const mapCustomFieldToCustomFieldTemplateProps = (c: CustomField, fieldSetId: string | undefined = undefined, register: any) => {
+                return {
+                    id: fieldSetId ? `fieldSet_${fieldSetId}_customField_${c.id}` : `customField_${c.id}`,
+                    data: c,
+                    definition: c.definition,
+                    register: register
+                } as CustomFieldTemplateProps
+            }
+
+            GetContactCustomFields(client, props.contactId).then((response: Contact) => {
+                setDefinitionId(response.definition?.id);
+                setFields(response.sortedFieldsAndFieldSets);
+                setFieldsView(response.sortedFieldsAndFieldSets
                     .filter((c: CustomField | FieldSet) => {
                         if ((c as CustomField).datatype) {
                             let customField = c as CustomField;
@@ -79,88 +99,121 @@ function ContactExtensionSection(props: any) {
                             }
                         }
                     }));
-            });
 
+                let fieldsToEdit = response.sortedFieldsAndFieldSets
+                    .map((c: CustomField | FieldSet) => {
+                        if ((c as CustomField).datatype) {
+                            return mapCustomFieldToCustomFieldTemplateProps(c as CustomField, undefined, register);
+                        } else {
+                            let fieldSet = c as FieldSet;
+                            return {
+                                id: `fieldSet_${c.id}`,
+                                name: c.name,
+                                definition: c.definition,
+                                definitionId: c.definitionId,
+                                customFields: fieldSet.customFields.map((f: CustomField) => mapCustomFieldToCustomFieldTemplateProps(f as CustomField, fieldSet.id, register)),
+                                register: register
+                            } as FieldSetTemplateProps;
+                        }
+                    });
+                setFieldsEdit(fieldsToEdit);
+
+                const obj = {} as EntityDefinitionTemplateProps;
+                obj.register = register;
+                obj.fields = fieldsToEdit;
+                setEntityDefinitionTemplateData(obj);
+            });
         }
 
-    }, [props.contactId]);
+    }, [props.contactId, reloadCustomFields]);
+
+    const {register, handleSubmit, setValue} = useForm();
 
     const onSubmit = handleSubmit(data => {
+        let entityExtension = mapEntityExtensionDataFromFormData(data, entityDefinitionTemplateData);
 
-        console.log(data);
+        data.customFields = entityExtension.customFields;
+        data.fieldSets = entityExtension.fieldSets;
 
-        let query = gql``;
+        const query = gql`mutation UpdateCustomFields($contactId: ID!, $customFields: [CustomFieldInput!], $fieldSets: [FieldSetInput!]) {
+            customFieldsMergeAndUpdateInContact(contactId: $contactId, customFields: $customFields, fieldSets: $fieldSets) {
+                id
+            }
+        }`
 
-        client.request(query, {}).then((response) => {
+        client.request(query, {
+            contactId: props.contactId,
+            customFields: entityExtension.customFields,
+            fieldSets: entityExtension.fieldSets
+        }).then((response: any) => {
+            if (response.customFieldsMergeAndUpdateInContact) {
+                setReloadCustomFields(true);
                 setEditDetails(false);
-            }
-        ).catch((reason) => {
-            console.log(reason);
-            if (reason.response.status === 400) {
-                // reason.response.data.errors.forEach((error: any) => {
-                //     formik.setFieldError(error.field, error.message);
-                // })
-                //todo show errors on form
             } else {
-                alert('error');
+                console.log(response.errors);
+                //todo show error
             }
+        }).catch(reason => {
+            console.log(reason);
+            //todo show error
         });
-
     });
 
     return <>
-        <div className='card-fieldset mt-3' style={{width: '25rem'}}>
-            <div className="card-header">
-                <div className="flex flex-row w-full">
-                    <div className="flex-grow-1">Custom fields</div>
-                    <div className="flex">
+        {
+            definitionId &&
+            <div className='card-fieldset mt-3' style={{width: '25rem'}}>
+                <div className="card-header">
+                    <div className="flex flex-row w-full">
+                        <div className="flex-grow-1">Custom fields</div>
+                        <div className="flex">
 
-                        {
-                            !editDetails &&
-                            <Button className="p-button-text p-0" onClick={() => {
-                                setEditDetails(true);
-                            }}>
-                                <FontAwesomeIcon size="xs" icon={faEdit} style={{color: 'black'}}/>
-                            </Button>
-                        }
+                            {
+                                definitionId && !editDetails &&
+                                <Button className="p-button-text p-0" onClick={() => {
+                                    fieldsEdit.forEach((f: CustomFieldTemplateProps | FieldSetTemplateProps) => {
+                                        if ((f as CustomFieldTemplateProps).data) {
+                                            setValue(f.id, (f as CustomFieldTemplateProps).data.value);
+                                        } else {
+                                            (f as FieldSetTemplateProps).customFields.forEach((fcf: CustomFieldTemplateProps) => {
+                                                setValue(fcf.id, fcf.data.value);
+                                            });
+                                        }
+                                    });
+                                    setEditDetails(true);
+                                }}>
+                                    <FontAwesomeIcon size="xs" icon={faEdit} style={{color: 'black'}}/>
+                                </Button>
+                            }
 
-                    </div>
-                </div>
-            </div>
-
-            <div className="card-body">
-
-                {
-                    !editDetails &&
-                    <div className="display">
-                        <EntityDefinitionViewTemplate fields={fieldsView}/>
-                    </div>
-                }
-
-                {
-                    editDetails &&
-                    <div className="content">
-                        <form>
-
-                            <div className="grid grid-nogutter">
-                                <EntityDefinitionEditTemplate
-                                    name={entityDefinitionTemplateData.name}
-                                    fields={entityDefinitionTemplateData.fields}
-                                    register={register}
-                                />
-                            </div>
-
-                        </form>
-
-                        <div className="flex justify-content-end">
-                            <Button onClick={(e: any) => setEditDetails(e.value)} className='p-button-link text-gray-600' label="Cancel"/>
-                            <Button onClick={() => onSubmit()} label="Save"/>
                         </div>
                     </div>
-                }
+                </div>
 
+                <div className="card-body">
+
+                    {
+                        !editDetails &&
+                        <div className="display">
+                            <EntityDefinitionViewTemplate fields={fieldsView}/>
+                        </div>
+                    }
+
+                    {
+                        editDetails &&
+                        <div className="content">
+                            <EntityDefinitionEditTemplate fields={fieldsEdit} register={register}/>
+
+                            <div className="flex justify-content-end">
+                                <Button onClick={(e: any) => setEditDetails(e.value)} className='p-button-link text-gray-600' label="Cancel"/>
+                                <Button onClick={() => onSubmit()} label="Save"/>
+                            </div>
+                        </div>
+                    }
+
+                </div>
             </div>
-        </div>
+        }
 
     </>
 }

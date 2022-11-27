@@ -1,5 +1,6 @@
 import {InputText} from "primereact/inputtext";
-import {CustomField, CustomFieldDefinition, FieldSet, FieldSetDefinition} from "../../models/customFields";
+import {CustomField, CustomFieldDefinition, EntityDefinition, EntityExtension, FieldSet, FieldSetDefinition} from "../../models/customFields";
+import {string} from "prop-types";
 
 export type CustomFieldTemplateProps = {
     id: string;
@@ -17,7 +18,6 @@ export type FieldSetTemplateProps = {
 }
 
 export type EntityDefinitionTemplateProps = {
-    name: string;
     fields: (CustomFieldTemplateProps | FieldSetTemplateProps)[];
     register: Function;
 }
@@ -67,6 +67,66 @@ export function EntityDefinitionEditTemplate(props: EntityDefinitionTemplateProp
             })
         }
     </div>
+}
+
+export function mapEntityExtensionDataFromFormData(formData: any, definition: EntityDefinitionTemplateProps): EntityExtension {
+    const customFields = [] as any;
+    const fieldSets = [] as any;
+
+    const customFieldPrefix = 'customField_';
+    const fieldSetPrefix = 'fieldSet_';
+
+    Object.keys(formData).forEach((k: string) => {
+        if (k.startsWith(customFieldPrefix)) {
+            const customFieldTemplateProps = definition.fields.filter((f: any) => f.id === k)[0] as CustomFieldTemplateProps;
+            const customFieldToPush = {} as CustomField;
+
+            customFieldToPush.id = customFieldTemplateProps.data.id;
+            customFieldToPush.value = formData[k];
+            customFieldToPush.name = customFieldTemplateProps.data.name;
+            customFieldToPush.datatype = customFieldTemplateProps.data.datatype;
+            customFieldToPush.definitionId = customFieldTemplateProps.data.definitionId;
+
+            customFields.push(customFieldToPush);
+        } else if (k.startsWith(fieldSetPrefix)) {
+            const fieldSetId = k.substring(0, k.indexOf(customFieldPrefix) - 1);
+            const customFieldId = k.substring(fieldSetId.length + 1, k.length);
+            const fieldSetTemplateProps = definition.fields.filter((f: any) => f.id === fieldSetId)[0] as FieldSetTemplateProps;
+            const customFieldTemplateProps = fieldSetTemplateProps.customFields.filter((f: any) => f.id === fieldSetId + '_' + customFieldId)[0] as CustomFieldTemplateProps;
+
+            let indexOf = fieldSets.indexOf((f: any) => f.id === fieldSetId);
+            let fieldSet = undefined;
+            if (indexOf === -1) {
+                fieldSet = {} as FieldSet;
+                fieldSet.name = fieldSetTemplateProps.name;
+                fieldSet.definitionId = fieldSetTemplateProps.definitionId
+                fieldSet.customFields = [];
+            } else {
+                fieldSet = fieldSets[indexOf];
+            }
+
+            const customFieldToPush = {} as CustomField;
+
+            customFieldToPush.id = customFieldTemplateProps.data.id;
+            customFieldToPush.value = formData[k];
+            customFieldToPush.name = customFieldTemplateProps.data.name;
+            customFieldToPush.datatype = customFieldTemplateProps.data.datatype;
+            customFieldToPush.definitionId = customFieldTemplateProps.data.definitionId;
+
+            fieldSet.customFields.push(customFieldToPush);
+
+            if (indexOf === -1) {
+                fieldSets.push(fieldSet);
+            } else {
+                fieldSets[indexOf] = fieldSet;
+            }
+        }
+    });
+
+    return {
+        customFields: customFields,
+        fieldSets: fieldSets
+    } as EntityExtension;
 }
 
 export type CustomFieldViewTemplateProps = {

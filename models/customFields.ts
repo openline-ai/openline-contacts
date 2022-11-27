@@ -38,3 +38,9 @@ export type EntityDefinition = {
     name: string;
     fields: (CustomFieldDefinition | FieldSetDefinition)[];
 }
+
+export type EntityExtension = {
+    customFields: CustomField[];
+    fieldSets: FieldSet[];
+    sortedFieldsAndFieldSets: (CustomField | FieldSet)[];
+}
