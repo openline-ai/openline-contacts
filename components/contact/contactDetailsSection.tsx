@@ -213,6 +213,7 @@ export default function ContactDetailsSection(props: any) {
                                 setValue('ownerId', contact.ownerId);
                                 setValue('ownerFullName', contact.ownerFullName);
                                 setValue('contactTypeId', contact.contactTypeId);
+                                setValue('contactTypeName', contact.contactTypeName);
                                 setValue('label', contact.label);
                                 setValue('notes', contact.notes);
                                 setValue('definitionId', contact.definitionId);
@@ -304,13 +305,22 @@ export default function ContactDetailsSection(props: any) {
                             </div>
                             <div className="field w-full">
                                 <label htmlFor="contactTypeId" className="block">Type</label>
-                                <Controller name="contactTypeId" control={control} render={({field}) => (
-                                    <Dropdown id={field.name} value={field.value} onChange={(e) => {
-                                        field.onChange(e.value);
-                                        contactTypeChanged(e.value);
-                                    }} options={contactTypeList}
-                                              optionValue="id" optionLabel="name" className="w-full"/>
-                                )}/>
+
+                                {
+                                    contact.id &&
+                                    <InputText id="contactTypeName" {...register("contactTypeName")} className="w-full" readOnly={true}/>
+                                }
+                                {
+                                    !contact.id &&
+                                    <Controller name="contactTypeId" control={control} render={({field}) => (
+                                        <Dropdown id={field.name} value={field.value} onChange={(e) => {
+                                            field.onChange(e.value);
+                                            contactTypeChanged(e.value);
+                                        }} options={contactTypeList}
+                                                  optionValue="id" optionLabel="name" className="w-full"/>
+                                    )}/>
+                                }
+
                             </div>
                             <div className="field w-full">
                                 <label htmlFor="label" className="block">Label</label>
