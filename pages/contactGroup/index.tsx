@@ -5,6 +5,7 @@ import GridComponent from "../../components/generic/GridComponent";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCirclePlus} from "@fortawesome/free-solid-svg-icons";
+import {ContactTitleEnum} from "../../model/enum-contactTitle";
 
 const ContactGroupList: NextPage = () => {
     const router = useRouter();
@@ -24,6 +25,12 @@ const ContactGroupList: NextPage = () => {
                                        }
                                    ]
                                }
+                               filters={[
+                                   {
+                                       fieldName: "NAME",
+                                       label: "Name"
+                                   }
+                               ]}
                                gridTitle="Contact groups"
                                gridActions={
                                    <div className="flex align-items-center">

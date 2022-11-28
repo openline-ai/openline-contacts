@@ -21,6 +21,9 @@ export function GetContactDetails(client: GraphQLClient, id: string): Promise<Co
                     id
                     name
                 }
+                definition{
+                    id
+                }
                 label
                 notes
             }
@@ -38,11 +41,14 @@ export function GetContactDetails(client: GraphQLClient, id: string): Promise<Co
     });
 }
 
-export function GetContactCustomFields(client: GraphQLClient, id: string): Promise<(CustomField | FieldSet)[]> {
+export function GetContactCustomFields(client: GraphQLClient, id: string): Promise<Contact> {
     return new Promise((resolve, reject) => {
 
         const query = gql`query GetContactCustomFields($id: ID!) {
             contact(id: $id) {
+                definition {
+                    id
+                }
                 customFields {
                     id
                     name
@@ -102,7 +108,10 @@ export function GetContactCustomFields(client: GraphQLClient, id: string): Promi
                     return a.definition.order - b.definition.order;
                 });
 
-                resolve(sortedData);
+                resolve({
+                    definition: response.contact.definition,
+                    sortedFieldsAndFieldSets: sortedData,
+                } as Contact);
             } else {
                 reject(response.errors);
             }
@@ -167,6 +176,7 @@ export function UpdateContact(client: GraphQLClient, data: any): Promise<Contact
                     ownerId: data.ownerId,
                     label: data.label,
                     notes: data.notes,
+                    definitionId: data.definitionId,
                 }
             }
         ).then((response: any) => {

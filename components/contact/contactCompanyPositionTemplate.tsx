@@ -127,7 +127,6 @@ function ContactCompanyPositionTemplate(props: any) {
                         id
                         name
                     }
-                    totalPages
                     totalElements
                 }
             }`

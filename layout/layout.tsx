@@ -33,13 +33,13 @@ export default function Layout({children}: any) {
         }
     ];
 
-    const { data } = useSession();
-
-    if (!data) {
-        return (
-                <AccessDenied />
-        )
-    }
+    // const { data } = useSession();
+    //
+    // if (!data) {
+    //     return (
+    //             <AccessDenied />
+    //     )
+    // }
 
     return (
         <div className="flex h-full w-full">

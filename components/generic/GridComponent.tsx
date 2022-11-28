@@ -161,7 +161,6 @@ const GridComponent = (props: any) => {
                 content {
                     ${fieldsForQuery}
                 }
-                totalPages
                 totalElements
             }
             }`
@@ -183,22 +182,11 @@ const GridComponent = (props: any) => {
     }, [lazyParams, props.triggerReload, sort]);
 
     const onPage = (event: any) => {
-        console.log(event);
         setLazyParams((prevLazyParams: any) => {
             return {
                 ...prevLazyParams, ...{
                     page: (event.first / event.rows) + 1,
                     first: event.first
-                }
-            };
-        });
-    }
-
-    const onFilter = (event: any) => {
-        setLazyParams((prevLazyParams: any) => {
-            return {
-                ...prevLazyParams, ...{
-                    filters: event.filters
                 }
             };
         });
@@ -268,26 +256,22 @@ const GridComponent = (props: any) => {
 
         <DataTable value={data} lazy responsiveLayout="scroll" dataKey="id" size={'normal'}
                    paginator paginatorTemplate={paginatorTemplate} paginatorLeft={paginatorLeft}
-                   first={lazyParams.first} rows={lazyParams.limit} totalRecords={totalRecords} onPage={onPage}
-                   onFilter={onFilter} loading={loading}>
+                   first={lazyParams.first} rows={lazyParams.limit} totalRecords={totalRecords} onPage={onPage} loading={loading}>
             {
                 props.columns
                     .filter((c: any) => c.hidden === undefined || c.hidden === false)
                     .map((columnDefinition: any) => {
                         let bodyTemplate = (rowData: any) => {
-                            if (columnDefinition.hidden !== undefined && columnDefinition.hidden === true) {
-                                return;
-                            } else if (columnDefinition.template) {
+                            if (columnDefinition.template) {
                                 return columnDefinition.template(rowData);
                             } else if (columnDefinition.editLink) {
                                 return <span className={`cta ${columnDefinition.className ?? ''}`}
                                              onClick={() => onEdit(rowData.id)}>{rowData[columnDefinition.field]}</span>
                             } else {
-                                return <div
-                                    className={columnDefinition.className ?? ''}>{rowData[columnDefinition.field]}</div>;
+                                return <div className={columnDefinition.className ?? ''}>{rowData[columnDefinition.field]}</div>;
                             }
                         };
-                        return <Column key={columnDefinition.field}
+                        return <Column key={columnDefinition.field + '_' + columnDefinition.label}
                                        field={columnDefinition.field}
                                        header={columnDefinition.label}
                                        className={columnDefinition.className ?? ''}
@@ -305,14 +289,12 @@ const GridComponent = (props: any) => {
 
             {
                 filters?.map((f: any) => {
-                    return (
-                        <>
-                            <div className="flex flex-row mb-3" key={f.field}>
+                    return <div className="flex flex-row mb-3" key={f.fieldName}>
 
                                 <span className="flex flex-grow-0 mr-3">
                                     {f.label}
                                 </span>
-                                <span className="flex flex-grow-1 mr-3 align-items-center">
+                        <span className="flex flex-grow-1 mr-3 align-items-center">
 
                                     {
                                         f.type === "TEXT" &&
@@ -337,26 +319,24 @@ const GridComponent = (props: any) => {
                                         </>
                                     }
 
-                                    {
-                                        f.type === "DROPDOWN" &&
-                                        <Dropdown options={f.options}
-                                                  optionValue="value" optionLabel="label"
-                                                  value={f.value} onChange={(e: any) => {
-                                            setFilters(filters.map((fv: any) => {
-                                                if (fv.fieldName === f.fieldName) {
-                                                    fv.value = e.target.value;
-                                                }
-                                                return fv;
-                                            }));
-                                        }}/>
-                                    }
+                            {
+                                f.type === "DROPDOWN" &&
+                                <Dropdown options={f.options}
+                                          optionValue="value" optionLabel="label"
+                                          value={f.value} onChange={(e: any) => {
+                                    setFilters(filters.map((fv: any) => {
+                                        if (fv.fieldName === f.fieldName) {
+                                            fv.value = e.target.value;
+                                        }
+                                        return fv;
+                                    }));
+                                }}/>
+                            }
 
 
                                 </span>
 
-                            </div>
-                        </>
-                    )
+                    </div>
                 })
             }
 
@@ -367,50 +347,48 @@ const GridComponent = (props: any) => {
             <div className="flex flex-column">
                 {
                     sort.map((c: any) => {
-                        return <>
-                            <div className="flex flex-row mb-3" key={c.field}>
-                                <div className="flex flex-grow-1 align-items-center mr-5">
-                                    <Checkbox
-                                        onChange={(e: any) => {
-                                            setSort(sort.map((s: any) => {
-                                                if (s.sortFieldName === c.sortFieldName) {
-                                                    s.active = e.checked;
-                                                }
-                                                return s;
-                                            }))
-                                        }}
-                                        checked={c.active}
-                                        className="mr-2"/>
-                                    <label>{c.label}</label>
-                                </div>
-                                <div key={c.sortFieldName} className="flex">
-                                    <Button
-                                        onClick={(e: any) => {
-                                            setSort(sort.map((s: any) => {
-                                                if (s.sortFieldName === c.sortFieldName) {
-                                                    s.dir = "ASC";
-                                                }
-                                                return s;
-                                            }))
-                                        }}
-                                        className={'sort-button mr-2' + (c.dir === "ASC" ? ' selected' : '')}>
-                                        <FontAwesomeIcon icon={faArrowUpShortWide} className="mr-2"/>ASC
-                                    </Button>
-                                    <Button
-                                        onClick={(e: any) => {
-                                            setSort(sort.map((s: any) => {
-                                                if (s.sortFieldName === c.sortFieldName) {
-                                                    s.dir = "DESC";
-                                                }
-                                                return s;
-                                            }))
-                                        }}
-                                        className={'sort-button mr-2' + (c.dir === "DESC" ? ' selected' : '')}>
-                                        <FontAwesomeIcon icon={faArrowDownWideShort}/>DESC
-                                    </Button>
-                                </div>
+                        return <div key={c.sortFieldName} className="flex flex-row mb-3">
+                            <div className="flex flex-grow-1 align-items-center mr-5">
+                                <Checkbox
+                                    onChange={(e: any) => {
+                                        setSort(sort.map((s: any) => {
+                                            if (s.sortFieldName === c.sortFieldName) {
+                                                s.active = e.checked;
+                                            }
+                                            return s;
+                                        }))
+                                    }}
+                                    checked={c.active}
+                                    className="mr-2"/>
+                                <label>{c.label}</label>
                             </div>
-                        </>
+                            <div key={c.sortFieldName} className="flex">
+                                <Button
+                                    onClick={(e: any) => {
+                                        setSort(sort.map((s: any) => {
+                                            if (s.sortFieldName === c.sortFieldName) {
+                                                s.dir = "ASC";
+                                            }
+                                            return s;
+                                        }))
+                                    }}
+                                    className={'sort-button mr-2' + (c.dir === "ASC" ? ' selected' : '')}>
+                                    <FontAwesomeIcon icon={faArrowUpShortWide} className="mr-2"/>ASC
+                                </Button>
+                                <Button
+                                    onClick={(e: any) => {
+                                        setSort(sort.map((s: any) => {
+                                            if (s.sortFieldName === c.sortFieldName) {
+                                                s.dir = "DESC";
+                                            }
+                                            return s;
+                                        }))
+                                    }}
+                                    className={'sort-button mr-2' + (c.dir === "DESC" ? ' selected' : '')}>
+                                    <FontAwesomeIcon icon={faArrowDownWideShort}/>DESC
+                                </Button>
+                            </div>
+                        </div>
                     })
                 }
 

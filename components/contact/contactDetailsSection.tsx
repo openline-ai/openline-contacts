@@ -17,10 +17,10 @@ import {GetContactTypes} from "../../services/contactTypeService";
 import {GetUsersPage} from "../../services/userService";
 import {Page, PaginationOf} from "../../models/pagination";
 import {User} from "../../models/user";
-import PropTypes, {string} from "prop-types";
+import PropTypes from "prop-types";
 import {GetEntityDefinitions} from "../../services/entityDefinitionService";
-import {CustomField, CustomFieldDefinition, EntityDefinition, FieldSet, FieldSetDefinition} from "../../models/customFields";
-import {CustomFieldTemplateProps, EntityDefinitionEditTemplate, EntityDefinitionTemplateProps, FieldSetTemplateProps} from "../generic/entityExtensionTemplates";
+import {CustomField, CustomFieldDefinition, EntityDefinition, FieldSetDefinition} from "../../models/customFields";
+import {CustomFieldTemplateProps, EntityDefinitionEditTemplate, EntityDefinitionTemplateProps, FieldSetTemplateProps, mapEntityExtensionDataFromFormData} from "../generic/entityExtensionTemplates";
 
 export default function ContactDetailsSection(props: any) {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -84,66 +84,16 @@ export default function ContactDetailsSection(props: any) {
             contactTypeId: contact.contactType?.id ?? undefined,
             contactTypeName: contact.contactType?.name ?? '',
             label: contact.label,
-            notes: contact.notes
+            notes: contact.notes,
+            definitionId: contact.definition?.id
         };
     }
 
     const onSubmit = handleSubmit(data => {
-        const customFields = [] as any;
-        const fieldSets = [] as any;
+        let entityExtension = mapEntityExtensionDataFromFormData(data, entityDefinitionTemplateData);
 
-        const customFieldPrefix = 'customField_';
-        const fieldSetPrefix = 'fieldSet_';
-
-        Object.keys(data).forEach((k: string) => {
-            if (k.startsWith(customFieldPrefix)) {
-                const customFieldTemplateProps = entityDefinitionTemplateData.fields.filter((f: any) => f.id === k)[0] as CustomFieldTemplateProps;
-                const customFieldToPush = {} as CustomField;
-
-                customFieldToPush.id = customFieldTemplateProps.data.id;
-                customFieldToPush.value = data[k];
-                customFieldToPush.name = customFieldTemplateProps.data.name;
-                customFieldToPush.datatype = customFieldTemplateProps.data.datatype;
-                customFieldToPush.definitionId = customFieldTemplateProps.data.definitionId;
-
-                customFields.push(customFieldToPush);
-            } else if (k.startsWith(fieldSetPrefix)) {
-                const fieldSetId = k.substring(0, k.indexOf(customFieldPrefix) - 1);
-                const customFieldId = k.substring(fieldSetId.length + 1, k.length);
-                const fieldSetTemplateProps = entityDefinitionTemplateData.fields.filter((f: any) => f.id === fieldSetId)[0] as FieldSetTemplateProps;
-                const customFieldTemplateProps = fieldSetTemplateProps.customFields.filter((f: any) => f.id === fieldSetId + '_' + customFieldId)[0] as CustomFieldTemplateProps;
-
-                let indexOf = fieldSets.indexOf((f: any) => f.id === fieldSetId);
-                let fieldSet = undefined;
-                if (indexOf === -1) {
-                    fieldSet = {} as FieldSet;
-                    fieldSet.name = fieldSetTemplateProps.name;
-                    fieldSet.definitionId = fieldSetTemplateProps.definitionId
-                    fieldSet.customFields = [];
-                } else {
-                    fieldSet = fieldSets[indexOf];
-                }
-
-                const customFieldToPush = {} as CustomField;
-
-                customFieldToPush.id = customFieldTemplateProps.data.id;
-                customFieldToPush.value = data[k];
-                customFieldToPush.name = customFieldTemplateProps.data.name;
-                customFieldToPush.datatype = customFieldTemplateProps.data.datatype;
-                customFieldToPush.definitionId = customFieldTemplateProps.data.definitionId;
-
-                fieldSet.customFields.push(customFieldToPush);
-
-                if (indexOf === -1) {
-                    fieldSets.push(fieldSet);
-                } else {
-                    fieldSets[indexOf] = fieldSet;
-                }
-            }
-        });
-
-        data.customFields = customFields;
-        data.fieldSets = fieldSets;
+        data.customFields = entityExtension.customFields;
+        data.fieldSets = entityExtension.fieldSets;
 
         if (!data.id) {
             CreateContact(client, data).then((savedContact: Contact) => {
@@ -174,7 +124,6 @@ export default function ContactDetailsSection(props: any) {
         });
     }
 
-    const [entityDefinition, setEntityDefinition] = useState({} as EntityDefinition);
     const [entityDefinitionTemplateData, setEntityDefinitionTemplateData] = useState({} as EntityDefinitionTemplateProps);
 
     const contactTypeChanged = (selectedContactTypeId: string) => {
@@ -183,7 +132,6 @@ export default function ContactDetailsSection(props: any) {
         }
 
         let selectedContactType = contactTypeList.filter((f: ContactType) => f.id === selectedContactTypeId)[0].name;
-        console.log(selectedContactType);
         let definitionName = '';
         switch (selectedContactType) {
             case 'Customer':
@@ -200,32 +148,32 @@ export default function ContactDetailsSection(props: any) {
                 let entityDefinitionsSelected = undefined;
                 if (entityDefinitionsFiltered.length === 1) {
                     entityDefinitionsSelected = entityDefinitionsFiltered[0];
-                    setEntityDefinition(entityDefinitionsSelected);
 
                     setValue('definitionId', entityDefinitionsSelected.id);
                 } else {
                     return;
                 }
 
-                const obj = {} as EntityDefinitionTemplateProps;
-                obj.name = entityDefinitionsSelected.name;
-                obj.register = register;
-                obj.fields = entityDefinitionsSelected.fields.map((f: (CustomFieldDefinition | FieldSetDefinition)) => {
-                    if ((f as CustomFieldDefinition).type) {
-                        return customFieldDefinitionToTemplateProps(f as CustomFieldDefinition);
-                    } else {
-                        const fieldSet = f as FieldSetDefinition;
-                        return {
-                            id: `fieldSet_${fieldSet.id}`,
-                            definitionId: fieldSet.id,
-                            name: fieldSet.name,
-                            customFields: fieldSet.customFields.map((f: CustomFieldDefinition) => customFieldDefinitionToTemplateProps(f as CustomFieldDefinition, fieldSet.id)),
-                            register: register
-                        } as FieldSetTemplateProps;
-                    }
-                });
+                if (props.contactId === 'new') {
+                    const obj = {} as EntityDefinitionTemplateProps;
+                    obj.register = register;
+                    obj.fields = entityDefinitionsSelected.fields.map((f: (CustomFieldDefinition | FieldSetDefinition)) => {
+                        if ((f as CustomFieldDefinition).type) {
+                            return customFieldDefinitionToTemplateProps(f as CustomFieldDefinition);
+                        } else {
+                            const fieldSet = f as FieldSetDefinition;
+                            return {
+                                id: `fieldSet_${fieldSet.id}`,
+                                definitionId: fieldSet.id,
+                                name: fieldSet.name,
+                                customFields: fieldSet.customFields.map((f: CustomFieldDefinition) => customFieldDefinitionToTemplateProps(f as CustomFieldDefinition, fieldSet.id)),
+                                register: register
+                            } as FieldSetTemplateProps;
+                        }
+                    });
 
-                setEntityDefinitionTemplateData(obj);
+                    setEntityDefinitionTemplateData(obj);
+                }
             });
         }
     }
@@ -267,6 +215,7 @@ export default function ContactDetailsSection(props: any) {
                                 setValue('contactTypeId', contact.contactTypeId);
                                 setValue('label', contact.label);
                                 setValue('notes', contact.notes);
+                                setValue('definitionId', contact.definitionId);
                                 setEditDetails(true);
                             }}>
                                 <FontAwesomeIcon size="xs" icon={faEdit} style={{color: 'black'}}/>
@@ -373,8 +322,8 @@ export default function ContactDetailsSection(props: any) {
                             </div>
 
                             {
-                                props.contactId === 'new' && entityDefinitionTemplateData.name &&
-                                <EntityDefinitionEditTemplate name={entityDefinitionTemplateData.name} fields={entityDefinitionTemplateData.fields} register={register}/>
+                                props.contactId === 'new' && entityDefinitionTemplateData.fields && entityDefinitionTemplateData.fields.length > 0 &&
+                                <EntityDefinitionEditTemplate fields={entityDefinitionTemplateData.fields} register={register}/>
                             }
 
                         </form>
