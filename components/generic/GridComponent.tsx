@@ -13,6 +13,7 @@ import {OverlayPanel} from "primereact/overlaypanel";
 import {Divider} from "primereact/divider";
 import {Checkbox} from "primereact/checkbox";
 import {InputText} from "primereact/inputtext";
+import {toast} from "react-toastify";
 
 
 const GridComponent = (props: any) => {
@@ -172,7 +173,9 @@ const GridComponent = (props: any) => {
             }).catch((e) => {
                 setTotalRecords(0);
                 setLoading(false);
-                //TODO show error
+
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         }
     }

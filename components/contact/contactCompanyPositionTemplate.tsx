@@ -8,6 +8,7 @@ import {faBriefcase, faEdit, faTrashCan, faUserNinja} from "@fortawesome/free-so
 import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
 import SearchOrAddComponent from "../generic/SearchOrAddComponent";
+import {toast} from "react-toastify";
 
 function ContactCompanyPositionTemplate(props: any) {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -63,6 +64,7 @@ function ContactCompanyPositionTemplate(props: any) {
                             companyName: response.contact_MergeCompanyPosition.company.name
                         }
                     });
+                    toast.success("Company position added successfully!");
                 } else {
                     props.notifySave({
                         ...response.contact_UpdateCompanyPosition, ...{
@@ -71,20 +73,14 @@ function ContactCompanyPositionTemplate(props: any) {
                             companyName: response.contact_UpdateCompanyPosition.company.name
                         }
                     });
+                    toast.success("Company position updated successfully!");
                 }
                 setEditDetails(false);
             }
-        ).catch((reason) => {
-            if (reason.response.status === 400) {
-                // reason.response.data.errors.forEach((error: any) => {
-                //     formik.setFieldError(error.field, error.message);
-                // })
-                //todo show errors on form
-            } else {
-                alert('error');
-            }
+        ).catch((reason: any) => {
+            //todo log an error in server side
+            toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
-
     })
 
     const [deleteCompanyPositionConfirmationModalVisible, setDeleteCompanyPositionConfirmationModalVisible] = useState(false);
@@ -101,14 +97,17 @@ function ContactCompanyPositionTemplate(props: any) {
             companyPositionId: props.companyPosition.id
         }).then((response: any) => {
             if (response.contact_DeleteCompanyPosition.result) {
-                //todo show notification
-
+                toast.success("Company position removed successfully!");
                 props.notifyDelete(props.companyPosition.uiKey);
 
                 setDeleteCompanyPositionConfirmationModalVisible(false);
             } else {
-                //TODO throw error
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
             }
+        }).catch((reason: any) => {
+            //todo log an error in server side
+            toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
     }
     const notifyCancelEdit = (uiKey: string) => {

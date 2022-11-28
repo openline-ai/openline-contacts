@@ -12,6 +12,7 @@ import ContactCompaniesPositions from "../../components/contact/contactCompanies
 import {DeleteContact} from "../../services/contactService";
 import ContactDetailsSection from "../../components/contact/contactDetailsSection";
 import ContactExtensionSection from "../../components/contact/contactExtensionSection";
+import {toast} from "react-toastify";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -24,12 +25,13 @@ function ContactDetails() {
         DeleteContact(client, id).then((result: boolean) => {
             if (result) {
                 router.push('/contact');
+                toast.success("Contact removed successfully!");
             } else {
-                // TODO throw error
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
             }
         }).catch((reason: any) => {
-            // TODO throw error
-            console.log(reason);
+            toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
     }
 
@@ -39,7 +41,6 @@ function ContactDetails() {
     const home = {icon: 'pi pi-home', url: '/'}
 
     return (
-        <Layout>
 
             <div className="flex p-5">
 
@@ -90,7 +91,6 @@ function ContactDetails() {
 
             </div>
 
-        </Layout>
     );
 }
 

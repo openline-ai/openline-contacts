@@ -202,8 +202,8 @@ export function DeleteContact(client: GraphQLClient, id: any): Promise<boolean> 
         }`
 
         client.request(query, {contactId: id}).then((response: any) => {
-            if (response.contact_SoftDelete.result) {
-                resolve(true);
+            if (response.contact_SoftDelete) {
+                resolve(response.contact_SoftDelete.result);
             } else {
                 reject(response.errors);
             }

@@ -39,6 +39,10 @@ const SearchOrAddComponent = (props: any) => {
                     setTotalElements(response.totalElements);
                     setLoadingData(false);
                     setLoadDataTriggered(false);
+                }).catch((reason: any) => {
+                    setSearchResultList([]);
+                    setTotalElements(0);
+                    setLoadingData(false);
                 });
             }, props.searchDelay);
         }

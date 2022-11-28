@@ -10,6 +10,7 @@ import {InputText} from "primereact/inputtext";
 import {Dropdown} from "primereact/dropdown";
 import {Checkbox} from "primereact/checkbox";
 import {PhoneNumberLabelEnum} from "../../model/enum-phoneNumberlLabel";
+import {toast} from "react-toastify";
 
 function ContactPhoneNumberTemplate(props: any) {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -53,27 +54,21 @@ function ContactPhoneNumberTemplate(props: any) {
         }).then((response) => {
                 if (!data.id) {
                     props.notifySave({...response.phoneNumberMergeToContact, ...{uiKey: data.uiKey}});
+                    toast.success("Phone number added successfully!");
                 } else {
                     props.notifySave({...response.phoneNumberUpdateInContact, ...{uiKey: data.uiKey}});
+                    toast.success("Phone number updated successfully!");
                 }
                 setEditDetails(false);
             }
-        ).catch((reason) => {
-            if (reason.response.status === 400) {
-                // reason.response.data.errors.forEach((error: any) => {
-                //     formik.setFieldError(error.field, error.message);
-                // })
-                //todo show errors on form
-            } else {
-                alert('error');
-            }
+        ).catch((reason: any) => {
+            //todo log an error in server side
+            toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
-
     })
 
     const [deletePhoneNumberConfirmationModalVisible, setDeletePhoneNumberConfirmationModalVisible] = useState(false);
     const deletePhoneNumber = () => {
-        //todo show loading
         const query = gql`mutation DeletePhoneNumberForContact($contactId: ID!, $e164: String!) {
             phoneNumberDeleteFromContact(contactId: $contactId, e164: $e164) {
                 result
@@ -85,15 +80,16 @@ function ContactPhoneNumberTemplate(props: any) {
             e164: props.phoneNumber.e164
         }).then((response: any) => {
             if (response.phoneNumberDeleteFromContact.result) {
-                //todo show notification
-
+                toast.success("Phone number removed successfully!");
                 props.notifyDelete(props.phoneNumber.uiKey);
-
                 setDeletePhoneNumberConfirmationModalVisible(false);
-
             } else {
-                //TODO throw error
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
             }
+        }).catch((reason: any) => {
+            //todo log an error in server side
+            toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
     }
     const notifyCancelEdit = (uiKey: string) => {

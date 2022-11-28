@@ -92,6 +92,10 @@ const SearchComponent = (props: any) => {
                     setSearchResultList(response.content);
                     setTotalElements(response.totalElements);
                     setLoadingData(false);
+                }).catch((reason: any) => {
+                    setSearchResultList([]);
+                    setTotalElements(0);
+                    setLoadingData(false);
                 });
             }, props.searchDelay);
         }

@@ -10,6 +10,7 @@ import {InputText} from "primereact/inputtext";
 import {Dropdown} from "primereact/dropdown";
 import {EmailLabelEnum} from "../../model/enum-emailLabel";
 import {Checkbox} from "primereact/checkbox";
+import {toast} from "react-toastify";
 
 function ContactEmailTemplate(props: any) {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -53,27 +54,22 @@ function ContactEmailTemplate(props: any) {
         }).then((response) => {
                 if (!data.id) {
                     props.notifySave({...response.emailMergeToContact, ...{uiKey: data.uiKey}});
+                    toast.success("Email added successfully!");
                 } else {
                     props.notifySave({...response.emailUpdateInContact, ...{uiKey: data.uiKey}});
+                    toast.success("Email updated successfully!");
                 }
                 setEditDetails(false);
             }
-        ).catch((reason) => {
-            if (reason.response.status === 400) {
-                // reason.response.data.errors.forEach((error: any) => {
-                //     formik.setFieldError(error.field, error.message);
-                // })
-                //todo show errors on form
-            } else {
-                alert('error');
-            }
+        ).catch((reason: any) => {
+            //todo log an error in server side
+            toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
-
-    })
+    });
 
     const [deleteEmailConfirmationModalVisible, setDeleteEmailConfirmationModalVisible] = useState(false);
     const deleteEmail = () => {
-        //todo show loading
+
         const query = gql`mutation DeleteEmail($contactId: ID!, $email: String!) {
             emailRemoveFromContact(contactId: $contactId, email: $email) {
                 result
@@ -85,15 +81,16 @@ function ContactEmailTemplate(props: any) {
             email: props.email.email
         }).then((response: any) => {
             if (response.emailRemoveFromContact.result) {
-                //todo show notification
-
+                toast.success("Email removed successfully!");
                 props.notifyDelete(props.email.uiKey);
-
                 setDeleteEmailConfirmationModalVisible(false);
-
             } else {
-                //TODO throw error
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
             }
+        }).catch((reason: any) => {
+            //todo log an error in server side
+            toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
     }
     const notifyCancelEdit = (uiKey: string) => {
