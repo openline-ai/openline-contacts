@@ -18,6 +18,7 @@ import {
 import {CustomField, FieldSet} from "../../models/customFields";
 import {GetContactCustomFields} from "../../services/contactService";
 import {Contact} from "../../models/contact";
+import {toast} from "react-toastify";
 
 function ContactExtensionSection(props: any) {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -122,6 +123,9 @@ function ContactExtensionSection(props: any) {
                 obj.register = register;
                 obj.fields = fieldsToEdit;
                 setEntityDefinitionTemplateData(obj);
+            }).catch((reason: any) => {
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         }
 
@@ -147,15 +151,16 @@ function ContactExtensionSection(props: any) {
             fieldSets: entityExtension.fieldSets
         }).then((response: any) => {
             if (response.customFieldsMergeAndUpdateInContact) {
+                toast.success("Custom fields updated successfully!");
                 setReloadCustomFields(true);
                 setEditDetails(false);
             } else {
-                console.log(response.errors);
-                //todo show error
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
             }
-        }).catch(reason => {
-            console.log(reason);
-            //todo show error
+        }).catch((reason: any) => {
+            //todo log an error in server side
+            toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
     });
 

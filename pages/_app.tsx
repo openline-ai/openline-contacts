@@ -9,16 +9,29 @@ import '../styles/layout.css'
 import '../styles/card-fieldset.css'
 import '../styles/button.css'
 import '../styles/search-component.css'
+import 'react-toastify/dist/ReactToastify.css';
+
 import {AppProps} from "next/app";
 import {Session} from "next-auth";
+import {ToastContainer} from "react-toastify";
+import Layout from "../layout/layout";
 
 export default function App({
                                 Component,
-                                pageProps: { session, ...pageProps },
+                                pageProps: {session, ...pageProps},
                             }: AppProps<{ session: Session }>) {
+    {/*<SessionProvider session={session}>*/
+    }
+    {/*</SessionProvider>*/
+    }
     return (
-        // <SessionProvider session={session}>
+        <Layout>
+            <ToastContainer position="bottom-right"
+                            autoClose={3000}
+                            closeOnClick={true}
+                            hideProgressBar={true}
+                            theme="colored"/>
             <Component {...pageProps} />
-        // </SessionProvider>
+        </Layout>
     )
 }

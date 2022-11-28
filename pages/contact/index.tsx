@@ -14,7 +14,6 @@ const ContactList: NextPage = () => {
     let onEdit = (id: any) => router.push(`/contact/${id}`);
     return (
         <>
-            <Layout>
                 <GridComponent gridTitle="Contacts"
                                hqlQuery="contacts"
                                columns={
@@ -87,7 +86,6 @@ const ContactList: NextPage = () => {
                                }
                                onEdit={onEdit}
                 />
-            </Layout>
         </>
     );
 }

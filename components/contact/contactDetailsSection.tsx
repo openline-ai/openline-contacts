@@ -11,7 +11,7 @@ import {getEnumLabel} from "../../model/enums";
 import {ContactTitleEnum} from "../../model/enum-contactTitle";
 import {InputTextarea} from "primereact/inputtextarea";
 import SearchComponent from "../../components/generic/SearchComponent";
-import {CreateContact, GetContactDetails, UpdateContact} from "../../services/contactService";
+import {CreateContact, DeleteContact, GetContactDetails, UpdateContact} from "../../services/contactService";
 import {Contact, ContactType} from "../../models/contact";
 import {GetContactTypes} from "../../services/contactTypeService";
 import {GetUsersPage} from "../../services/userService";
@@ -21,6 +21,7 @@ import PropTypes from "prop-types";
 import {GetEntityDefinitions} from "../../services/entityDefinitionService";
 import {CustomField, CustomFieldDefinition, EntityDefinition, FieldSetDefinition} from "../../models/customFields";
 import {CustomFieldTemplateProps, EntityDefinitionEditTemplate, EntityDefinitionTemplateProps, FieldSetTemplateProps, mapEntityExtensionDataFromFormData} from "../generic/entityExtensionTemplates";
+import {toast} from "react-toastify";
 
 export default function ContactDetailsSection(props: any) {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -41,9 +42,7 @@ export default function ContactDetailsSection(props: any) {
         notes: ''
     }) as any;
 
-    const {register, handleSubmit, setValue, control} = useForm({
-        defaultValues: contact
-    });
+    const {register, handleSubmit, setValue, control} = useForm();
 
     const [contactTypeList, setContactTypeList] = useState([] as any);
     const [editDetails, setEditDetails] = useState(false);
@@ -55,8 +54,8 @@ export default function ContactDetailsSection(props: any) {
             GetContactTypes(client).then((contactTypes: ContactType[]) => {
                 setContactTypeList(contactTypes);
             }).catch((reason: any) => {
-                // TODO throw error
-                console.log(reason);
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         }
 
@@ -66,8 +65,8 @@ export default function ContactDetailsSection(props: any) {
             GetContactDetails(client, props.contactId).then((contact: Contact) => {
                 setContact(getContactObjectFromResponse(contact));
             }).catch((reason: any) => {
-                // TODO throw error
-                console.log(reason);
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         }
 
@@ -98,16 +97,18 @@ export default function ContactDetailsSection(props: any) {
         if (!data.id) {
             CreateContact(client, data).then((savedContact: Contact) => {
                 router.push('/contact/' + savedContact.id);
+                toast.success("Contact added successfully!");
             }).catch((reason: any) => {
-                // TODO throw error
-                console.log(reason);
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         } else {
             UpdateContact(client, data).then((savedContact: Contact) => {
                 setReloadContactDetails(!reloadContactDetails);
+                toast.success("Contact updated successfully!");
             }).catch((reason: any) => {
-                // TODO throw error
-                console.log(reason);
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         }
     });
@@ -117,8 +118,8 @@ export default function ContactDetailsSection(props: any) {
             GetUsersPage(client, PaginationOf(), where).then((response: Page<User>) => {
                 resolve(response);
             }).catch((reason: any) => {
-                // TODO throw error
-                console.log(reason);
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
                 reject(reason);
             });
         });
@@ -174,6 +175,9 @@ export default function ContactDetailsSection(props: any) {
 
                     setEntityDefinitionTemplateData(obj);
                 }
+            }).catch((reason: any) => {
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         }
     }

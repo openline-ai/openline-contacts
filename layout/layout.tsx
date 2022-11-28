@@ -7,6 +7,7 @@ import {faArrowDownShortWide, faCaretDown, faIdCard, faUserSecret, faUsersRectan
 import {Menu} from "primereact/menu";
 import {useSession} from "next-auth/react";
 import AccessDenied from "../components/accessDenied";
+import {ToastContainer} from "react-toastify";
 
 export default function Layout({children}: any) {
     const router = useRouter();
