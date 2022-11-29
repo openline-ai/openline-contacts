@@ -45,8 +45,9 @@
 
 ## 🚀 Installation
 
-Download and install Openline Contacts using the following command
+Download and install Openline Contacts using the following commands
 
+### macOS
 ```terminal
 echo Installing openline CLI
 npm i openline -g
@@ -71,10 +72,13 @@ Environment variables used by this app
 
 Here's a list of the big technologies that we use:
 
-- **PostgreSQL** & **Neo4j** - Data storage
-- **Go** - Back end & API
-- **TypeScript** - Web components
-- **React** - Front end apps and UI components
+- **[React][react]**
+- **[PrimeReact][prime-react]**
+- **[PrimeFlex][prime-flex]**
+- **[React hook form][react-hook-form]**
+- **[FontAwesome][fontawesome]**
+- **[GraphQL Request][graphql-request]**
+- **[React toastify][react-toastify]**
 
 ### Folder structure
 
@@ -141,3 +145,11 @@ A massive thank you goes out to all these wonderful people ([emoji key][emoji]):
 [pricing]: https://openline.ai/pricing
 [slack]: https://join.slack.com/t/openline-ai/shared_invite/zt-1i6umaw6c-aaap4VwvGHeoJ1zz~ngCKQ
 [twitter]: https://twitter.com/OpenlineAI
+
+[react]: https://reactjs.org/
+[react-hook-form]: https://react-hook-form.com/
+[prime-react]: https://www.primefaces.org/primereact/
+[prime-flex]: https://www.primefaces.org/primeflex/
+[fontawesome]: https://fontawesome.com/
+[graphql-request]: https://github.com/prisma-labs/graphql-request
+[react-toastify]: https://github.com/fkhadra/react-toastify
