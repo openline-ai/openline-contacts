@@ -172,11 +172,9 @@ export function UpdateContact(client: GraphQLClient, data: any): Promise<Contact
                     title: data.title,
                     firstName: data.firstName,
                     lastName: data.lastName,
-                    contactTypeId: data.contactTypeId,
                     ownerId: data.ownerId,
                     label: data.label,
-                    notes: data.notes,
-                    definitionId: data.definitionId,
+                    notes: data.notes
                 }
             }
         ).then((response: any) => {

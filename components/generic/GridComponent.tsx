@@ -7,28 +7,39 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faArrowDownWideShort, faArrowUpShortWide, faColumns, faFilter, faSearch} from "@fortawesome/free-solid-svg-icons";
 import {Dropdown} from "primereact/dropdown";
 import PropTypes from "prop-types";
-import {gql, GraphQLClient} from 'graphql-request'
 import {Sidebar} from "primereact/sidebar";
 import {OverlayPanel} from "primereact/overlaypanel";
 import {Divider} from "primereact/divider";
 import {Checkbox} from "primereact/checkbox";
 import {InputText} from "primereact/inputtext";
 import {toast} from "react-toastify";
+import {Filter, PaginatedRequest, Sort} from "../../utils/pagination";
 
 
 const GridComponent = (props: any) => {
-    const client = new GraphQLClient(`${process.env.API_PATH}/query`);
-
     const [data, setData] = useState([] as any);
 
     const [filtersPanelVisible, setFiltersPanelVisible] = useState(false);
     const sortContainerRef = useRef<OverlayPanel>(null);
     const configurationContainerRef = useRef<OverlayPanel>(null);
 
-    const [sort, setSort] = useState(props.columns.filter((c: any) => c.sortFieldName).map((c: any) => {
+    const [columns, setColumns] = useState(props.columns.map((c: any) => {
         return {
+            field: c.field,
             label: c.label,
-            sortFieldName: c.sortFieldName,
+            template: c.template,
+            hidden: c.hidden ?? false,
+            display: c.visible ?? 'SHOW',
+            className: c.className,
+            editLink: c.editLink,
+            sortable: c.sortable
+        }
+    }));
+
+    const [sort, setSort] = useState(props.sorting.filter((c: any) => !c.hidden).map((c: any) => {
+        return {
+            field: c.field,
+            label: c.label,
             dir: 'ASC',
             active: false
         }
@@ -37,7 +48,7 @@ const GridComponent = (props: any) => {
         return {
             type: sb.type ?? "TEXT",
             label: sb.label,
-            fieldName: sb.fieldName,
+            field: sb.field,
             operation: "CONTAINS", //todo this needs to be changed when we are going to have types
             value: undefined,
             options: sb.options,
@@ -86,98 +97,48 @@ const GridComponent = (props: any) => {
     const [lazyParams, setLazyParams] = useState({
         first: 0,
         limit: 25,
-        page: 1,
-        sortField: '',
-        sortOrder: null,
-        sortOrderBE: ''
+        page: 1
     });
 
     const loadLazyData = () => {
         setLoading(true);
 
-        const wh = [] as any;
+        const filtersData: Filter[] = [];
 
         filters.filter((f: any) => f.value).forEach((f: any) => {
-            wh.push({
-                "property": f.fieldName,
-                "value": f.value,
-                "operation": f.operation
-            });
+            filtersData.push({
+                property: f.field,
+                value: f.value,
+                operation: f.operation
+            } as Filter);
         });
-        var where = undefined as any;
-        switch (wh.length) {
-            case 0: {
-                where = undefined;
-                break;
-            }
-            case 1: {
-                where = {
-                    "filter": wh[0]
-                };
-                break;
-            }
-            default: {
-                where = {
-                    "AND": []
-                };
-                wh.forEach((f: any) => {
-                    where["AND"].push({
-                        "filter": f
-                    })
-                })
-            }
-        }
 
         const params = {
-            where: where,
+            where: filtersData,
             pagination: {
                 page: lazyParams.page,
                 limit: lazyParams.limit
             },
             sort: sort.filter((s: any) => s.active).map((s: any) => {
                 return {
-                    by: s.sortFieldName,
+                    by: s.field,
                     direction: s.dir,
                     caseSensitive: false
-                }
+                } as Sort;
             })
-        } as any;
+        } as PaginatedRequest;
 
-        if (props.queryData) {
-            props.queryData(params).then((response: any) => {
-                setData(response.content);
-                setTotalRecords(response.totalElements);
-                setLoading(false);
-            }).catch((e: any) => {
-                setTotalRecords(0);
-                setLoading(false);
-                //TODO show error
-            });
-        } else {
-            var fieldsForQuery = props.columns.filter((p: any) => p.field).map((p: any) => p.field).join("\n");
-            fieldsForQuery += "\nid\n";
+        props.queryData(params).then((response: any) => {
+            setData(response.content);
+            setTotalRecords(response.totalElements);
+            setLoading(false);
+        }).catch((e: any) => {
+            setTotalRecords(0);
+            setLoading(false);
 
-            const query = gql`query GetList($pagination: Pagination, $where: Filter, $sort: [SortBy!]){
-                ${props.hqlQuery}(pagination: $pagination, where: $where, sort: $sort){
-                content {
-                    ${fieldsForQuery}
-                }
-                totalElements
-            }
-            }`
-
-            client.request(query, params).then((response: any) => {
-                setData(response[props.hqlQuery].content);
-                setTotalRecords(response[props.hqlQuery].totalElements);
-                setLoading(false);
-            }).catch((e) => {
-                setTotalRecords(0);
-                setLoading(false);
-
-                //todo log an error in server side
-                toast.error("There was a problem on our side and we are doing our best to solve it!");
-            });
-        }
+            //todo log an error in server side
+            toast.error("There was a problem on our side and we are doing our best to solve it!");
+        });
     }
 
     useEffect(() => {
@@ -211,12 +172,12 @@ const GridComponent = (props: any) => {
         }
 
         {
-            (props.filtersEnabled || props.sortingEnabled) &&
+            (filters.length > 0 || sort.length > 0) &&
             <div className="p-datatable filters flex">
 
                 <div className="flex flex-grow-1">
                     {
-                        props.filtersEnabled &&
+                        filters.length > 0 &&
                         <div className="flex align-items-center ml-1">
                             <FontAwesomeIcon icon={faFilter}/>
                             <Button onClick={() => setFiltersPanelVisible(true)} className='p-button-link'
@@ -227,12 +188,12 @@ const GridComponent = (props: any) => {
                 <div className="flex flex-grow-1 justify-content-end">
 
                     {
-                        (props.sortingEnabled || props.configurationEnabled) &&
+                        (sort.length > 0 || props.columnSelectorEnabled) &&
                         <Divider layout="vertical" className="p-0"/>
                     }
 
                     {
-                        props.sortingEnabled &&
+                        sort.length > 0 &&
                         <Button onClick={(e: any) => sortContainerRef?.current?.toggle(e)} className='p-button-text'>
                             <FontAwesomeIcon icon={faArrowUpShortWide} className="mr-2"/>
                             <span>Sorting</span>
@@ -240,12 +201,12 @@ const GridComponent = (props: any) => {
                     }
 
                     {
-                        props.sortingEnabled && props.configurationEnabled &&
+                        sort.length > 0 && props.columnSelectorEnabled &&
                         <Divider layout="vertical" className="p-0"/>
                     }
 
                     {
-                        props.configurationEnabled &&
+                        props.columnSelectorEnabled &&
                         <Button onClick={(e: any) => configurationContainerRef?.current?.toggle(e)} className='p-button-text mr-1'>
                             <FontAwesomeIcon icon={faColumns} className="mr-2"/>
                             <span>Columns</span>
@@ -261,8 +222,9 @@ const GridComponent = (props: any) => {
                    paginator paginatorTemplate={paginatorTemplate} paginatorLeft={paginatorLeft}
                    first={lazyParams.first} rows={lazyParams.limit} totalRecords={totalRecords} onPage={onPage} loading={loading}>
             {
-                props.columns
-                    .filter((c: any) => c.hidden === undefined || c.hidden === false)
+                columns
+                    .filter((c: any) => c.hidden === false)
+                    .filter((c: any) => c.display === 'SHOW')
                     .map((columnDefinition: any) => {
                         let bodyTemplate = (rowData: any) => {
                             if (columnDefinition.template) {
@@ -274,7 +236,7 @@ const GridComponent = (props: any) => {
                                 return <div className={columnDefinition.className ?? ''}>{rowData[columnDefinition.field]}</div>;
                             }
                         };
-                        return <Column key={columnDefinition.field + '_' + columnDefinition.label}
+                        return <Column key={columnDefinition.field}
                                        field={columnDefinition.field}
                                        header={columnDefinition.label}
                                        className={columnDefinition.className ?? ''}
@@ -292,7 +254,7 @@ const GridComponent = (props: any) => {
 
             {
                 filters?.map((f: any) => {
-                    return <div className="flex flex-row mb-3" key={f.fieldName}>
+                    return <div className="flex flex-row mb-3" key={f.field}>
 
                                 <span className="flex flex-grow-0 mr-3">
                                     {f.label}
@@ -304,7 +266,7 @@ const GridComponent = (props: any) => {
                                         <>
                                             <InputText className="w-full mr-3" onChange={(e: any) => {
                                                 setFilters(filters.map((fv: any) => {
-                                                    if (fv.fieldName === f.fieldName) {
+                                                    if (fv.field === f.field) {
                                                         fv.value = e.target.value;
                                                     }
                                                     return fv;
@@ -313,7 +275,7 @@ const GridComponent = (props: any) => {
 
                                             <Dropdown options={f.operations} value={f.operation} onChange={(e: any) => {
                                                 setFilters(filters.map((fv: any) => {
-                                                    if (fv.fieldName === f.fieldName) {
+                                                    if (fv.field === f.field) {
                                                         fv.operation = e.target.value;
                                                     }
                                                     return fv;
@@ -328,7 +290,7 @@ const GridComponent = (props: any) => {
                                           optionValue="value" optionLabel="label"
                                           value={f.value} onChange={(e: any) => {
                                     setFilters(filters.map((fv: any) => {
-                                        if (fv.fieldName === f.fieldName) {
+                                        if (fv.field === f.field) {
                                             fv.value = e.target.value;
                                         }
                                         return fv;
@@ -350,12 +312,12 @@ const GridComponent = (props: any) => {
             <div className="flex flex-column">
                 {
                     sort.map((c: any) => {
-                        return <div key={c.sortFieldName} className="flex flex-row mb-3">
+                        return <div key={c.field} className="flex flex-row mb-3">
                             <div className="flex flex-grow-1 align-items-center mr-5">
                                 <Checkbox
                                     onChange={(e: any) => {
                                         setSort(sort.map((s: any) => {
-                                            if (s.sortFieldName === c.sortFieldName) {
+                                            if (s.field === c.field) {
                                                 s.active = e.checked;
                                             }
                                             return s;
@@ -365,11 +327,11 @@ const GridComponent = (props: any) => {
                                     className="mr-2"/>
                                 <label>{c.label}</label>
                             </div>
-                            <div key={c.sortFieldName} className="flex">
+                            <div className="flex">
                                 <Button
                                     onClick={(e: any) => {
                                         setSort(sort.map((s: any) => {
-                                            if (s.sortFieldName === c.sortFieldName) {
+                                            if (s.field === c.field) {
                                                 s.dir = "ASC";
                                             }
                                             return s;
@@ -381,7 +343,7 @@ const GridComponent = (props: any) => {
                                 <Button
                                     onClick={(e: any) => {
                                         setSort(sort.map((s: any) => {
-                                            if (s.sortFieldName === c.sortFieldName) {
+                                            if (s.field === c.field) {
                                                 s.dir = "DESC";
                                             }
                                             return s;
@@ -398,25 +360,51 @@ const GridComponent = (props: any) => {
             </div>
         </OverlayPanel>
 
-        <OverlayPanel ref={configurationContainerRef} dismissable>
-            Grid configuration
-            TODO
+        <OverlayPanel ref={configurationContainerRef} style={{width: '160px'}} dismissable>
+            <div className="mb-3">Select the columns you want to see</div>
+
+            {
+                columns
+                    .filter((c: any) => c.display !== 'EXCLUDE')
+                    .map((columnDefinition: any) => {
+                        return <div key={columnDefinition.field} className={`flex flex-grow-1 align-items-center mr-5 mb-2`}>
+                            <Checkbox
+                                onChange={(e: any) => {
+                                    setColumns(columns.map((cc: any) => {
+                                        if (cc.field === columnDefinition.field) {
+                                            cc.display = e.checked ? 'SHOW' : 'HIDE';
+                                        }
+                                        return cc;
+                                    }))
+                                }}
+                                checked={columnDefinition.display === 'SHOW'}
+                                className="mr-2"/>
+                            <label>{columnDefinition.label}</label>
+                        </div>
+                    })
+            }
         </OverlayPanel>
     </>;
 }
 
 GridComponent.propTypes = {
     showHeader: PropTypes.bool,
+    columnSelectorEnabled: PropTypes.bool,
     gridTitle: PropTypes.string,
     gridActions: PropTypes.object,
 
-    filtersEnabled: PropTypes.bool,
-    sortingEnabled: PropTypes.bool,
-    configurationEnabled: PropTypes.bool,
-
+    columns: PropTypes.arrayOf(PropTypes.shape({
+        field: PropTypes.string.isRequired,
+        label: PropTypes.string.isRequired,
+        template: PropTypes.func,
+        hidden: PropTypes.bool, //column is visible in grid
+        display: PropTypes.oneOf(['EXCLUDE', 'SHOW', 'HIDE']), //configuration in column grid
+        className: PropTypes.string,
+        editLink: PropTypes.bool
+    })),
     filters: PropTypes.arrayOf(PropTypes.shape({
         label: PropTypes.string.isRequired,
-        fieldName: PropTypes.string.isRequired,
+        field: PropTypes.string.isRequired,
 
         type: PropTypes.oneOf(["TEXT", "DROPDOWN"]),
 
@@ -428,32 +416,25 @@ GridComponent.propTypes = {
 
         operations: PropTypes.arrayOf(PropTypes.oneOf(["CONTAINS", "EQUALS"]))
     })),
-    columns: PropTypes.arrayOf(PropTypes.shape({
-        field: PropTypes.string,
-        hidden: PropTypes.bool,
-        label: PropTypes.string,
-        className: PropTypes.string,
-        template: PropTypes.func,
-        editLink: PropTypes.bool,
-        filterPlaceholder: PropTypes.string,
-        sortFieldName: PropTypes.string
+    sorting: PropTypes.arrayOf(PropTypes.shape({
+        label: PropTypes.string.isRequired,
+        field: PropTypes.string.isRequired
     })),
 
     triggerReload: PropTypes.bool,
 
-    queryData: PropTypes.func, //you can load data in your component
-    hqlQuery: PropTypes.string, //or the grid can load it for you
+    queryData: PropTypes.func,
 
     onEdit: PropTypes.func
 }
 
 GridComponent.defaultProps = {
+    columns: [],
     filters: [],
+    sorting: [],
     showHeader: true,
     gridTitle: 'Title',
-    filtersEnabled: true,
-    sortingEnabled: true,
-    configurationEnabled: true
+    columnSelectorEnabled: true
 }
 
 export default GridComponent

@@ -276,13 +276,12 @@ function ContactGroupEdit() {
                 <div className="flex-grow-1">
                     <GridComponent
                         gridTitle="Contacts in group"
-                        sortingEnabled={false}
-                        filtersEnabled={false}
-                        configurationEnabled={false}
+                        columnSelectorEnabled={false}
                         columns={
                             [
                                 {
                                     className: 'w50',
+                                    field: 'contact',
                                     label: 'Contact',
                                     template: (c: any) => {
                                         return <div key={c.id}>
