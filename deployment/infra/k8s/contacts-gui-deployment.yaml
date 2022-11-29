@@ -13,7 +13,7 @@ spec:
         app: contacts-gui
     spec:
       containers:
-        - image: ghcr.io/openline-ai/openline-contacts/contacts-gui:latest
+        - image: ghcr.io/openline-ai/openline-contacts:latest
           name: contacts-gui
           imagePullPolicy: Never
           ports:
