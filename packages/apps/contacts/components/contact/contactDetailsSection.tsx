@@ -10,7 +10,7 @@ import {Controller, useForm} from "react-hook-form";
 import {getEnumLabel} from "../../model/enums";
 import {ContactTitleEnum} from "../../model/enum-contactTitle";
 import {InputTextarea} from "primereact/inputtextarea";
-import SearchComponent from "../../components/generic/SearchComponent";
+import SearchComponent from "../generic/SearchComponent";
 import {CreateContact, DeleteContact, GetContactDetails, UpdateContact} from "../../services/contactService";
 import {Contact, ContactType} from "../../models/contact";
 import {GetContactTypes} from "../../services/contactTypeService";
