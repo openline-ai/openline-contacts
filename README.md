@@ -48,7 +48,10 @@
 Download and install Openline Contacts using the following command
 
 ```terminal
-[coming soon]
+echo Installing openline CLI
+npm i openline -g
+echo Starting contacts CRM with openline CLI
+openline dev start contacts
 ```
 
 ## 🤝 Resources
@@ -60,9 +63,9 @@ Download and install Openline Contacts using the following command
 
 Environment variables used by this app
 
-| Variable  | Meaning          | Default               |
-|-----------|------------------|-----------------------|
-| API_PATH  | Contacts API URL | http://localost:10000 |
+| Variable  | Meaning            | Default                |
+|-----------|--------------------|------------------------|
+| API_PATH  | customerOS API URL | http://localhost:10000 |
 
 ### Technologies
 
