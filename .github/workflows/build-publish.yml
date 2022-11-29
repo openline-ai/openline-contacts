@@ -1,10 +1,11 @@
 on:
-  push: { branches: [otter] }
+  push:
+    branches: [otter]
+    paths:
+      - 'packages/apps/contacts/**'
+      - '.github/workflows/build-publish.yml'
   release:
     types: [ created, edited ]
-  paths:
-    - 'packages/apps/contacts/**'
-    - '.github/workflows/build-publish.yml'
 
 env:
   REGISTRY: ghcr.io
