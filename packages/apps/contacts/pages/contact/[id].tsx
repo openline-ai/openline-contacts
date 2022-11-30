@@ -13,6 +13,8 @@ import ContactDetailsSection from "../../components/contact/contactDetailsSectio
 import ContactExtensionSection from "../../components/contact/contactExtensionSection";
 import {toast} from "react-toastify";
 import ContactHistory from "../../components/contact/contactHistory";
+import {getSession} from "next-auth/react";
+import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -104,6 +106,10 @@ function ContactDetails() {
         </div>
 
     );
+}
+
+export async function getServerSideProps(context: any) {
+    return loggedInOrRedirectToLogin(await getSession(context));
 }
 
 export default ContactDetails

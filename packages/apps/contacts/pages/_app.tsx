@@ -15,23 +15,25 @@ import {AppProps} from "next/app";
 import {Session} from "next-auth";
 import {ToastContainer} from "react-toastify";
 import Layout from "../layout/layout";
+import {SessionProvider, useSession} from "next-auth/react";
+import AccessDenied from "../components/accessDenied";
 
 export default function App({
                                 Component,
                                 pageProps: {session, ...pageProps},
                             }: AppProps<{ session: Session }>) {
-    {/*<SessionProvider session={session}>*/
-    }
-    {/*</SessionProvider>*/
-    }
+
+
     return (
-        <Layout>
-            <ToastContainer position="bottom-right"
-                            autoClose={3000}
-                            closeOnClick={true}
-                            hideProgressBar={true}
-                            theme="colored"/>
-            <Component {...pageProps} />
-        </Layout>
+        <SessionProvider session={session}>
+            <Layout>
+                <ToastContainer position="bottom-right"
+                                autoClose={3000}
+                                closeOnClick={true}
+                                hideProgressBar={true}
+                                theme="colored"/>
+                <Component {...pageProps} />
+            </Layout>
+        </SessionProvider>
     )
 }

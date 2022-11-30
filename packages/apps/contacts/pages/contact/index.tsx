@@ -9,6 +9,8 @@ import {ContactTitleEnum} from "../../model/enum-contactTitle";
 import {gql, GraphQLClient} from "graphql-request";
 import {MapGridFilters} from "../../utils/converters";
 import {PaginatedRequest} from "../../utils/pagination";
+import {getSession} from "next-auth/react";
+import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 
 const ContactList: NextPage = () => {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -121,6 +123,10 @@ const ContactList: NextPage = () => {
             />
         </>
     );
+}
+
+export async function getServerSideProps(context: any) {
+    return loggedInOrRedirectToLogin(await getSession(context));
 }
 
 export default ContactList

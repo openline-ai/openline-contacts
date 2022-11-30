@@ -6,10 +6,10 @@ export const authOptions: NextAuthOptions = {
         FusionAuth({
             id: "fusionauth",
             name: "Openline",
-            clientId: process.env.CLIENT_ID as string,
-            clientSecret: process.env.CLIENT_SECRET as string,
-            tenantId: process.env.TENANT_ID,
-            issuer: "https://auth.openline.ninja",
+            clientId: process.env.NEXTAUTH_OAUTH_CLIENT_ID as string,
+            clientSecret: process.env.NEXTAUTH_OAUTH_CLIENT_SECRET as string,
+            tenantId: process.env.NEXTAUTH_OAUTH_TENANT_ID,
+            issuer: process.env.NEXTAUTH_OAUTH_SERVER_URL,
             client: {
                 authorization_signed_response_alg: 'HS256',
                 id_token_signed_response_alg: 'HS256'
@@ -17,7 +17,7 @@ export const authOptions: NextAuthOptions = {
         }),
     ],
     theme: {
-        colorScheme: "dark",
+        colorScheme: "light",
     },
     callbacks: {
         async jwt({ token }: any) {
