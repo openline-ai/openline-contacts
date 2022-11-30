@@ -270,7 +270,7 @@ export default function ContactDetailsSection(props: any) {
                     <div className="content">
                         <form>
                             <div className="field w-full">
-                                <label htmlFor="lastName" className="block">Title *</label>
+                                <label htmlFor="lastName" className="block">Title</label>
                                 <Controller name="title" control={control} render={({field}) => (
                                     <Dropdown id={field.name} value={field.value} onChange={(e) => field.onChange(e.value)} options={ContactTitleEnum}
                                               optionValue="value" optionLabel="label" className="w-full"/>

@@ -1,5 +1,4 @@
 import {useRouter} from "next/router";
-import Layout from "../../layout/layout";
 import {GraphQLClient} from "graphql-request";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -7,12 +6,13 @@ import {faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {useState} from "react";
 import {BreadCrumb} from "primereact/breadcrumb";
 import {Dialog} from "primereact/dialog";
-import ContactCommunicationSection from "../../components/contact/contactCommunications";
+import ContactCommunicationSection from "../../components/contact/contactChannels";
 import ContactCompaniesPositions from "../../components/contact/contactCompaniesPositions";
 import {DeleteContact} from "../../services/contactService";
 import ContactDetailsSection from "../../components/contact/contactDetailsSection";
 import ContactExtensionSection from "../../components/contact/contactExtensionSection";
 import {toast} from "react-toastify";
+import ContactHistory from "../../components/contact/contactHistory";
 
 function ContactDetails() {
     const client = new GraphQLClient(`${process.env.API_PATH}/query`);
@@ -42,11 +42,14 @@ function ContactDetails() {
 
     return (
 
-            <div className="flex p-5">
+        <div className="flex p-5 w-full h-full">
+
+            <div className="flex flex-grow-0 flex-column">
+
+                <BreadCrumb model={items} home={home} className="pl-1"/>
 
                 <div className="flex-grow-0 mr-5">
 
-                    <BreadCrumb model={items} home={home} className="pl-1"/>
 
                     <ContactDetailsSection contactId={id as string}/>
 
@@ -90,6 +93,15 @@ function ContactDetails() {
                 </div>
 
             </div>
+
+            {
+                id && id !== 'new' &&
+                <div className="flex flex-grow-1">
+                    <ContactHistory contactId={id}/>
+                </div>
+            }
+
+        </div>
 
     );
 }
