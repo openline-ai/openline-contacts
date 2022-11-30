@@ -16,6 +16,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "graphql": "16.6.0",
     "graphql-request": "5.0.0",
+    "moment": "^2.29.4",
     "next": "^13.0.2",
     "next-auth": "^4.17.0",
     "preact": "10.11.2",
@@ -27,6 +28,7 @@
     "react-dom": "18.2.0",
     "react-fontawesome": "1.7.1",
     "react-hook-form": "^7.39.1",
+    "react-moment": "^1.1.2",
     "react-toastify": "^9.1.1"
   },
   "devDependencies": {
