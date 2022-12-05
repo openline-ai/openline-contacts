@@ -9,6 +9,17 @@
     color: white!important;
 }
 
+.dark-button {
+    color: #313044;
+    background: none;
+    border: none;
+}
+
+.dark-button:hover{
+    background: #313044!important;
+    color: white!important;
+}
+
 .openline-menu{
     width: 100%;
     background: none;

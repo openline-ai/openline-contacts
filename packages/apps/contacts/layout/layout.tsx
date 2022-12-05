@@ -1,38 +1,37 @@
 import {useRouter} from "next/router";
 import {Button} from "primereact/button";
 import {OverlayPanel} from "primereact/overlaypanel";
-import {useEffect, useRef, useState} from "react";
+import {useRef} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowDownShortWide, faCaretDown, faIdCard, faUserSecret, faUsersRectangle} from "@fortawesome/free-solid-svg-icons";
+import {faArrowRightFromBracket, faCaretDown, faIdCard, faUserSecret, faUsersRectangle} from "@fortawesome/free-solid-svg-icons";
 import {Menu} from "primereact/menu";
-import {useSession} from "next-auth/react";
+import {signOut, useSession} from "next-auth/react";
 
 export default function Layout({children}: any) {
     const router = useRouter();
     const {data: session, status} = useSession();
 
-    const [redirectToLogin, setRedirectToLogin] = useState(false);
+    console.log(session);
+
     const userSettingsContainerRef = useRef<OverlayPanel>(null);
     const notificationsContainerRef = useRef<OverlayPanel>(null);
-    //
-    // useEffect(() => {
-    //     if (redirectToLogin) {
-    //         console.log('aa')
-    //         router.push('/api/auth/signin');
-    //     }
-    // }, [redirectToLogin]);
-    //
-    // useEffect(() => {
-    //     if (!session) {
-    //         setRedirectToLogin(true);
-    //     }
-    // }, [session]);
-    //
-    // if (!session) {
-    //     return (
-    //         <div>loading screen</div>
-    //     )
-    // }
+
+    let userItems = [
+        {
+            label: 'My profile',
+            icon: <FontAwesomeIcon icon={faUserSecret} className="mr-2"/>,
+            command: () => {
+                router.push('/');
+            }
+        },
+        {
+            label: 'Logout',
+            icon: <FontAwesomeIcon icon={faArrowRightFromBracket} className="mr-2"/>,
+            command: () => {
+                signOut();
+            }
+        }
+    ];
 
     let items = [
         {
@@ -53,7 +52,6 @@ export default function Layout({children}: any) {
         }
     ];
 
-
     return (
         <div className="flex h-full w-full">
 
@@ -65,12 +63,12 @@ export default function Layout({children}: any) {
 
                         <Button className="light-button" onClick={(e: any) => userSettingsContainerRef?.current?.toggle(e)}>
                             <FontAwesomeIcon icon={faUserSecret} className="mr-2"/>
-                            <span>Millie Brown</span>
+                            <span>{session?.user?.email}</span>
                             <FontAwesomeIcon icon={faCaretDown} className="ml-2"/>
                         </Button>
 
                         <OverlayPanel ref={userSettingsContainerRef} dismissable>
-                            user settings TODO
+                            <Menu model={userItems} style={{border: 'none'}}/>
                         </OverlayPanel>
 
                     </div>
