@@ -13,7 +13,7 @@ import {PhoneNumberLabelEnum} from "../../model/enum-phoneNumberlLabel";
 import {toast} from "react-toastify";
 
 function ContactPhoneNumberTemplate(props: any) {
-    const client = new GraphQLClient(`${process.env.API_PATH}/query`);
+    const client = new GraphQLClient(`/customer-os-api/query`);
 
     const {register, setValue, handleSubmit, control} = useForm({
         defaultValues: props.phoneNumber

@@ -21,7 +21,7 @@ import {Contact} from "../../models/contact";
 import {toast} from "react-toastify";
 
 function ContactExtensionSection(props: any) {
-    const client = new GraphQLClient(`${process.env.API_PATH}/query`);
+    const client = new GraphQLClient(`/customer-os-api/query`);
 
     const [reloadCustomFields, setReloadCustomFields] = useState(false);
     const [definitionId, setDefinitionId] = useState('');

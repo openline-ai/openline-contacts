@@ -11,7 +11,7 @@ import {uuidv4} from "../../utils/uuid-generator";
 import ContactPhoneNumberTemplate from "./contactPhoneNumberTemplate";
 
 function ContactCommunication(props: any) {
-    const client = new GraphQLClient(`${process.env.API_PATH}/query`);
+    const client = new GraphQLClient(`/customer-os-api/query`);
 
     const addCommunicationChannelContainerRef = useRef<OverlayPanel>(null);
 

@@ -8,7 +8,7 @@ import Moment from "react-moment";
 import Link from "next/link";
 
 function ContactHistory(props: any) {
-    const client = new GraphQLClient(`${process.env.API_PATH}/query`);
+    const client = new GraphQLClient(`/customer-os-api/query`);
 
     const [historyItems, setHistoryItems] = useState([] as any);
 

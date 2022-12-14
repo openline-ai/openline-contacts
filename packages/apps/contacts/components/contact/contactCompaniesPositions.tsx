@@ -8,7 +8,7 @@ import {uuidv4} from "../../utils/uuid-generator";
 import ContactCompanyPositionTemplate from "./contactCompanyPositionTemplate";
 
 function ContactCompaniesPositions(props: any) {
-    const client = new GraphQLClient(`${process.env.API_PATH}/query`);
+    const client = new GraphQLClient(`/customer-os-api/query`);
 
     const [companyPositions, setCompanyPositions] = useState([] as any);
 

@@ -11,10 +11,14 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 
 COPY . .
+COPY .env.cluster .env.production
 
-RUN yarn build
+ARG ENV
+
+RUN npm run-script "build:$ENV"
 
 FROM node:16.16-alpine AS runner
+
 WORKDIR /app
 
 RUN addgroup --system --gid 1001 openlinegroup
@@ -30,8 +34,8 @@ COPY --from=builder --chown=openlineuser:openlinegroup /app/.next/static ./.next
 
 USER openlineuser
 
-EXPOSE 3000
+EXPOSE 3001
 
-ENV PORT 3000
+ENV PORT 3001
 
 CMD ["node", "server.js"]
