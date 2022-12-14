@@ -31,6 +31,12 @@ const ContactList: NextPage = () => {
                         contactType{
                             name
                         }
+                        emails {
+                            email
+                        }
+                        phoneNumbers {
+                            e164
+                        }
                     }
                     totalElements
                 }
@@ -70,7 +76,18 @@ const ContactList: NextPage = () => {
                                                c.title &&
                                                <span className="mr-1"></span>
                                            }
-                                           <span>{c.firstName}<span className="mr-1"></span>{c.lastName}</span>
+                                           {
+                                               c.firstName &&
+                                               <span className="mr-1">{c.firstName} {c.lastName}</span>
+                                           }
+                                           {
+                                               !c.firstName && c.emails && c.emails[0] &&
+                                               <span>{c.emails[0].email}</span>
+                                           }
+                                           {
+                                               (!c.firstName && (!c.emails  || !c.emails[0])) && c.phoneNumbers && c.phoneNumbers[0] &&
+                                               <span>{c.phoneNumbers[0].e164}</span>
+                                           }
                                        </div>
                                    }
                                },
