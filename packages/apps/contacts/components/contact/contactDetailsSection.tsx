@@ -277,11 +277,11 @@ export default function ContactDetailsSection(props: any) {
                                 )}/>
                             </div>
                             <div className="field w-full">
-                                <label htmlFor="firstName" className="block">First name *</label>
+                                <label htmlFor="firstName" className="block">First name</label>
                                 <InputText id="firstName" {...register("firstName")} className="w-full"/>
                             </div>
                             <div className="field w-full">
-                                <label htmlFor="lastName" className="block">Last name *</label>
+                                <label htmlFor="lastName" className="block">Last name</label>
                                 <InputText id="lastName" {...register("lastName")} className="w-full"/>
                             </div>
                             <div className="field w-full">
