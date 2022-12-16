@@ -19,7 +19,7 @@ import {getSession} from "next-auth/react";
 import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 
 function ContactGroupEdit() {
-    const client = new GraphQLClient(`${process.env.API_PATH}/query`);
+    const client = new GraphQLClient(`/customer-os-api/query`);
 
     const [contactGroup, setContactGroup] = useState({
         id: undefined,

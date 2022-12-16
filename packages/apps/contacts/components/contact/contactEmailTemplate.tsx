@@ -13,7 +13,7 @@ import {Checkbox} from "primereact/checkbox";
 import {toast} from "react-toastify";
 
 function ContactEmailTemplate(props: any) {
-    const client = new GraphQLClient(`${process.env.API_PATH}/query`);
+    const client = new GraphQLClient(`/customer-os-api/query`);
 
     const {register, setValue, handleSubmit, control} = useForm({
         defaultValues: props.email

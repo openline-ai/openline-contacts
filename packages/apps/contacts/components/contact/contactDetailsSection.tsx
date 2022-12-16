@@ -24,7 +24,7 @@ import {CustomFieldTemplateProps, EntityDefinitionEditTemplate, EntityDefinition
 import {toast} from "react-toastify";
 
 export default function ContactDetailsSection(props: any) {
-    const client = new GraphQLClient(`${process.env.API_PATH}/query`);
+    const client = new GraphQLClient(`/customer-os-api/query`);
 
     const router = useRouter();
 
