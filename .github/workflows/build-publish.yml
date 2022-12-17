@@ -50,6 +50,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            NODE_ENV
-        env:
-          NODE_ENV: cluster
+            ENV=cluster

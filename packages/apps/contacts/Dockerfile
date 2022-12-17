@@ -12,7 +12,8 @@ COPY --from=deps /app/node_modules ./node_modules
 
 COPY . .
 
-ARG NODE_ENV
+ARG ENV
+ENV NODE_ENV $ENV
 
 RUN npm run-script "build:$NODE_ENV"
 
