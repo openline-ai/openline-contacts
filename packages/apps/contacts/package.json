@@ -4,8 +4,8 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3001",
-    "build:dev": "env-cmd -f .env.local next build",
+    "dev": "env-cmd -f .env.dev next dev -p 3001",
+    "build:dev": "env-cmd -f .env.dev next build",
     "build:cluster": "env-cmd -f .env.cluster next build",
     "start": "next start -p 3001",
     "lint": "next lint"
