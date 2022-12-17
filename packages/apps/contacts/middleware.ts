@@ -4,29 +4,33 @@ import {NextRequest, NextResponse} from "next/server";
 // More on how NextAuth.js middleware works: https://next-auth.js.org/configuration/nextjs#middleware
 
 export default withAuth(function middleware(request: NextRequestWithAuth) {
-        var newURL = '';
+        if (!request.nextUrl.pathname.startsWith('/customer-os-api/')) {
+            return NextResponse.next();
+        } else {
 
-        if (request.nextUrl.pathname.startsWith('/customer-os-api/')) {
-            newURL = process.env.CUSTOMER_OS_API_PATH + "/" + request.nextUrl.pathname.substring(("/customer-os-api/").length);
-        }
+            var newURL = '';
 
-        if (request.nextUrl.searchParams) {
-            newURL = newURL + "?" + request.nextUrl.searchParams.toString()
-        }
-        console.log("Rewriting url to " + newURL);
-        console.log("middleware: " + JSON.stringify(request.nextauth.token));
-
-        const requestHeaders = new Headers(request.headers);
-        requestHeaders.set('X-Openline-API-KEY', process.env.CUSTOMER_OS_API_KEY as string)
-
-        return NextResponse.rewrite(new URL(newURL, request.url),
-            {
-                request: {
-                    headers: requestHeaders,
-                },
+            if (request.nextUrl.pathname.startsWith('/customer-os-api/')) {
+                newURL = process.env.CUSTOMER_OS_API_PATH + "/" + request.nextUrl.pathname.substring(("/customer-os-api/").length);
             }
-        )
 
+            if (request.nextUrl.searchParams) {
+                newURL = newURL + "?" + request.nextUrl.searchParams.toString()
+            }
+            console.log("Rewriting url to " + newURL);
+            console.log("middleware: " + JSON.stringify(request.nextauth.token));
+
+            const requestHeaders = new Headers(request.headers);
+            requestHeaders.set('X-Openline-API-KEY', process.env.CUSTOMER_OS_API_KEY as string)
+
+            return NextResponse.rewrite(new URL(newURL, request.url),
+                {
+                    request: {
+                        headers: requestHeaders,
+                    },
+                }
+            )
+        }
     },
     {
         callbacks: {
