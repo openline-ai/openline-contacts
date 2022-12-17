@@ -17,5 +17,5 @@ spec:
           name: contacts-gui
           imagePullPolicy: Always
           ports:
-            - containerPort: 3000
+            - containerPort: 3001
               name: http-port

@@ -11,7 +11,7 @@ import {getSession} from "next-auth/react";
 import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 
 const ContactGroupList: NextPage = () => {
-    const client = new GraphQLClient(`${process.env.API_PATH}/query`);
+    const client = new GraphQLClient(`/customer-os-api/query`);
     const router = useRouter();
 
     const loadData = function (params: PaginatedRequest) {

@@ -13,7 +13,7 @@ import {getSession} from "next-auth/react";
 import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 
 const ContactList: NextPage = () => {
-    const client = new GraphQLClient(`${process.env.API_PATH}/query`);
+    const client = new GraphQLClient(`/customer-os-api/query`);
     const router = useRouter();
 
     let onEdit = (id: any) => router.push(`/contact/${id}`);

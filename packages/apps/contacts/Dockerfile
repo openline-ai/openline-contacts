@@ -30,8 +30,8 @@ COPY --from=builder --chown=openlineuser:openlinegroup /app/.next/static ./.next
 
 USER openlineuser
 
-EXPOSE 3000
+EXPOSE 3001
 
-ENV PORT 3000
+ENV PORT 3001
 
 CMD ["node", "server.js"]
