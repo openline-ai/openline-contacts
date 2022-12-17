@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [otter]
+    branches: [abc]
     paths:
       - 'packages/apps/contacts/**'
       - '.github/workflows/build-publish.yml'
