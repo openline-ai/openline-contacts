@@ -14,7 +14,7 @@ COPY . .
 
 ARG ENV
 
-RUN npm run-script "build:$NODE_ENV"
+RUN npm run-script "build:$ENV"
 
 FROM node:16.16-alpine AS runner
 
