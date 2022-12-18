@@ -20,7 +20,7 @@ export default withAuth(function middleware(request: NextRequestWithAuth) {
             console.log("Rewriting url to " + newURL);
 
             const requestHeaders = new Headers(request.headers);
-            requestHeaders.set('X-Openline-APP-KEY', process.env.CUSTOMER_OS_API_KEY as string)
+            requestHeaders.set('X-Openline-API-KEY', process.env.CUSTOMER_OS_API_KEY as string)
 
             return NextResponse.rewrite(new URL(newURL, request.url),
                 {
