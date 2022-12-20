@@ -189,7 +189,7 @@ function ContactGroupEdit() {
     const home = {icon: 'pi pi-home', url: '/'}
 
     return (
-        <div className="flex p-5">
+        <div className="flex p-3">
 
             <div className="flex-grow-0 mr-5">
 
@@ -261,7 +261,7 @@ function ContactGroupEdit() {
                                 visible={deleteConfirmationModalVisible}
                                 footer={
                                     <div className="flex flex-grow-1 justify-content-between align-items-center">
-                                        <Button label="Delete the contact group" icon="pi pi-check" onClick={() => deleteContactGroup()} autoFocus/>
+                                        <Button label="Delete the contact group" icon="pi pi-check" onClick={() => deleteContactGroup()}/>
                                         <Button label="Cancel" icon="pi pi-times" onClick={() => setDeleteConfirmationModalVisible(false)} className="p-button-text"/>
                                     </div>
                                 }

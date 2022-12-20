@@ -15,6 +15,8 @@ import {toast} from "react-toastify";
 import ContactHistory from "../../components/contact/contactHistory";
 import {getSession} from "next-auth/react";
 import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
+import {TabPanel, TabView} from "primereact/tabview";
+import ContactNotes from "../../components/contact/contactNotes";
 
 function ContactDetails() {
     const client = new GraphQLClient(`/customer-os-api/query`);
@@ -42,13 +44,15 @@ function ContactDetails() {
     ];
     const home = {icon: 'pi pi-home', url: '/'}
 
+    const [activeIndex, setActiveIndex] = useState(0);
+
     return (
 
-        <div className="flex p-5 w-full h-full">
+        <div className="flex p-3 w-full h-full">
 
             <div className="flex flex-grow-0 flex-column">
 
-                <BreadCrumb model={items} home={home} className="pl-1"/>
+                <BreadCrumb model={items} home={home} className="pl-1 mb-4"/>
 
                 <div className="flex-grow-0 mr-5">
 
@@ -98,8 +102,18 @@ function ContactDetails() {
 
             {
                 id && id !== 'new' &&
-                <div className="flex flex-grow-1">
-                    <ContactHistory contactId={id}/>
+                <div className="flex flex-column flex-grow-1">
+                    <div className="flex flex-grow-1">
+                        <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} className="w-full h-full">
+                            <TabPanel header="Activities">
+                                <ContactHistory contactId={id}/>
+                            </TabPanel>
+                            <TabPanel header="Notes">
+                                <ContactNotes contactId={id}/>
+                            </TabPanel>
+                        </TabView>
+                    </div>
+                    <div className="flex mb-5">&nbsp;</div>
                 </div>
             }
 

@@ -9,9 +9,8 @@ import {Dropdown} from "primereact/dropdown";
 import {Controller, useForm} from "react-hook-form";
 import {getEnumLabel} from "../../model/enums";
 import {ContactTitleEnum} from "../../model/enum-contactTitle";
-import {InputTextarea} from "primereact/inputtextarea";
 import SearchComponent from "../generic/SearchComponent";
-import {CreateContact, DeleteContact, GetContactDetails, UpdateContact} from "../../services/contactService";
+import {CreateContact, GetContactDetails, UpdateContact} from "../../services/contactService";
 import {Contact, ContactType} from "../../models/contact";
 import {GetContactTypes} from "../../services/contactTypeService";
 import {GetUsersPage} from "../../services/userService";
@@ -37,9 +36,7 @@ export default function ContactDetailsSection(props: any) {
         ownerId: undefined,
         ownerFullName: '',
         contactTypeId: undefined,
-        contactTypeName: '',
-        label: '',
-        notes: ''
+        contactTypeName: ''
     }) as any;
 
     const {register, handleSubmit, setValue, control} = useForm();
@@ -83,7 +80,6 @@ export default function ContactDetailsSection(props: any) {
             contactTypeId: contact.contactType?.id ?? undefined,
             contactTypeName: contact.contactType?.name ?? '',
             label: contact.label,
-            notes: contact.notes,
             definitionId: contact.definition?.id
         };
     }
@@ -219,7 +215,6 @@ export default function ContactDetailsSection(props: any) {
                                 setValue('contactTypeId', contact.contactTypeId);
                                 setValue('contactTypeName', contact.contactTypeName);
                                 setValue('label', contact.label);
-                                setValue('notes', contact.notes);
                                 setValue('definitionId', contact.definitionId);
                                 setEditDetails(true);
                             }}>
@@ -257,10 +252,6 @@ export default function ContactDetailsSection(props: any) {
                         <div className="grid grid-nogutter mt-3">
                             <div className="col-4">Label</div>
                             <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.label}</div>
-                        </div>
-                        <div className="grid grid-nogutter mt-3">
-                            <div className="col-4">Notes</div>
-                            <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.notes}</div>
                         </div>
                     </div>
                 }
@@ -329,10 +320,6 @@ export default function ContactDetailsSection(props: any) {
                             <div className="field w-full">
                                 <label htmlFor="label" className="block">Label</label>
                                 <InputText id="label" {...register("label")} className="w-full"/>
-                            </div>
-                            <div className="field w-full">
-                                <label htmlFor="notes" className="block">Notes</label>
-                                <InputTextarea id="notes" rows={2} {...register("notes")} autoResize className="w-full"/>
                             </div>
 
                             {

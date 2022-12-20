@@ -1,4 +1,4 @@
-import {CustomField, EntityDefinition, EntityExtension, FieldSet} from "./customFields";
+import {EntityDefinition, EntityExtension} from "./customFields";
 
 export type Contact = {
     id: string;
@@ -21,4 +21,9 @@ export type Owner = {
 export type ContactType = {
     id: string;
     name: string;
+}
+
+export type Note = {
+    id: string;
+    text: string;
 }

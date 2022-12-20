@@ -1,7 +1,6 @@
 import {gql, GraphQLClient} from "graphql-request";
-import {Contact} from "../models/contact";
-import {CustomField, FieldSet} from "../models/customFields";
-import {string} from "prop-types";
+import {Contact, Note} from "../models/contact";
+import {PaginatedResponse, Pagination} from "../utils/pagination";
 
 export function GetContactDetails(client: GraphQLClient, id: string): Promise<Contact> {
     return new Promise((resolve, reject) => {
@@ -25,7 +24,6 @@ export function GetContactDetails(client: GraphQLClient, id: string): Promise<Co
                     id
                 }
                 label
-                notes
             }
         }`
 
@@ -202,6 +200,124 @@ export function DeleteContact(client: GraphQLClient, id: any): Promise<boolean> 
         client.request(query, {contactId: id}).then((response: any) => {
             if (response.contact_SoftDelete) {
                 resolve(response.contact_SoftDelete.result);
+            } else {
+                reject(response.errors);
+            }
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
+
+}
+
+export function GetContactNotes(client: GraphQLClient, contactId: string, pagination: Pagination): Promise<PaginatedResponse<Note>> {
+    return new Promise((resolve, reject) => {
+
+        const query = gql`query GetContactNotes($contactId: ID!, $pagination: Pagination!) {
+            contact(id: $contactId) {
+                notes(pagination: $pagination) {
+                    content {
+                        id
+                        text
+                    }
+                    totalElements
+                }
+            }
+        }`
+
+        client.request(query, {
+            contactId: contactId,
+            pagination: pagination
+        }).then((response: any) => {
+            console.log(response.contact.notes)
+            if (response.contact.notes) {
+                resolve({
+                    content: response.contact.notes.content,
+                    totalElements: response.contact.notes.totalElements
+                });
+            } else {
+                reject(response.error);
+            }
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
+}
+
+export function CreateContactNote(client: GraphQLClient, contactId: string, data: any): Promise<Note> {
+    return new Promise((resolve, reject) => {
+
+        const query = gql`mutation AddNote($contactId: ID!, $note: NoteInput!) {
+            note_MergeToContact(contactId: $contactId, input: $note) {
+                id
+                text
+            }
+        }`
+
+        client.request(query, {
+                contactId: contactId,
+                note: {
+                    text: data.text
+                }
+            }
+        ).then((response: any) => {
+            if (response.note_MergeToContact) {
+                resolve(response.note_MergeToContact);
+            } else {
+                reject(response.errors);
+            }
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
+
+}
+
+export function UpdateContactNote(client: GraphQLClient, contactId: string, data: any): Promise<Note> {
+    return new Promise((resolve, reject) => {
+
+        const query = gql`mutation UpdateNote($contactId: ID!, $note: NoteUpdateInput!) {
+            note_UpdateInContact(contactId: $contactId, input: $note) {
+                id
+                text
+            }
+        }`
+
+        client.request(query, {
+                contactId: contactId,
+                note: {
+                    id: data.id,
+                    text: data.text
+                }
+            }
+        ).then((response: any) => {
+            if (response.note_UpdateInContact) {
+                resolve(response.note_UpdateInContact);
+            } else {
+                reject(response.errors);
+            }
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
+
+}
+
+export function DeleteNote(client: GraphQLClient, contactId: any, noteId: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+
+        const query = gql`mutation DeleteContact($contactId: ID!, $noteId: ID!) {
+            note_DeleteFromContact(contactId: $contactId, noteId: $noteId) {
+                result
+            }
+        }`
+
+        client.request(query, {
+            contactId: contactId,
+            noteId: noteId
+        }).then((response: any) => {
+            if (response.note_DeleteFromContact) {
+                resolve(response.note_DeleteFromContact.result);
             } else {
                 reject(response.errors);
             }
