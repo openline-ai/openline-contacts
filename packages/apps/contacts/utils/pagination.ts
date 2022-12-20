@@ -17,3 +17,7 @@ export type PaginatedRequest = {
     pagination: Pagination;
     sort: Sort[];
 }
+export type PaginatedResponse<T> = {
+    content: T[],
+    totalElements: number;
+}
