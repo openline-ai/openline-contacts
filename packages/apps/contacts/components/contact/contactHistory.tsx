@@ -86,7 +86,7 @@ function ContactHistory(props: any) {
                                     <Moment className="text-sm text-gray-600" date={e.startedAt} format={'d MMM yy'}></Moment>
 
                                     <div className="ml-3">
-                                        <Link href={`${process.env.OASIS_GUI_PATH}/feed/${e.id}`} target="_blank" className='cta'>Show more details...</Link>
+                                        <Link href={`${process.env.OASIS_GUI_PATH}/feed?id=${e.id}`} target="_blank" className='cta'>Show more details...</Link>
                                     </div>
                                 </div>
 
