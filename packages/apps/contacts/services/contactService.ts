@@ -218,7 +218,7 @@ export function GetContactNotes(client: GraphQLClient, contactId: string, pagina
                 notes(pagination: $pagination) {
                     content {
                         id
-                        text
+                        html
                     }
                     totalElements
                 }
@@ -250,14 +250,14 @@ export function CreateContactNote(client: GraphQLClient, contactId: string, data
         const query = gql`mutation AddNote($contactId: ID!, $note: NoteInput!) {
             note_MergeToContact(contactId: $contactId, input: $note) {
                 id
-                text
+                html
             }
         }`
 
         client.request(query, {
                 contactId: contactId,
                 note: {
-                    text: data.text
+                    html: data.html
                 }
             }
         ).then((response: any) => {
@@ -279,7 +279,7 @@ export function UpdateContactNote(client: GraphQLClient, contactId: string, data
         const query = gql`mutation UpdateNote($contactId: ID!, $note: NoteUpdateInput!) {
             note_UpdateInContact(contactId: $contactId, input: $note) {
                 id
-                text
+                html
             }
         }`
 
@@ -287,7 +287,7 @@ export function UpdateContactNote(client: GraphQLClient, contactId: string, data
                 contactId: contactId,
                 note: {
                     id: data.id,
-                    text: data.text
+                    html: data.html
                 }
             }
         ).then((response: any) => {

@@ -25,5 +25,5 @@ export type ContactType = {
 
 export type Note = {
     id: string;
-    text: string;
+    html: string;
 }
