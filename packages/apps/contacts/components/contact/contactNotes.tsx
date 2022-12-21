@@ -10,8 +10,8 @@ import {CreateContactNote, DeleteNote, GetContactNotes, UpdateContactNote} from 
 import {Note} from "../../models/contact";
 import {Skeleton} from "primereact/skeleton";
 import {Dialog} from "primereact/dialog";
-import {useForm} from "react-hook-form";
-import {InputTextarea} from "primereact/inputtextarea";
+import {Controller, useForm} from "react-hook-form";
+import {Editor} from "primereact/editor";
 
 function ContactNotes(props: any) {
     const client = new GraphQLClient(`/customer-os-api/query`);
@@ -34,6 +34,9 @@ function ContactNotes(props: any) {
         GetContactNotes(client, props.contactId, {page: 0, limit: 100}).then((result: PaginatedResponse<Note>) => {
             console.log(result)
             if (result) {
+                result.content.forEach(note => {
+                    note.html = note.html.replace(/<img .*?>/g, "");
+                });
                 setNoteItems(result.content);
                 setNoteTotalElements(result.totalElements);
                 setLoading(false);
@@ -64,9 +67,9 @@ function ContactNotes(props: any) {
 
     const [note, setNote] = useState({
         id: undefined,
-        text: ''
+        html: ''
     }) as any;
-    const {register, handleSubmit, setValue} = useForm();
+    const {register, handleSubmit, setValue, control} = useForm();
     const onSubmit = handleSubmit(data => {
         if (!data.id) {
             CreateContactNote(client, props.contactId, data).then((savedNote: Note) => {
@@ -88,6 +91,33 @@ function ContactNotes(props: any) {
             });
         }
     });
+
+    // https://quilljs.com/docs/modules/toolbar/
+    const richTextHeader = () => {
+        return (
+            <span className="ql-formats">
+
+                {/*<select className="ql-size">*/}
+                {/*    <option selected></option>*/}
+                {/*    <option value="small">Small</option>*/}
+                {/*    <option value="large">Large</option>*/}
+                {/*    <option value="huge">Huge</option>*/}
+                {/*</select>*/}
+
+                <button className="ql-bold" aria-label="Bold"></button>
+                <button className="ql-italic" aria-label="Italic"></button>
+                <button className="ql-underline" aria-label="Underline"></button>
+                <button className="ql-strike" aria-label="Strike"></button>
+
+                <button className="ql-link" aria-label="Link"></button>
+                <button className="ql-code-block" aria-label="Code block"></button>
+                <button className="ql-blockquote" aria-label="Blockquote"></button>
+
+            </span>
+        );
+    }
+
+
     return (
         <div className='w-full h-full'>
             <div>
@@ -105,7 +135,18 @@ function ContactNotes(props: any) {
                         onHide={() => setEditNoteModalVisible(false)}>
 
                     <form onSubmit={onSubmit}>
-                        <InputTextarea id="text" {...register("text")} className="w-full" rows={10}/>
+
+
+                        <Controller name="html" control={control} render={({field}) => (
+                            <Editor id="html" {...register("html")}
+                                    style={{height: '200px'}}
+                                    className="w-full"
+                                    headerTemplate={richTextHeader()}
+                                    value={field.value} onTextChange={(e) => setValue('html', e.htmlValue)}
+                            />
+                        )}/>
+
+                        {/**/}
                     </form>
                 </Dialog>
 
@@ -133,7 +174,7 @@ function ContactNotes(props: any) {
                             <div className="flex flex-grow-0 align-items-center" onClick={() => {
                                 setNote({});
                                 setValue('id', undefined);
-                                setValue('text', '');
+                                setValue('html', '');
                                 setEditNoteModalVisible(true);
                             }}>
                                 <FontAwesomeIcon icon={faPlusCircle} className="text-gray-600" style={{color: 'black'}}/>
@@ -156,7 +197,7 @@ function ContactNotes(props: any) {
                                 return <div key={e.id} className="flex align-items-center w-full mt-3 p-3 bg-white border-dark-1" style={{}}>
 
                                     <div className="flex flex-grow-1">
-                                        {e.text}
+                                        <div className="w-full h-full" dangerouslySetInnerHTML={{ __html: e.html }}></div>
                                     </div>
 
                                     <div className="flex flex-grow-0">
@@ -164,7 +205,7 @@ function ContactNotes(props: any) {
                                         <div className="flex flex-grow-0 align-items-center mr-2 cursor-pointer" onClick={() => {
                                             setNote(e);
                                             setValue('id', e.id);
-                                            setValue('text', e.text);
+                                            setValue('html', e.html);
                                             setEditNoteModalVisible(true);
                                         }}>
                                             <FontAwesomeIcon icon={faEdit} className="text-gray-600" style={{color: 'black'}}/>
