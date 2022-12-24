@@ -16,7 +16,7 @@ import ContactHistory from "../../components/contact/contactHistory";
 import {getSession} from "next-auth/react";
 import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 import {TabPanel, TabView} from "primereact/tabview";
-import ContactNotes from "../../components/contact/contactNotes";
+import ContactNotes from "../../components/contact/note/contactNotes";
 
 function ContactDetails() {
     const client = new GraphQLClient(`/customer-os-api/query`);
