@@ -7,7 +7,7 @@ import {useState} from "react";
 import {BreadCrumb} from "primereact/breadcrumb";
 import {Dialog} from "primereact/dialog";
 import ContactCommunicationSection from "../../components/contact/contactChannels";
-import ContactCompaniesPositions from "../../components/contact/contactCompaniesPositions";
+import ContactOrganization from "../../components/contact/contactOrganization";
 import {DeleteContact} from "../../services/contactService";
 import ContactDetailsSection from "../../components/contact/contactDetailsSection";
 import ContactExtensionSection from "../../components/contact/contactExtensionSection";
@@ -66,7 +66,7 @@ function ContactDetails() {
 
                     {
                         id && id !== 'new' &&
-                        <ContactCompaniesPositions contactId={id}/>
+                        <ContactOrganization contactId={id}/>
                     }
 
                     {

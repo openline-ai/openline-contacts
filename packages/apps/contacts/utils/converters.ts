@@ -1,6 +1,7 @@
 import {Filter} from "./pagination";
 
 export function MapGridFilters(fitlers: Filter[]) {
+    if (!fitlers) return undefined;
     var where = undefined as any;
     switch (fitlers.length) {
         case 0: {

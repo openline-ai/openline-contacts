@@ -9,12 +9,17 @@ import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
 import SearchOrAddComponent from "../generic/SearchOrAddComponent";
 import {toast} from "react-toastify";
+import {GetOrganizations} from "../../services/organizationService";
+import {PaginatedRequest, PaginatedResponse} from "../../utils/pagination";
+import {GetContactTypes} from "../../services/contactTypeService";
+import {ContactType} from "../../models/contact";
+import {Organization} from "../../models/organization";
 
-function ContactCompanyPositionTemplate(props: any) {
+function ContactOrganizationTemplate(props: any) {
     const client = new GraphQLClient(`/customer-os-api/query`);
 
     const {register, setValue, handleSubmit, control} = useForm({
-        defaultValues: props.companyPosition
+        defaultValues: props.organizationRole
     });
 
     const onSubmit = handleSubmit((data: any) => {
@@ -22,10 +27,10 @@ function ContactCompanyPositionTemplate(props: any) {
         let query = undefined;
 
         if (!data.id) {
-            query = gql`mutation MergeCompanyPosition ($contactId: ID!, $companyPosition: CompanyPositionInput!) {
-                contact_MergeCompanyPosition(contactId: $contactId, input: $companyPosition){
+            query = gql`mutation CreateContactRole ($contactId: ID!, $contactRole: ContactRoleInput!) {
+                contactRole_Create(contactId: $contactId, input: $contactRole) {
                     id
-                    role{
+                    organization {
                         id
                         name
                     }
@@ -33,10 +38,10 @@ function ContactCompanyPositionTemplate(props: any) {
                 }
             }`
         } else {
-            query = gql`mutation UpdateCompanyPosition ($contactId: ID!, $companyPositionId: ID!, $companyPosition: CompanyPositionInput!) {
-                contact_UpdateCompanyPosition(contactId: $contactId, companyPositionId: $companyPositionId input: $companyPosition){
+            query = gql`mutation UpdateContactRole ($contactId: ID!, $roleId: ID!, $contactRole: ContactRoleInput!) {
+                contactRole_Update(contactId: $contactId, roleId: $roleId, input: $contactRole) {
                     id
-                    role{
+                    organization {
                         id
                         name
                     }
@@ -47,33 +52,30 @@ function ContactCompanyPositionTemplate(props: any) {
 
         client.request(query, {
             contactId: props.contactId,
-            companyPositionId: data.id,
-            companyPosition: {
-                company: {
-                    id: data.companyId,
-                    name: data.companyName
-                },
+            roleId: data.id,
+            contactRole: {
+                organizationId: data.organizationId,
                 jobTitle: data.jobTitle
             }
         }).then((response) => {
                 if (!data.id) {
                     props.notifySave({
-                        ...response.contact_MergeCompanyPosition, ...{
+                        ...response.contactRole_Create, ...{
                             uiKey: data.uiKey,
-                            companyId: response.contact_MergeCompanyPosition.company.id,
-                            companyName: response.contact_MergeCompanyPosition.company.name
+                            organizationId: response.contactRole_Create.organization.id,
+                            organizationName: response.contactRole_Create.organization.name
                         }
                     });
-                    toast.success("Company position added successfully!");
+                    toast.success("Organization added successfully!");
                 } else {
                     props.notifySave({
-                        ...response.contact_UpdateCompanyPosition, ...{
+                        ...response.contactRole_Update, ...{
                             uiKey: data.uiKey,
-                            companyId: response.contact_UpdateCompanyPosition.company.id,
-                            companyName: response.contact_UpdateCompanyPosition.company.name
+                            organizationId: response.contactRole_Update.organization.id,
+                            organizationName: response.contactRole_Update.organization.name
                         }
                     });
-                    toast.success("Company position updated successfully!");
+                    toast.success("Organization updated successfully!");
                 }
                 setEditDetails(false);
             }
@@ -83,24 +85,24 @@ function ContactCompanyPositionTemplate(props: any) {
         });
     })
 
-    const [deleteCompanyPositionConfirmationModalVisible, setDeleteCompanyPositionConfirmationModalVisible] = useState(false);
-    const deleteCompanyPosition = () => {
+    const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
+    const deleteRole = () => {
         //todo show loading
-        const query = gql`mutation DeleteCompanyPosition ($contactId: ID!, $companyPositionId: ID!) {
-            contact_DeleteCompanyPosition(contactId: $contactId, companyPositionId: $companyPositionId){
+        const query = gql`mutation DeleteOrganizationRole ($contactId: ID!, $roleId: ID!) {
+            contactRole_Delete(contactId: $contactId, roleId: $roleId){
                 result
             }
         }`
 
         client.request(query, {
             contactId: props.contactId,
-            companyPositionId: props.companyPosition.id
+            roleId: props.organizationRole.id
         }).then((response: any) => {
-            if (response.contact_DeleteCompanyPosition.result) {
-                toast.success("Company position removed successfully!");
-                props.notifyDelete(props.companyPosition.uiKey);
+            if (response.contactRole_Delete.result) {
+                toast.success("Organization removed successfully!");
+                props.notifyDelete(props.organizationRole.uiKey);
 
-                setDeleteCompanyPositionConfirmationModalVisible(false);
+                setDeleteConfirmationModalVisible(false);
             } else {
                 //todo log an error in server side
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
@@ -117,37 +119,28 @@ function ContactCompanyPositionTemplate(props: any) {
 
     const [editDetails, setEditDetails] = useState(props.initialEditState ?? false);
 
-    const searchCompany = function (name: string, maxResults: string) {
+    const searchOrganization = function (name: string, maxResults: number) {
         return new Promise((resolve, reject) => {
 
-            const query = gql`query SearchCompanyByName ($pagination: Pagination!, $name: String!) {
-                companies_ByNameLike(pagination: $pagination, companyName: $name){
-                    content{
-                        id
-                        name
-                    }
-                    totalElements
-                }
-            }`
-
-            client.request(query, {
+            const params = {
                 pagination: {
-                    "page": 0,
-                    "limit": maxResults
-                },
-                name: name
-            }).then((response: any) => {
-                if (response.companies_ByNameLike.content) {
-                    resolve({
-                        content: response.companies_ByNameLike.content,
-                        totalElements: response.companies_ByNameLike.totalElements
-                    });
-                } else {
-                    resolve({
-                        error: response
-                    });
+                    page: 0,
+                    limit: maxResults
                 }
+            } as PaginatedRequest;
+
+            GetOrganizations(client, params).then((response: PaginatedResponse<Organization>) => {
+                resolve({
+                    content: response.content,
+                    totalElements: response.totalElements
+                });
+            }).catch((reason: any) => {
+                console.log(reason)
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
+                reject(reason);
             });
+
         });
     }
 
@@ -158,35 +151,35 @@ function ContactCompanyPositionTemplate(props: any) {
                 <div className="display">
                     <div className="grid grid-nogutter mt-3">
                         <div className="col-8">
-                            Company: {props.companyPosition.companyName}<br/>
-                            Job: {props.companyPosition.jobTitle}
+                            Organization: {props.organizationRole.organization.name}<br/>
+                            Job: {props.organizationRole.jobTitle}
                         </div>
                         <div className="col-4">
 
                             <Button className="p-button-text p-0" onClick={(e: any) => {
-                                setValue('id', props.companyPosition.id);
-                                setValue('companyId', props.companyPosition.companyId);
-                                setValue('companyName', props.companyPosition.companyName);
-                                setValue('jobTitle', props.companyPosition.jobTitle);
+                                setValue('id', props.organizationRole.id);
+                                setValue('organizationId', props.organizationRole.organization.id);
+                                setValue('organizationName', props.organizationRole.organization.name);
+                                setValue('jobTitle', props.organizationRole.jobTitle);
                                 setEditDetails(true);
                             }}>
                                 <FontAwesomeIcon size="xs" icon={faEdit} style={{color: 'black'}}/>
                             </Button>
 
-                            <Button className="p-button-text p-0" onClick={(e: any) => setDeleteCompanyPositionConfirmationModalVisible(true)}>
+                            <Button className="p-button-text p-0" onClick={(e: any) => setDeleteConfirmationModalVisible(true)}>
                                 <FontAwesomeIcon size="xs" icon={faTrashCan} style={{color: 'black'}}/>
                             </Button>
-                            <Dialog header="Company position delete confirmation"
+                            <Dialog header="Organization role delete confirmation"
                                     draggable={false}
-                                    visible={deleteCompanyPositionConfirmationModalVisible}
+                                    visible={deleteConfirmationModalVisible}
                                     footer={
                                         <div className="flex flex-grow-1 justify-content-between align-items-center">
-                                            <Button label="Delete the company position" icon="pi pi-check" onClick={() => deleteCompanyPosition()} autoFocus/>
-                                            <Button label="Cancel" icon="pi pi-times" onClick={() => setDeleteCompanyPositionConfirmationModalVisible(false)} className="p-button-text"/>
+                                            <Button label="Delete the organization role" icon="pi pi-check" onClick={() => deleteRole()} autoFocus/>
+                                            <Button label="Cancel" icon="pi pi-times" onClick={() => setDeleteConfirmationModalVisible(false)} className="p-button-text"/>
                                         </div>
                                     }
-                                    onHide={() => setDeleteCompanyPositionConfirmationModalVisible(false)}>
-                                <p>Please confirm that you want to delete this company position.</p>
+                                    onHide={() => setDeleteConfirmationModalVisible(false)}>
+                                <p>Please confirm that you want to delete this organization role.</p>
                             </Dialog>
 
                         </div>
@@ -199,13 +192,13 @@ function ContactCompanyPositionTemplate(props: any) {
                 <div className="content">
                     <form>
                         <div className="field w-full">
-                            <label htmlFor="companyName" className="block">Company *</label>
-                            <Controller name="companyName" control={control} render={({field}) => (
+                            <label htmlFor="organizationName" className="block">Organization *</label>
+                            <Controller name="organizationName" control={control} render={({field}) => (
                                 <SearchOrAddComponent
-                                    resourceLabel="companies"
+                                    resourceLabel="organizations"
                                     value={field.value}
-                                    searchData={(name: string, maxResults: string) => {
-                                        return searchCompany(name, maxResults);
+                                    searchData={(name: string, maxResults: number) => {
+                                        return searchOrganization(name, maxResults);
                                     }}
                                     searchItemTemplate={(e: any) => {
                                         return <>
@@ -214,12 +207,12 @@ function ContactCompanyPositionTemplate(props: any) {
                                         </>
                                     }}
                                     onInputValueChanged={(c: any) => {
-                                        setValue('companyId', undefined);
-                                        setValue('companyName', c.label);
+                                        setValue('organizationId', undefined);
+                                        setValue('organizationName', c.label);
                                     }}
                                     onItemSelected={(e: any) => {
-                                        setValue('companyId', e.id);
-                                        setValue('companyName', e.name);
+                                        setValue('organizationId', e.id);
+                                        setValue('organizationName', e.name);
                                     }}
                                     maxResults={5}/>
                             )}/>
@@ -231,7 +224,7 @@ function ContactCompanyPositionTemplate(props: any) {
                     </form>
 
                     <div className="flex justify-content-end">
-                        <Button onClick={(e: any) => notifyCancelEdit(props.companyPosition.uiKey)} className='p-button-link text-gray-600' label="Cancel"/>
+                        <Button onClick={(e: any) => notifyCancelEdit(props.organizationRole.uiKey)} className='p-button-link text-gray-600' label="Cancel"/>
                         <Button onClick={() => onSubmit()} label="Save"/>
                     </div>
                 </div>
@@ -240,16 +233,16 @@ function ContactCompanyPositionTemplate(props: any) {
     );
 }
 
-ContactCompanyPositionTemplate.propTypes = {
+ContactOrganizationTemplate.propTypes = {
     contactId: PropTypes.string,
-    companyPosition: PropTypes.object,
+    organizationRole: PropTypes.object,
     initialEditState: PropTypes.bool,
     notifySave: PropTypes.func,
     notifyDelete: PropTypes.func,
     notifyCancelEdit: PropTypes.func
 }
 
-ContactCompanyPositionTemplate.defaultValues = {
+ContactOrganizationTemplate.defaultValues = {
     initialEditState: false,
     notifySave: () => {
     },
@@ -259,4 +252,4 @@ ContactCompanyPositionTemplate.defaultValues = {
     }
 }
 
-export default ContactCompanyPositionTemplate
+export default ContactOrganizationTemplate
