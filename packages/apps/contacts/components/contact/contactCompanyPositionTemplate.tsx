@@ -25,7 +25,7 @@ function ContactCompanyPositionTemplate(props: any) {
             query = gql`mutation MergeCompanyPosition ($contactId: ID!, $companyPosition: CompanyPositionInput!) {
                 contact_MergeCompanyPosition(contactId: $contactId, input: $companyPosition){
                     id
-                    company{
+                    role{
                         id
                         name
                     }
@@ -36,7 +36,7 @@ function ContactCompanyPositionTemplate(props: any) {
             query = gql`mutation UpdateCompanyPosition ($contactId: ID!, $companyPositionId: ID!, $companyPosition: CompanyPositionInput!) {
                 contact_UpdateCompanyPosition(contactId: $contactId, companyPositionId: $companyPositionId input: $companyPosition){
                     id
-                    company{
+                    role{
                         id
                         name
                     }
