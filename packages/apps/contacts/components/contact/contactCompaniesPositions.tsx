@@ -18,7 +18,7 @@ function ContactCompaniesPositions(props: any) {
 
             const query = gql`query LoadCompaniesForContactWithId($id: ID!) {
                 contact(id: $id) {
-                    companyPositions{
+                    roles{
                         id
                         company{
                             id
@@ -30,13 +30,13 @@ function ContactCompaniesPositions(props: any) {
             }`
 
             client.request(query, {id: props.contactId}).then((response: any) => {
-                response.contact.companyPositions.forEach((e: any) => {
+                response.contact.roles.forEach((e: any) => {
                     e.uiKey = uuidv4(); //TODO make sure the ID is unique in the array
                     e.newItem = false;
                     e.companyId = e.company.id;
                     e.companyName = e.company.name;
                 });
-                setCompanyPositions(response.contact.companyPositions);
+                setCompanyPositions(response.contact.roles);
             });
         }
 
