@@ -10,14 +10,17 @@ import '../styles/card-fieldset.css'
 import '../styles/button.css'
 import '../styles/search-component.css'
 import 'react-toastify/dist/ReactToastify.css';
+import {WebChat} from "@openline-ai/openline-web-chat";
+import "@openline-ai/openline-web-chat/dist/esm/index.css"
+
 
 import {AppProps} from "next/app";
 import {Session} from "next-auth";
 import {ToastContainer} from "react-toastify";
 import Layout from "../layout/layout";
-import {SessionProvider, useSession} from "next-auth/react";
-import AccessDenied from "../components/accessDenied";
+import {SessionProvider} from "next-auth/react";
 
+const isSSR = () => typeof window === undefined;
 export default function App({
                                 Component,
                                 pageProps: {session, ...pageProps},
@@ -33,6 +36,22 @@ export default function App({
                                 hideProgressBar={true}
                                 theme="colored"/>
                 <Component {...pageProps} />
+                {!isSSR() && (
+                    <WebChat apikey={`${process.env.API_KEY}`}
+                             httpServerPath={`${process.env.HTTP_PATH}`}
+                             wsServerPath={`${process.env.WS_PATH}`}
+                             trackerEnabled={false}
+                             trackerAppId={''}
+                             trackerId={''}
+                             trackerCollectorUrl={''}
+                             trackerBufferSize={''}
+                             trackerMinimumVisitLength={''}
+                             trackerHeartbeatDelay={''}
+                             userEmail={session?.user?.email || ''}
+                    />)
+                }
+
+
             </Layout>
         </SessionProvider>
     )
