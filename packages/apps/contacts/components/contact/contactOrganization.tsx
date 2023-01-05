@@ -5,22 +5,22 @@ import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCirclePlus} from "@fortawesome/free-solid-svg-icons";
 import {uuidv4} from "../../utils/uuid-generator";
-import ContactCompanyPositionTemplate from "./contactCompanyPositionTemplate";
+import ContactOrganizationTemplate from "./contactOrganizationTemplate";
 
-function ContactCompaniesPositions(props: any) {
+function ContactOrganization(props: any) {
     const client = new GraphQLClient(`/customer-os-api/query`);
 
-    const [companyPositions, setCompanyPositions] = useState([] as any);
+    const [roles, setRoles] = useState([] as any);
 
     useEffect(() => {
 
         if (props.contactId !== undefined) {
 
-            const query = gql`query LoadCompaniesForContactWithId($id: ID!) {
+            const query = gql`query LoadOrganizationsForContactWithId($id: ID!) {
                 contact(id: $id) {
-                    companyPositions{
+                    roles{
                         id
-                        company{
+                        organization{
                             id
                             name
                         }
@@ -30,22 +30,22 @@ function ContactCompaniesPositions(props: any) {
             }`
 
             client.request(query, {id: props.contactId}).then((response: any) => {
-                response.contact.companyPositions.forEach((e: any) => {
+                response.contact.roles.forEach((e: any) => {
                     e.uiKey = uuidv4(); //TODO make sure the ID is unique in the array
                     e.newItem = false;
-                    e.companyId = e.company.id;
-                    e.companyName = e.company.name;
+                    e.organizationId = e.organization?.id ?? undefined;
+                    e.organizationName = e.organization?.name ?? undefined;
                 });
-                setCompanyPositions(response.contact.companyPositions);
+                setRoles(response.contact.roles);
             });
         }
 
     }, [props.contactId]);
 
-    const companyPositionSaved = (data: any) => {
-        setCompanyPositions(companyPositions.map((e: any) => {
+    const organizationRoleSaved = (data: any) => {
+        setRoles(roles.map((e: any) => {
             if (e.uiKey !== data.uiKey) {
-                //if the saved company position is marked as primary, we unmark the others
+                //if the saved organization position is marked as primary, we unmark the others
                 return e;
             } else {
                 return {...data, ...{newItem: false}};
@@ -53,16 +53,16 @@ function ContactCompaniesPositions(props: any) {
         }));
     }
 
-    const companyPositionDeleted = (uiKey: string) => {
-        setCompanyPositions(companyPositions.filter((e: any) => {
+    const organizationRoleDeleted = (uiKey: string) => {
+        setRoles(roles.filter((e: any) => {
             if (e.uiKey !== uiKey) {
                 return e;
             }
         }));
     }
 
-    const companyPositionCancelEdit = (uiKey: string) => {
-        setCompanyPositions(companyPositions.filter((e: any) => {
+    const organizationRoleCancelEdit = (uiKey: string) => {
+        setRoles(roles.filter((e: any) => {
             if (e.uiKey !== uiKey) {
                 return e;
             } else {
@@ -77,17 +77,17 @@ function ContactCompaniesPositions(props: any) {
         <div className='card-fieldset mt-3' style={{width: '25rem'}}>
             <div className="card-header">
                 <div className="flex flex-row w-full">
-                    <div className="flex-grow-1">Companies</div>
+                    <div className="flex-grow-1">Organizations</div>
                     <div className="flex">
 
                         <Button className="p-button-text p-0" onClick={(e: any) => {
-                            setCompanyPositions([...companyPositions, {
+                            setRoles([...roles, {
                                 id: undefined,
-                                companyId: undefined,
-                                companyName: '',
+                                organizationId: undefined,
+                                organizationName: '',
                                 jobTitle: '',
                                 uiKey: uuidv4(), //TODO make sure the ID is unique in the array
-                                newItem: true // this is used to remove the item from the company positions array in case of cancel new item
+                                newItem: true // this is used to remove the item from the organization positions array in case of cancel new item
                             }]);
                         }}>
                             <FontAwesomeIcon size="xs" icon={faCirclePlus} style={{color: 'black'}}/>
@@ -98,21 +98,21 @@ function ContactCompaniesPositions(props: any) {
             <div className="card-body">
 
                 {
-                    companyPositions.length === 0 &&
+                    roles.length === 0 &&
                     <div className="display">
-                        No companies associated
+                        No organizations associated
                     </div>
                 }
 
                 {
-                    companyPositions.map((e: any) => {
-                        return <ContactCompanyPositionTemplate key={e.uiKey}
-                                                               contactId={props.contactId}
-                                                               companyPosition={e}
-                                                               initialEditState={e.newItem}
-                                                               notifySave={(e: any) => companyPositionSaved(e)}
-                                                               notifyDelete={(uiKey: string) => companyPositionDeleted(uiKey)}
-                                                               notifyCancelEdit={(uiKey: string) => companyPositionCancelEdit(uiKey)}
+                    roles.map((e: any) => {
+                        return <ContactOrganizationTemplate key={e.uiKey}
+                                                            contactId={props.contactId}
+                                                            organizationRole={e}
+                                                            initialEditState={e.newItem}
+                                                            notifySave={(e: any) => organizationRoleSaved(e)}
+                                                            notifyDelete={(uiKey: string) => organizationRoleDeleted(uiKey)}
+                                                            notifyCancelEdit={(uiKey: string) => organizationRoleCancelEdit(uiKey)}
                         />
                     })
                 }
@@ -122,7 +122,7 @@ function ContactCompaniesPositions(props: any) {
     );
 }
 
-ContactCompaniesPositions.propTypes = {
+ContactOrganization.propTypes = {
     contactId: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.arrayOf(string)
@@ -130,4 +130,4 @@ ContactCompaniesPositions.propTypes = {
     className: PropTypes.arrayOf(string)
 }
 
-export default ContactCompaniesPositions
+export default ContactOrganization

@@ -27,7 +27,7 @@ export default function ContactDetailsSection(props: any) {
 
     const router = useRouter();
 
-    const [reloadContactDetails, setReloadContactDetails] = useState(false);
+    const [reloadDetails, setReloadDetails] = useState(false);
     const [contact, setContact] = useState({
         definitionId: undefined,
         title: '',
@@ -67,7 +67,7 @@ export default function ContactDetailsSection(props: any) {
             });
         }
 
-    }, [props.contactId, reloadContactDetails]);
+    }, [props.contactId, reloadDetails]);
 
     const getContactObjectFromResponse = (contact: Contact) => {
         return {
@@ -100,7 +100,7 @@ export default function ContactDetailsSection(props: any) {
             });
         } else {
             UpdateContact(client, data).then((savedContact: Contact) => {
-                setReloadContactDetails(!reloadContactDetails);
+                setReloadDetails(!reloadDetails);
                 toast.success("Contact updated successfully!");
             }).catch((reason: any) => {
                 //todo log an error in server side

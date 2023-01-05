@@ -20,7 +20,7 @@ export function GetContactDetails(client: GraphQLClient, id: string): Promise<Co
                     id
                     name
                 }
-                definition{
+                template{
                     id
                 }
                 label
@@ -44,7 +44,7 @@ export function GetContactCustomFields(client: GraphQLClient, id: string): Promi
 
         const query = gql`query GetContactCustomFields($id: ID!) {
             contact(id: $id) {
-                definition {
+                template {
                     id
                 }
                 customFields {
@@ -52,7 +52,7 @@ export function GetContactCustomFields(client: GraphQLClient, id: string): Promi
                     name
                     datatype
                     value
-                    definition {
+                    template {
                         id
                         name
                         type
@@ -66,7 +66,7 @@ export function GetContactCustomFields(client: GraphQLClient, id: string): Promi
                 fieldSets {
                     id
                     name
-                    definition {
+                    template {
                         id
                         name
                         order
@@ -76,7 +76,7 @@ export function GetContactCustomFields(client: GraphQLClient, id: string): Promi
                         name
                         datatype
                         value
-                        definition {
+                        template {
                             id
                             name
                             type

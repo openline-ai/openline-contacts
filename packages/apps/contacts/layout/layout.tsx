@@ -3,7 +3,7 @@ import {Button} from "primereact/button";
 import {OverlayPanel} from "primereact/overlaypanel";
 import {useRef} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowRightFromBracket, faCaretDown, faIdCard, faUserSecret, faUsersRectangle} from "@fortawesome/free-solid-svg-icons";
+import {faArrowRightFromBracket, faCaretDown, faIdCard, faSitemap, faUserSecret, faUsersRectangle} from "@fortawesome/free-solid-svg-icons";
 import {Menu} from "primereact/menu";
 import {signOut, useSession} from "next-auth/react";
 
@@ -48,6 +48,14 @@ export default function Layout({children}: any) {
             className: router.pathname.split('/')[1] === 'contactGroup' ? 'selected' : '',
             command: () => {
                 router.push('/contactGroup');
+            }
+        },
+        {
+            label: 'Organizations',
+            icon: <FontAwesomeIcon icon={faSitemap} className="mr-2"/>,
+            className: router.pathname.split('/')[1] === 'organization' ? 'selected' : '',
+            command: () => {
+                router.push('/organization');
             }
         }
     ];

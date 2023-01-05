@@ -30,7 +30,7 @@ function ContactGroupEdit() {
     const router = useRouter();
     const {id} = router.query;
 
-    const [reloadContactGroupDetails, setReloadContactGroupDetails] = useState(false);
+    const [reloadDetails, setReloadDetails] = useState(false);
     useEffect(() => {
 
         if (id !== undefined && id === 'new') {
@@ -45,7 +45,7 @@ function ContactGroupEdit() {
             });
         }
 
-    }, [id, reloadContactGroupDetails]);
+    }, [id, reloadDetails]);
 
     const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
     const deleteContactGroup = () => {
@@ -81,7 +81,7 @@ function ContactGroupEdit() {
         } else {
             UpdateContactGroup(client, data).then((result: ContactGroup) => {
                 if (result) {
-                    setReloadContactGroupDetails(true);
+                    setReloadDetails(!reloadDetails);
                     toast.success("Contact group updated successfully!");
                 } else {
                     //todo log an error in server side
