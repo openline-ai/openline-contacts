@@ -6,12 +6,13 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faArrowRightFromBracket, faCaretDown, faIdCard, faSitemap, faUserSecret, faUsersRectangle} from "@fortawesome/free-solid-svg-icons";
 import {Menu} from "primereact/menu";
 import {signOut, useSession} from "next-auth/react";
+import {WebChat} from "@openline-ai/openline-web-chat";
+import "@openline-ai/openline-web-chat/dist/esm/index.css"
 
 export default function Layout({children}: any) {
     const router = useRouter();
-    const {data: session, status} = useSession();
 
-    console.log(session);
+    const {data: session} = useSession();
 
     const userSettingsContainerRef = useRef<OverlayPanel>(null);
     const notificationsContainerRef = useRef<OverlayPanel>(null);
@@ -91,9 +92,9 @@ export default function Layout({children}: any) {
 
                 </div>
 
-                <div className="flex w-full h-full">
+                <nav className="flex w-full h-full">
                     <Menu model={items} className={'openline-menu'}/>
-                </div>
+                </nav>
 
             </div>
 
@@ -102,6 +103,18 @@ export default function Layout({children}: any) {
                     {children}
                 </div>
             </div>
+            <WebChat apikey={`${process.env.WEB_CHAT_API_KEY}`}
+                     httpServerPath={`${process.env.WEB_CHAT_HTTP_PATH}`}
+                     wsServerPath={`${process.env.WEB_CHAT_WS_PATH}`}
+                     trackerEnabled={false}
+                     trackerAppId=''
+                     trackerId=''
+                     trackerCollectorUrl=''
+                     trackerBufferSize=''
+                     trackerMinimumVisitLength=''
+                     trackerHeartbeatDelay=''
+                     userEmail={session?.user?.email || ''}
+            />
         </div>
     )
 }
