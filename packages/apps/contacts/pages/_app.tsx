@@ -11,12 +11,12 @@ import '../styles/button.css'
 import '../styles/search-component.css'
 import 'react-toastify/dist/ReactToastify.css';
 
+
 import {AppProps} from "next/app";
 import {Session} from "next-auth";
 import {ToastContainer} from "react-toastify";
 import Layout from "../layout/layout";
-import {SessionProvider, useSession} from "next-auth/react";
-import AccessDenied from "../components/accessDenied";
+import {SessionProvider} from "next-auth/react";
 
 export default function App({
                                 Component,

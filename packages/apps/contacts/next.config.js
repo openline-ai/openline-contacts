@@ -14,6 +14,10 @@ const nextConfig = {
     NEXTAUTH_OAUTH_TENANT_ID: process.env.NEXTAUTH_OAUTH_TENANT_ID,
     NEXTAUTH_OAUTH_SERVER_URL: process.env.NEXTAUTH_OAUTH_SERVER_URL,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+
+    WEB_CHAT_API_KEY:process.env.WEB_CHAT_API_KEY,
+    WEB_CHAT_HTTP_PATH:process.env.WEB_CHAT_HTTP_PATH,
+    WEB_CHAT_WS_PATH: process.env.WEB_CHAT_WS_PATH,
   },
   output: 'standalone'
 }
