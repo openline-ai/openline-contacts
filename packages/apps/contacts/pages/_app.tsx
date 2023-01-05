@@ -41,12 +41,12 @@ export default function App({
                              httpServerPath={`${process.env.HTTP_PATH}`}
                              wsServerPath={`${process.env.WS_PATH}`}
                              trackerEnabled={false}
-                             trackerAppId={''}
-                             trackerId={''}
-                             trackerCollectorUrl={''}
-                             trackerBufferSize={''}
-                             trackerMinimumVisitLength={''}
-                             trackerHeartbeatDelay={''}
+                             trackerAppId=''
+                             trackerId=''
+                             trackerCollectorUrl=''
+                             trackerBufferSize=''
+                             trackerMinimumVisitLength=''
+                             trackerHeartbeatDelay=''
                              userEmail={session?.user?.email || ''}
                     />)
                 }
