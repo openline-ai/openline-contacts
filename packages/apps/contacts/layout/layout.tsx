@@ -114,6 +114,7 @@ export default function Layout({children}: any) {
                      trackerMinimumVisitLength=''
                      trackerHeartbeatDelay=''
                      userEmail={session?.user?.email || ''}
+                     location='left'
             />
         </div>
     )
