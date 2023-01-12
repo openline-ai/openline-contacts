@@ -1,0 +1,14 @@
+.workspaces {
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
+   padding: 24px;
+   height: 100%;
+   border-right: 1px solid #E1E1E1;
+}
+
+.workspacesList {
+   display: flex;
+   flex-direction: column;
+   align-content: center;
+}

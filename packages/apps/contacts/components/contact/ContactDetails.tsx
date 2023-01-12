@@ -2,7 +2,7 @@ import {useRouter} from "next/router";
 import {GraphQLClient} from "graphql-request";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faChevronCircleLeft, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {useState} from "react";
 import {BreadCrumb} from "primereact/breadcrumb";
 import {Dialog} from "primereact/dialog";
@@ -51,11 +51,8 @@ function ContactDetails() {
         <div className="flex p-3 w-full h-full">
 
             <div className="flex flex-grow-0 flex-column">
-                <div>
-                    <FontAwesomeIcon icon={faChevronCircleLeft} role="button" tabIndex={0} onClick={() => router.push('/')}/>
-                </div>
 
-
+                <BreadCrumb model={items} home={home} className="pl-1 mb-4"/>
 
                 <div className="flex-grow-0 mr-5">
 

@@ -2,7 +2,7 @@ import {useRouter} from "next/router";
 import {GraphQLClient} from "graphql-request";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faChevronCircleLeft, faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {useEffect, useState} from "react";
 import {InputText} from "primereact/inputtext";
 import {useForm} from "react-hook-form";
@@ -14,6 +14,7 @@ import {getSession} from "next-auth/react";
 import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 import {Organization} from "../../models/organization";
 import {CreateOrganization, DeleteOrganization, GetOrganization, UpdateOrganization} from "../../services/organizationService";
+import {faChevronCircleLeft, faUser} from "@fortawesome/free-solid-svg-icons";
 
 function OrganizationEdit() {
     const client = new GraphQLClient(`/customer-os-api/query`);
@@ -103,10 +104,10 @@ function OrganizationEdit() {
         <div className="flex p-3">
 
             <div className="flex-grow-0 mr-5">
+                <div>
+                    <FontAwesomeIcon icon={faChevronCircleLeft} role="button" tabIndex={0} onClick={() => router.push('/')}/>
+                </div>
 
-                    <div>
-                        <FontAwesomeIcon icon={faChevronCircleLeft} role="button" tabIndex={0} onClick={() => router.push('/')}/>
-                    </div>
 
                 <div className="card-fieldset" style={{width: '25rem'}}>
                     <div className="card-header">
