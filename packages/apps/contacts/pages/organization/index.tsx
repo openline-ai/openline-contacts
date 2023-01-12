@@ -3,7 +3,7 @@ import {useRouter} from "next/router";
 import GridComponent from "../../components/generic/GridComponent";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCirclePlus} from "@fortawesome/free-solid-svg-icons";
+import {faArrowLeft, faCirclePlus} from "@fortawesome/free-solid-svg-icons";
 import {getEnumLabel} from "../../model/enums";
 import {ContactTitleEnum} from "../../model/enum-contactTitle";
 import {GraphQLClient} from "graphql-request";
@@ -36,7 +36,10 @@ const OrganizationList: NextPage = () => {
     }
 
     return (
-        <>
+        <div>
+            <button onClick={() => router.push('/')}>
+                <FontAwesomeIcon icon={faArrowLeft} />
+            </button>
             <GridComponent gridTitle="Organizations"
                            queryData={(params: any) => loadData(params)}
                            columns={[
@@ -66,7 +69,7 @@ const OrganizationList: NextPage = () => {
                            }
                            onEdit={onEdit}
             />
-        </>
+        </div>
     );
 }
 
