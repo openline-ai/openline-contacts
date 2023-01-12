@@ -13,7 +13,6 @@ export default function Layout({children}: any) {
 
             {router.pathname === '/' && (
                 <SidePanel user={session}/>
-
             )}
 
 

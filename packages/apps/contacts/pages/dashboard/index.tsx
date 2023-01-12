@@ -10,11 +10,9 @@ const Dashboard: NextPage = () => {
     return (
         // <details-page-layout />
         <div style={{padding: '40px'}}>
-
             <OrganizationList fullScreenMode={false}/>
             <Divider />
             <ContactList fullScreenMode={false} />
-
         </div>
     )
 }
