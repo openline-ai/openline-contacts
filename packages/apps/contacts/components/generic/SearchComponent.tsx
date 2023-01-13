@@ -262,7 +262,7 @@ SearchComponent.propTypes = {
     overlayWidth: PropTypes.string,
     triggerType: PropTypes.oneOf(["dropdown", "button"]),
 
-    //search with button
+    //search with icon-button
     buttonLabel: PropTypes.string,
     buttonIcon: PropTypes.any,
 

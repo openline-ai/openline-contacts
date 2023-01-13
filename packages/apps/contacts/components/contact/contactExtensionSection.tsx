@@ -44,7 +44,7 @@ function ContactExtensionSection(props: any) {
      * edit a field -> created manually -> edit just that field
      *
      * WARNING
-     * when there are no fields saved with a value, but we have the underlying fields saved, not sure how to put the edit button
+     * when there are no fields saved with a value, but we have the underlying fields saved, not sure how to put the edit icon-button
      */
 
 

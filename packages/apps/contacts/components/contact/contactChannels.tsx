@@ -1,14 +1,14 @@
 import PropTypes, {string} from "prop-types";
-import {useEffect, useImperativeHandle, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {gql, GraphQLClient} from "graphql-request";
-import {Button} from "primereact/button";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCirclePlus} from "@fortawesome/free-solid-svg-icons";
-import {OverlayPanel} from "primereact/overlaypanel";
+import {OverlayPanel, OverlayPanelEventType} from "primereact/overlaypanel";
 import {Menu} from "primereact/menu";
-import ContactEmailTemplate from "./contactEmailTemplate";
+import ContactEmailTemplate from "./contact-detail-preview-template/contactEmailTemplate";
 import {uuidv4} from "../../utils/uuid-generator";
-import ContactPhoneNumberTemplate from "./contactPhoneNumberTemplate";
+import ContactPhoneNumberTemplate from "./contact-detail-preview-template/contactPhoneNumberTemplate";
+import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
+import {Button, Divider} from "../atoms";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 function ContactCommunication(props: any) {
     const client = new GraphQLClient(`/customer-os-api/query`);
@@ -118,16 +118,18 @@ function ContactCommunication(props: any) {
     }
 
     return (
-        <div className='card-fieldset' style={{width: '100%'}}>
+        <>
             <div className="card-header">
-                <div className="flex flex-row w-full">
-                    <div className="flex-grow-1">Communication</div>
-                    <div className="flex">
-
-                        <Button className="p-button-text p-0" onClick={(e: any) => addCommunicationChannelContainerRef?.current?.toggle(e)}>
-                            <FontAwesomeIcon size="xs" icon={faCirclePlus} style={{color: 'black'}}/>
-                        </Button>
-
+                <div className="flex flex-row w-full align-items-center">
+                    <h1 className="text-gray-900 text-xl">Communication</h1>
+                    <div className="flex ml-3">
+                        {/* fixme */}
+                        <div className='flex flex-1 justify-content-end'>
+                            <Button mode="primary" onClick={(e: OverlayPanelEventType) => addCommunicationChannelContainerRef?.current?.toggle(e)}>
+                                <FontAwesomeIcon icon={faPlus} />
+                                Add
+                            </Button>
+                        </div>
                         <OverlayPanel ref={addCommunicationChannelContainerRef} dismissable>
                             <Menu model={[
                                 {
@@ -163,7 +165,7 @@ function ContactCommunication(props: any) {
                     </div>
                 </div>
             </div>
-            <div className="card-body">
+            <div>
 
                 {
                     emails.length === 0 &&
@@ -173,15 +175,19 @@ function ContactCommunication(props: any) {
                 }
 
                 {
-                    emails.map((e: any) => {
-                        return <ContactEmailTemplate key={e.uiKey}
-                                                     contactId={props.contactId}
-                                                     email={e}
-                                                     initialEditState={e.newItem}
-                                                     notifySave={(e: any) => emailSaved(e)}
-                                                     notifyDelete={(uiKey: string) => emailDeleted(uiKey)}
-                                                     notifyCancelEdit={(uiKey: string) => emailCancelEdit(uiKey)}
-                        />
+                    emails.map((e: any, i:number) => {
+                        return <>
+                            <ContactEmailTemplate key={e.uiKey}
+                                                  contactId={props.contactId}
+                                                  email={e}
+                                                  initialEditState={e.newItem}
+                                                  notifySave={(e: any) => emailSaved(e)}
+                                                  notifyDelete={(uiKey: string) => emailDeleted(uiKey)}
+                                                  notifyCancelEdit={(uiKey: string) => emailCancelEdit(uiKey)}
+                            />
+                                <Divider/>
+                        </>
+                   
                     })
                 }
 
@@ -199,7 +205,7 @@ function ContactCommunication(props: any) {
                 }
 
             </div>
-        </div>
+        </>
     );
 }
 

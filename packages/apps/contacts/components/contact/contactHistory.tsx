@@ -23,7 +23,7 @@ function ContactHistory(props: any) {
                         content {
                             id
                             startedAt
-                            user {
+                            users {
                                 id
                                 firstName
                                 lastName
@@ -48,7 +48,8 @@ function ContactHistory(props: any) {
     }, [props.contactId]);
 
     return (
-        <div className='w-full h-full'>
+        <div>
+            
             <div>
 
                 {

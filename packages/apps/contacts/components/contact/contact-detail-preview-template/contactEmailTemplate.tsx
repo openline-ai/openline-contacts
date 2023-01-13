@@ -4,14 +4,15 @@ import {useState} from "react";
 import {gql, GraphQLClient} from "graphql-request";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faEdit, faEnvelope, faPhone, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
 import {Dropdown} from "primereact/dropdown";
-import {EmailLabelEnum} from "../../model/enum-emailLabel";
+import {EmailLabelEnum} from "../../../model/enum-emailLabel";
 import {Checkbox} from "primereact/checkbox";
 import {toast} from "react-toastify";
-
+import {IconButton} from "../../atoms/icon-button";
+import styles from './contact-detail-preview.module.scss'
 function ContactEmailTemplate(props: any) {
     const client = new GraphQLClient(`/customer-os-api/query`);
 
@@ -104,28 +105,42 @@ function ContactEmailTemplate(props: any) {
         <>
             {
                 !editDetails &&
-                <div className="display">
-                    <div className="grid grid-nogutter mt-3">
-                        <div className="col-8">
-                            Email: {props.email.email}<br/>
-                            Label: {props.email.label}
-                            {props.email.primary ? <><br/> Primary</> : ''}
+                <div className={styles.contactDetailsContainer}>
+                    <div>
+                        <div className={styles.contactDetailLabel}>
+                            {props.email.label}
                         </div>
-                        <div className="col-4">
-
-                            <Button className="p-button-text p-0" onClick={(e: any) => {
-                                setValue('id', props.email.id);
-                                setValue('email', props.email.email);
-                                setValue('label', props.email.label);
-                                setValue('primary', props.email.primary);
-                                setEditDetails(true);
-                            }}>
-                                <FontAwesomeIcon size="xs" icon={faEdit} style={{color: 'black'}}/>
-                            </Button>
-
-                            <Button className="p-button-text p-0" onClick={(e: any) => setDeleteEmailConfirmationModalVisible(true)}>
-                                <FontAwesomeIcon size="xs" icon={faTrashCan} style={{color: 'black'}}/>
-                            </Button>
+                        <div className={styles.contactDetail}>
+                            {props.email.email}
+                        </div>       
+                     
+                        <div className={styles.contactDetail}>
+                            {props.email.primary ?  <>Primary</> : ''}
+                        </div>
+                    </div>
+                            <div className='flex'>
+                                <div>
+                                    <IconButton
+                                        className="p-button-text p-0"
+                                        onClick={(e: any) => {
+                                            setValue('id', props.email.id);
+                                            setValue('email', props.email.email);
+                                            setValue('label', props.email.label);
+                                            setValue('primary', props.email.primary);
+                                            setEditDetails(true);
+                                        }}
+                                        icon={faEdit}
+                                    />
+                                </div>
+                                <div>
+                                    <IconButton
+                                        className="p-button-text p-0"
+                                        onClick={() => setDeleteEmailConfirmationModalVisible(true)}
+                                        icon={faTrashCan}
+                                    />
+                                </div>
+                            </div>
+                        
                             <Dialog header="Email delete confirmation"
                                     draggable={false}
                                     visible={deleteEmailConfirmationModalVisible}
@@ -139,8 +154,6 @@ function ContactEmailTemplate(props: any) {
                                 <p>Please confirm that you want to delete this email address.</p>
                             </Dialog>
 
-                        </div>
-                    </div>
                 </div>
             }
 

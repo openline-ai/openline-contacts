@@ -3,7 +3,7 @@ import { Avatar } from '../avatar';
 import {StaticImageData} from "next/image";
 import styles from "./avatar-button.module.scss";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faChevronCircleRight, faUser} from "@fortawesome/free-solid-svg-icons";
+import {faUser} from "@fortawesome/free-solid-svg-icons";
 
 interface Props extends Partial<HTMLButtonElement> {
     image?: StaticImageData;

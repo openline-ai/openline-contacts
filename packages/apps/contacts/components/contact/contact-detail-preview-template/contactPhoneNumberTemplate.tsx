@@ -4,14 +4,15 @@ import {useState} from "react";
 import {gql, GraphQLClient} from "graphql-request";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faEdit, faPhone, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
 import {Dropdown} from "primereact/dropdown";
 import {Checkbox} from "primereact/checkbox";
-import {PhoneNumberLabelEnum} from "../../model/enum-phoneNumberlLabel";
+import {PhoneNumberLabelEnum} from "../../../model/enum-phoneNumberlLabel";
 import {toast} from "react-toastify";
-
+import styles from "./contact-detail-preview.module.scss";
+import {IconButton} from "../../atoms/icon-button";
 function ContactPhoneNumberTemplate(props: any) {
     const client = new GraphQLClient(`/customer-os-api/query`);
 
@@ -103,28 +104,48 @@ function ContactPhoneNumberTemplate(props: any) {
         <>
             {
                 !editDetails &&
-                <div className="display">
-                    <div className="grid grid-nogutter mt-3">
-                        <div className="col-8">
-                            Number: {props.phoneNumber.e164}<br/>
-                            Label: {props.phoneNumber.label}
-                            {props.phoneNumber.primary ? <><br/> Primary</> : ''}
+                    <div className={styles.contactDetailsContainer}>
+                        <div>
+                            <div className={styles.contactDetailLabel}>
+                                {props.phoneNumber.label}
+                            </div>
+                            <div className={styles.contactDetail}>
+                                {/*<FontAwesomeIcon icon={faPhone} className={styles.contactDetailIcon} />*/}
+                                {props.phoneNumber.e164}
+                            </div>
+                       
+                            <div className={styles.contactDetail}>
+                                {props.phoneNumber.primary ?  <>Primary</> : ''}
+                            </div>
+
+
+
                         </div>
-                        <div className="col-4">
+                        <div className='flex'>
+                            <div>
+                                <IconButton
+                                    className="p-button-text p-0"
+                                    onClick={(e: any) => {
+                                        setValue('id', props.phoneNumber.id);
+                                        setValue('e164', props.phoneNumber.e164);
+                                        setValue('label', props.phoneNumber.label);
+                                        setValue('primary', props.phoneNumber.primary);
+                                        setEditDetails(true);
+                                    }}
+                                    icon={faEdit}
+                                />
+                            </div>
+                            <div>
+                                <IconButton
+                                    className="p-button-text p-0"
+                                    onClick={() => setDeletePhoneNumberConfirmationModalVisible(true)}
+                                    icon={faTrashCan}
+                                />
+                            </div>
+                        </div>
+                   
 
-                            <Button className="p-button-text p-0" onClick={(e: any) => {
-                                setValue('id', props.phoneNumber.id);
-                                setValue('e164', props.phoneNumber.e164);
-                                setValue('label', props.phoneNumber.label);
-                                setValue('primary', props.phoneNumber.primary);
-                                setEditDetails(true);
-                            }}>
-                                <FontAwesomeIcon size="xs" icon={faEdit} style={{color: 'black'}}/>
-                            </Button>
-
-                            <Button className="p-button-text p-0" onClick={(e: any) => setDeletePhoneNumberConfirmationModalVisible(true)}>
-                                <FontAwesomeIcon size="xs" icon={faTrashCan} style={{color: 'black'}}/>
-                            </Button>
+                        
                             <Dialog header="Phone number delete confirmation"
                                     draggable={false}
                                     visible={deletePhoneNumberConfirmationModalVisible}
@@ -139,8 +160,6 @@ function ContactPhoneNumberTemplate(props: any) {
                             </Dialog>
 
                         </div>
-                    </div>
-                </div>
             }
 
             {
