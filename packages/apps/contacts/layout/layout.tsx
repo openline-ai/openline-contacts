@@ -23,7 +23,7 @@ export default function Layout({children}: any) {
             </div>
 
             <WebChat apikey={`${process.env.WEB_CHAT_API_KEY}`}
-                     httpServerPath={`${process.env.WEB_CHAT_HTTP_PATH}`}
+                     httpServerPath="/ch/api/v1"
                      wsServerPath={`${process.env.WEB_CHAT_WS_PATH}`}
                      location="left"
                      trackerEnabled={`${process.env.WEB_CHAT_TRACKER_ENABLED}` === 'true'}
