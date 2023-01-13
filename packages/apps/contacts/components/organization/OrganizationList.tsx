@@ -58,10 +58,12 @@ export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScree
                            ]}
                            gridActions={
                                <div className="flex align-items-center">
-                                   <Button onClick={(e: any) => router.push(`/organization`)} className='p-button-text'>
-                                       <FontAwesomeIcon icon={faWindowRestore} className="mr-2"/>Full screen
-                                   </Button>
-                                   <Button onClick={(e: any) => router.push(`/organization/new`)} className='p-button-text'>
+                                   {!fullScreenMode && (
+                                       <Button onClick={() => router.push(`/organization`)} className='p-button-text'>
+                                           <FontAwesomeIcon icon={faWindowRestore} className="mr-2"/>Full screen
+                                       </Button>
+                                   )}
+                                   <Button onClick={() => router.push(`/organization/new`)} className='p-button-text'>
                                        <FontAwesomeIcon icon={faCirclePlus} className="mr-2"/>Add an organization
                                    </Button>
                                </div>
