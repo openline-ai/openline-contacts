@@ -133,10 +133,13 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
                            ]}
                            gridActions={
                                <div className="flex align-items-center">
-                                   <Button onClick={(e: any) => router.push(`/contact`)} className='p-button-text'>
-                                       <FontAwesomeIcon icon={faWindowRestore} className="mr-2"/>Full screen
-                                   </Button>
-                                   <Button onClick={(e: any) => router.push(`/contact/new`)} className='p-button-text'>
+                                   {!fullScreenMode && (
+                                       <Button onClick={() => router.push(`/contact`)} className='p-button-text'>
+                                           <FontAwesomeIcon icon={faWindowRestore} className="mr-2"/>Full screen
+                                       </Button>
+                                   )}
+
+                                   <Button onClick={() => router.push(`/contact/new`)} className='p-button-text'>
                                        <FontAwesomeIcon icon={faCirclePlus} className="mr-2"/>Add a new contact
                                    </Button>
                                </div>
