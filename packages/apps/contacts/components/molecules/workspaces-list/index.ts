@@ -1,1 +1,0 @@
-export {WorkspacesList} from './WorkspacesList'
