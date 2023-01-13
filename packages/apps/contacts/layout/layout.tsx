@@ -1,10 +1,4 @@
 import {useRouter} from "next/router";
-import {Button} from "primereact/button";
-import {OverlayPanel} from "primereact/overlaypanel";
-import {useRef} from "react";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowRightFromBracket, faCaretDown, faIdCard, faSitemap, faUserSecret, faUsersRectangle} from "@fortawesome/free-solid-svg-icons";
-import {Menu} from "primereact/menu";
 import {signOut, useSession} from "next-auth/react";
 import {WebChat} from "@openline-ai/openline-web-chat";
 import "@openline-ai/openline-web-chat/dist/esm/index.css"

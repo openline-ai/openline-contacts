@@ -11,11 +11,10 @@ import {MapGridFilters} from "../../utils/converters";
 import {PaginatedRequest} from "../../utils/pagination";
 import {getSession} from "next-auth/react";
 import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
-
-const ContactList: NextPage = () => {
+import {FullScreenModeLayout} from "../organisms/fullscreen-mode-layout";
+export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMode}) => {
     const client = new GraphQLClient(`/customer-os-api/query`);
     const router = useRouter();
-
     let onEdit = (id: any) => router.push(`/contact/${id}`);
 
     const loadData = function (params: PaginatedRequest) {
@@ -58,9 +57,12 @@ const ContactList: NextPage = () => {
             });
         });
     }
+    console.log('FULL', fullScreenMode)
 
     return (
-        <>
+        <FullScreenModeLayout fullScreenMode={fullScreenMode} >
+
+
             <GridComponent gridTitle="Contacts"
                            queryData={(params: any) => loadData(params)}
                            columns={[
@@ -131,7 +133,7 @@ const ContactList: NextPage = () => {
                            ]}
                            gridActions={
                                <div className="flex align-items-center">
-                                   <Button onClick={(e: any) => router.push(`/organization`)} className='p-button-text'>
+                                   <Button onClick={(e: any) => router.push(`/contact`)} className='p-button-text'>
                                        <FontAwesomeIcon icon={faWindowRestore} className="mr-2"/>Full screen
                                    </Button>
                                    <Button onClick={(e: any) => router.push(`/contact/new`)} className='p-button-text'>
@@ -141,12 +143,12 @@ const ContactList: NextPage = () => {
                            }
                            onEdit={onEdit}
             />
-        </>
+        </FullScreenModeLayout>
+
+
     );
 }
 
 export async function getServerSideProps(context: any) {
     return loggedInOrRedirectToLogin(await getSession(context));
 }
-
-export default ContactList

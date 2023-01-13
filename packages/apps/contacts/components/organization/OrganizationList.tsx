@@ -3,9 +3,7 @@ import {useRouter} from "next/router";
 import GridComponent from "../../components/generic/GridComponent";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCirclePlus, faWindowMaximize, faWindowRestore} from "@fortawesome/free-solid-svg-icons";
-import {getEnumLabel} from "../../model/enums";
-import {ContactTitleEnum} from "../../model/enum-contactTitle";
+import {faCirclePlus, faWindowRestore} from "@fortawesome/free-solid-svg-icons";
 import {GraphQLClient} from "graphql-request";
 import {PaginatedRequest, PaginatedResponse} from "../../utils/pagination";
 import {getSession} from "next-auth/react";
@@ -13,8 +11,9 @@ import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 import {toast} from "react-toastify";
 import {GetOrganizations} from "../../services/organizationService";
 import {Organization} from "../../models/organization";
+import {FullScreenModeLayout} from "../organisms/fullscreen-mode-layout";
 
-const OrganizationList: NextPage = () => {
+export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScreenMode}) => {
     const client = new GraphQLClient(`/customer-os-api/query`);
     const router = useRouter();
 
@@ -36,7 +35,7 @@ const OrganizationList: NextPage = () => {
     }
 
     return (
-        <>
+        <FullScreenModeLayout fullScreenMode={fullScreenMode}>
             <GridComponent gridTitle="Organizations"
                            queryData={(params: any) => loadData(params)}
                            columns={[
@@ -69,7 +68,7 @@ const OrganizationList: NextPage = () => {
                            }
                            onEdit={onEdit}
             />
-        </>
+        </FullScreenModeLayout>
     );
 }
 
@@ -77,4 +76,3 @@ export async function getServerSideProps(context: any) {
     return loggedInOrRedirectToLogin(await getSession(context));
 }
 
-export default OrganizationList
