@@ -4,7 +4,7 @@ import {NextResponse} from "next/server";
 // More on how NextAuth.js middleware works: https://next-auth.js.org/configuration/nextjs#middleware
 
 export default withAuth(function middleware(request: NextRequestWithAuth) {
-        if (!request.nextUrl.pathname.startsWith('/customer-os-api/') && !request.nextUrl.pathname.startsWith('/fs/') && !request.nextUrl.pathname.startsWith('/ch/')) {
+        if (!request.nextUrl.pathname.startsWith('/customer-os-api/') && !request.nextUrl.pathname.startsWith('/fs/')) {
             return NextResponse.next()
         } else {
 
@@ -17,9 +17,6 @@ export default withAuth(function middleware(request: NextRequestWithAuth) {
             } else if (request.nextUrl.pathname.startsWith('/fs/')) {
                 newURL = process.env.FILE_STORAGE_API_PATH + "/" + request.nextUrl.pathname.substring(("/fs/").length);
                 requestHeaders.set('X-Openline-API-KEY', process.env.FILE_STORAGE_API_KEY as string)
-            } else if (request.nextUrl.pathname.startsWith('/ch/')) {
-                newURL = process.env.WEB_CHAT_HTTP_PATH + "/" + request.nextUrl.pathname.substring(("/ch/").length);
-                requestHeaders.set('WebChatApiKey', process.env.WEB_CHAT_API_KEY as string)
             }
 
             if (request.nextUrl.searchParams) {
@@ -47,5 +44,5 @@ export default withAuth(function middleware(request: NextRequestWithAuth) {
     })
 
 export const config = {
-    matcher: ['/customer-os-api/(.*)', '/fs/(.*)', '/ch/(.*)'],
+    matcher: ['/customer-os-api/(.*)', '/fs/(.*)'],
 }
