@@ -30,10 +30,8 @@ import ContactNoteModalTemplate from "../note/contactNoteModalTemplate";
 
 // TODO Move atom components to ui-kit
 // TODO refactor this so it is layout that can be reused
-interface Props {
-    children: React.ReactNode
-}
-export const DetailsPageLayout = ({children}: Props) => {
+
+export const DetailsPageLayout = () => {
     const {data: session} = useSession();
     const client = new GraphQLClient(`/customer-os-api/query`);
     const [reload, setReload] = useState(false);
