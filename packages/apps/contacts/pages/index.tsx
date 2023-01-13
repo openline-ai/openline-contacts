@@ -1,13 +1,13 @@
 import type {NextPage} from 'next'
-import ContactList from "./contact";
 import {getSession} from "next-auth/react";
 import {loggedInOrRedirectToLogin} from "../utils/logged-in";
+import Dashboard from "./dashboard";
 
 const Home: NextPage = () => {
 
     return (
         <>
-            <ContactList/>
+            <Dashboard/>
         </>
     )
 }

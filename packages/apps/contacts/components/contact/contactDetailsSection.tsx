@@ -198,7 +198,7 @@ export default function ContactDetailsSection(props: any) {
     }
 
     return (
-        <div className="card-fieldset" style={{width: '25rem'}}>
+        <div className="card-fieldset" style={{width: '100%'}}>
             <div className="card-header">
                 <div className="flex flex-row w-full">
                     <div className="flex-grow-1">Contact details</div>
