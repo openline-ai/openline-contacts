@@ -4,9 +4,11 @@ import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 import {ContactList} from "../../components/contact/ContactList";
 import {OrganizationList} from "../../components/organization/OrganizationList";
 import {Divider} from "../../components/atoms";
+import {DetailsPageLayout} from "../../components/contact/details-page-layout/DetailsPageLayout";
 
 const Dashboard: NextPage = () => {
     return (
+        // <details-page-layout />
         <div style={{padding: '40px'}}>
 
             <OrganizationList fullScreenMode={false}/>

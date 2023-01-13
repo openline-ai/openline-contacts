@@ -13,7 +13,7 @@ export const Avatar: React.FC<AvatarProps> = ({ image, username, imageHeight,
     return image ? (
                     <Image {...rest} src={image} alt={username} height={imageHeight || 40} width={imageWidth} />
             ) : (
-                <p>{username}</p>
+                <div>{username}</div>
             )
 };
 

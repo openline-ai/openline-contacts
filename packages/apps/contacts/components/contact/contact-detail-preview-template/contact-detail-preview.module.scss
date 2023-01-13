@@ -1,0 +1,32 @@
+.contactDetailsContainer {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+.contactDetailEntry {
+  display: flex;
+}
+.contactDetail {
+  color: #474747;
+  font-size: 1rem;
+  margin-right: 4px;
+
+  &:not(:last-of-type) {
+    margin-bottom: 10px;
+  }
+}
+
+.contactDetailLabel {
+  color: #474747;
+  margin-bottom: 10px;
+  text-transform: lowercase;
+
+  &:first-letter {
+    text-transform: capitalize;
+  }
+
+}
+
+.contactDetailIcon {
+  margin-right: 8px;
+}

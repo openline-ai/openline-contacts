@@ -337,7 +337,7 @@ const GridComponent = (props: any) => {
                                             return s;
                                         }))
                                     }}
-                                    className={'sort-button mr-2' + (c.dir === "ASC" ? ' selected' : '')}>
+                                    className={'sort-icon-button mr-2' + (c.dir === "ASC" ? ' selected' : '')}>
                                     <FontAwesomeIcon icon={faArrowUpShortWide} className="mr-2"/>ASC
                                 </Button>
                                 <Button
@@ -349,7 +349,7 @@ const GridComponent = (props: any) => {
                                             return s;
                                         }))
                                     }}
-                                    className={'sort-button mr-2' + (c.dir === "DESC" ? ' selected' : '')}>
+                                    className={'sort-icon-button mr-2' + (c.dir === "DESC" ? ' selected' : '')}>
                                     <FontAwesomeIcon icon={faArrowDownWideShort}/>DESC
                                 </Button>
                             </div>

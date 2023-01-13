@@ -1,24 +1,24 @@
 import PropTypes from "prop-types";
-import {ChangeEvent, useRef, useState} from "react";
+import {ChangeEvent, useRef } from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faImage} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import {toast} from "react-toastify";
-import {Button} from "primereact/button";
 import {Controller, useForm} from "react-hook-form";
 import {Editor} from "primereact/editor";
-import {Dialog} from "primereact/dialog";
 import {CreateContactNote, UpdateContactNote} from "../../../services/contactService";
 import {GraphQLClient} from "graphql-request";
 import {Note} from "../../../models/contact";
+import {Button} from "../../atoms";
+
 
 function ContactNoteModalTemplate(props: any) {
     const client = new GraphQLClient(`/customer-os-api/query`);
 
     const {register, handleSubmit, setValue, getValues, control} = useForm({
         defaultValues: {
-            id: props.note.id,
-            html: props.note.html,
+            id: props.note?.id,
+            html: props.note?.html,
             htmlEnhanced: props.note.htmlEnhanced
         }
     });
@@ -125,27 +125,25 @@ function ContactNoteModalTemplate(props: any) {
     }
 
     return (
-        <Dialog header={props.note.id ? 'Edit note' : 'Add note'}
-                style={{width: '700px'}}
-                visible={true}
-                draggable={false}
-                footer={
-                    <div className="flex flex-grow-1 justify-content-between align-items-center">
-                        <Button label={props.note.id ? 'Update note' : 'Add note'} icon="pi pi-check" onClick={() => onSubmit()}/>
-                        <Button label="Cancel" icon="pi pi-times" onClick={() => props.notifyCancel()} className="p-button-text"/>
-                    </div>
-                }
-                onHide={() => props.notifyCancel()}>
-
-            <Controller name="htmlEnhanced" control={control} render={({field}) => (
-                <Editor style={{height: '300px'}}
-                        className="w-full"
-                        headerTemplate={richTextHeader()}
-                        value={field.value} onTextChange={(e) => setValue('htmlEnhanced', e.htmlValue)}
+        <div style={{display: 'flex', flexDirection: 'column'}}>
+            <Controller  name="htmlEnhanced" control={control} render={({field}) => (
+                <Editor
+                    style={{height: '120px'}}
+                    className="w-full h-full"
+                    headerTemplate={richTextHeader()}
+                    value={field.value} onTextChange={(e) => setValue('htmlEnhanced', e.htmlValue)}
                 />
+               
             )}/>
+            <div className="flex justify-content-end mt-3">
+                <Button onClick={onSubmit} mode="primary" className='mt-3'>
+                    Save
+                </Button>
+            </div>
 
-        </Dialog>
+
+        </div>
+
     );
 }
 

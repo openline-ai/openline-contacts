@@ -48,7 +48,7 @@ export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScree
                                {
                                    className: 'w10',
                                    field: 'industry',
-                                   label: 'industry'
+                                   label: 'Industry'
                                },
                                {
                                    className: 'w10',

@@ -1,36 +1,37 @@
 import PropTypes, {string} from "prop-types";
 import {useEffect, useState} from "react";
 import {GraphQLClient} from "graphql-request";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlusCircle} from "@fortawesome/free-solid-svg-icons";
 import {PaginatedResponse} from "../../../utils/pagination";
-import {Button} from "primereact/button";
 import {toast} from "react-toastify";
 import {GetContactNotes} from "../../../services/contactService";
 import {Note} from "../../../models/contact";
 import {Skeleton} from "primereact/skeleton";
 import ContactNoteTemplate from "./contactNoteTemplate";
-import ContactNoteModalTemplate from "./contactNoteModalTemplate";
 
-function ContactNotes(props: any) {
+
+interface Props {
+   contactId?: string | Array<string> 
+   className?: Array<string>
+   reload: boolean
+   setReload: (newState: boolean) => void
+}
+function ContactNotes(props: Props) {
     const client = new GraphQLClient(`/customer-os-api/query`);
 
     const [noteTotalElements, setNoteTotalElements] = useState(0);
     const [noteItems, setNoteItems] = useState([] as any);
     const [loading, setLoading] = useState(true);
-    const [reload, setReload] = useState(false);
-    const [addNewNote, setAddNewNote] = useState(false);
 
     useEffect(() => {
         if (props.contactId) {
             loadNotes();
         }
-    }, [props.contactId, reload]);
+    }, [props.contactId, props.reload]);
 
     const loadNotes = () => {
         setLoading(true);
         //todo add pagination
-        GetContactNotes(client, props.contactId, {page: 0, limit: 100}).then(async (result: PaginatedResponse<Note>) => {
+        GetContactNotes(client, (props.contactId as string), {page: 0, limit: 100}).then(async (result: PaginatedResponse<Note>) => {
             if (result) {
                 setNoteItems(result.content);
                 setNoteTotalElements(result.totalElements);
@@ -62,43 +63,11 @@ function ContactNotes(props: any) {
                 {
                     !loading &&
                     <>
-
-                        <div className="flex flex-grow-1 align-items-center w-full bg-white border-dark-1 p-3 mt-3">
-
-                            <div className="flex flex-grow-1">
-                                Total notes: {noteTotalElements}
-                            </div>
-
-                            <div className="flex flex-grow-0 align-items-center" onClick={() => {
-                                setAddNewNote(!addNewNote);
-                            }}>
-                                <FontAwesomeIcon icon={faPlusCircle} className="text-gray-600" style={{color: 'black'}}/>
-                                <Button className='p-button-link text-gray-600' label="Add note"/>
-                            </div>
-                            {
-                                addNewNote &&
-                                <ContactNoteModalTemplate
-                                    note={{
-                                        id: undefined,
-                                        html: ''
-                                    }}
-                                    contactId={props.contactId}
-                                    notifyChanged={(data: any) => {
-                                        setAddNewNote(false);
-                                        setReload(!reload); // TODO add the new node to the array. do not reload everything
-                                    }}
-                                    notifyCancel={() => {
-                                        setAddNewNote(false);
-                                    }}
-                                />
-                            }
-
-                        </div>
-
+                        
                         {
                             noteItems.length == 0 &&
                             <div className="flex">
-                                <div className="flex flex-grow-1 p-2 bg-white border-dark-1 mt-3">
+                                <div className="flex flex-grow-1 p-2 mt-3">
                                     No notes added yet
                                 </div>
                             </div>
@@ -107,15 +76,15 @@ function ContactNotes(props: any) {
                         {
                             noteItems.map((e: any) => {
                                 return <ContactNoteTemplate key={e.id}
-                                                            contactId={props.contactId}
+                                                            contactId={props.contactId as string} //fixme
                                                             note={e}
                                                             notifyChanged={(id: string) => {
                                                                 //TODO change only the object that has changed, not reload the whole list
-                                                                setReload(!reload);
+                                                                props.setReload(!props.reload);
                                                             }}
                                                             notifyDeleted={(id: string) => {
                                                                 //TODO change only the object that has changed, not reload the whole list
-                                                                setReload(!reload);
+                                                                props.setReload(!props.reload);
                                                             }}
                                 />
                             })
@@ -126,14 +95,6 @@ function ContactNotes(props: any) {
             </div>
         </div>
     );
-}
-
-ContactNotes.propTypes = {
-    contactId: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.arrayOf(string)
-    ]) || undefined,
-    className: PropTypes.arrayOf(string)
 }
 
 export default ContactNotes

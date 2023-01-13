@@ -1,0 +1,49 @@
+.button {
+  padding: 8px 16px;
+  border-radius: 30px;
+  border: none; // fix in theming
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // fixme improve visual
+
+
+  & svg {
+    margin-right: 4px;
+  }
+
+  &:hover,
+  &:focus,
+  &:active {
+    background: linear-gradient(-45deg, var(--primary-color), #f696b6);
+  }
+
+   &:not(:last-of-type) {
+     margin-right: 8px;
+   }
+
+  &.default {
+    background: transparent;
+    color: #474747;
+
+    // fixme improve visual
+    &:hover,
+    &:focus,
+    &:active {
+      background: #D3D3D3;
+    }
+  }
+
+  &.primary {
+    background: var(--primary-color);
+    color: white;
+
+    // fixme improve visual
+    &:hover,
+    &:focus,
+    &:active {
+      background: var(--primary-color-hover);
+
+    }
+  }
+}

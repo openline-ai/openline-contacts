@@ -1,0 +1,88 @@
+.pageWrapper {
+  max-width: 1280px; // todo move to variable, web standard
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+   height:100%;
+   //width: 100%;
+  padding: 12px;
+  grid-gap: 8px;
+  grid-template-areas: "profile"
+                       "contactFields"
+                       "message"
+                       "contactHistory";
+
+  @media (min-width:801px)  {
+    /* tablet, landscape iPad, lo-res laptops ands desktops */
+    flex-direction: row;
+    padding: 24px 12px;
+    grid-template-columns: 2fr 3fr;
+    grid-template-rows: 150px 1fr;
+    grid-gap: 48px;
+    grid-template-areas: "profile message"
+                         "contactFields contactHistory"
+  }
+
+}
+.avatar {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  border-radius: 50%;
+  color: #fff;
+}
+
+.dataSectionWrapper {
+  height:100%;
+  width: 100%
+}
+.communicationSectionWrapper {
+  height:100%;
+  width: 100%
+}
+
+.profileSection {
+  //background: #d2e5ff;
+  display: flex;
+  padding: 12px;
+  grid-area: profile;
+}
+
+.userDataSection {
+  padding: 12px;
+}
+.profileUserData {
+  display: flex;
+  color: #444;
+  margin-bottom: 8px;
+  font-size: 16px;
+
+  span {
+    margin-right: 8px;
+  }
+}
+.quickActionRow {
+  display:flex;
+
+}
+
+.contactFieldSection {
+  //background: #b072f1;
+  grid-area: contactFields;
+
+}
+
+.messageEditorSection {
+  grid-area: message;
+
+
+
+}
+.contactHistorySection {
+  //background: #949ff5;
+  grid-area: contactHistory;
+}
