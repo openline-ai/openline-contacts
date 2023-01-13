@@ -1,23 +1,18 @@
 import {useRouter} from "next/router";
-import {signOut, useSession} from "next-auth/react";
+import {useSession} from "next-auth/react";
 import {WebChat} from "@openline-ai/openline-web-chat";
 import "@openline-ai/openline-web-chat/dist/esm/index.css"
-import WorkspacePanel from "../components/organisms/workspace-panel/WorkspacePanel";
+import {SidePanel} from "../components/organisms";
 
 export default function Layout({children}: any) {
     const router = useRouter();
-
     const {data: session} = useSession();
-
-    console.log(router)
 
     return (
         <div className="flex h-full w-full">
 
             {router.pathname === '/' && (
-                <WorkspacePanel
-                    workspaceList={['Workspace']}
-                    workspaceListItems={[]} />
+                <SidePanel user={session}/>
 
             )}
 

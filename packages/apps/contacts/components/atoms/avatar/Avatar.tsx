@@ -1,8 +1,7 @@
 import React from 'react';
 import Image, {ImageProps, StaticImageData} from "next/image";
-import styles from "./avatar.module.css";
 
-interface AvatarProps extends ImageProps {
+interface AvatarProps extends Partial<ImageProps> {
     image?: StaticImageData;
     username: string;
     imageHeight?: number

@@ -6,15 +6,12 @@ import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {useEffect, useState} from "react";
 import {InputText} from "primereact/inputtext";
 import {useForm} from "react-hook-form";
-import {BreadCrumb} from "primereact/breadcrumb";
 import {Dialog} from "primereact/dialog";
-import {DeleteContactGroup} from "../../services/contactGroupService";
 import {toast} from "react-toastify";
 import {getSession} from "next-auth/react";
 import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 import {Organization} from "../../models/organization";
 import {CreateOrganization, DeleteOrganization, GetOrganization, UpdateOrganization} from "../../services/organizationService";
-import {faChevronCircleLeft, faUser} from "@fortawesome/free-solid-svg-icons";
 import {FullScreenModeLayout} from "../organisms/fullscreen-mode-layout";
 
 function OrganizationEdit() {
@@ -42,7 +39,7 @@ function OrganizationEdit() {
             setEditDetails(false);
             GetOrganization(client, id as string).then((org: Organization) => {
                 setOrganization(org);
-            }).catch((reason: any) => {
+            }).catch(() => {
                 //todo log error on server side
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
@@ -60,7 +57,7 @@ function OrganizationEdit() {
                 //todo log an error in server side
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             }
-        }).catch((reason: any) => {
+        }).catch(() => {
             toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
     }
@@ -78,7 +75,7 @@ function OrganizationEdit() {
                     //todo log an error in server side
                     toast.error("There was a problem on our side and we are doing our best to solve it!");
                 }
-            }).catch((reason: any) => {
+            }).catch(() => {
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         } else {
@@ -90,16 +87,11 @@ function OrganizationEdit() {
                     //todo log an error in server side
                     toast.error("There was a problem on our side and we are doing our best to solve it!");
                 }
-            }).catch((reason: any) => {
+            }).catch(() => {
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         }
     });
-
-    const items = [
-        {label: 'Organizations', url: '/organization'}
-    ];
-    const home = {icon: 'pi pi-home', url: '/'}
 
     return (
         <FullScreenModeLayout fullScreenMode>
@@ -114,7 +106,6 @@ function OrganizationEdit() {
                                 {
                                     !editDetails &&
                                     <Button className="p-button-text p-0" onClick={() => {
-                                        console.log(organization)
                                         setValue('id', organization.id);
                                         setValue('name', organization.name);
                                         setValue('description', organization.description);
@@ -204,7 +195,7 @@ function OrganizationEdit() {
                     <>
                         <div className="flex align-items-center mt-2 ml-1">
                             <FontAwesomeIcon icon={faTrashCan} className="text-gray-600" style={{color: 'black'}}/>
-                            <Button onClick={(e: any) => setDeleteConfirmationModalVisible(true)} className='p-button-link text-gray-600'
+                            <Button onClick={() => setDeleteConfirmationModalVisible(true)} className='p-button-link text-gray-600'
                                     label="Delete"/>
                         </div>
                         <Dialog header="Organization delete confirmation"
@@ -224,7 +215,7 @@ function OrganizationEdit() {
                 }
             </div>
 
-        </div>
+        </FullScreenModeLayout>
     );
 }
 

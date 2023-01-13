@@ -57,7 +57,6 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
             });
         });
     }
-    console.log('FULL', fullScreenMode)
 
     return (
         <FullScreenModeLayout fullScreenMode={fullScreenMode} >
