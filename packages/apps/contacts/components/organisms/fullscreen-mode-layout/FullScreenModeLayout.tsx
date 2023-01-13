@@ -7,14 +7,15 @@ import styles from "./fullscreen-mode.module.scss";
 interface Props {
    fullScreenMode: boolean
    children: React.ReactNode
+   classNames?: string;
 }
 
-export const FullScreenModeLayout: React.FC<Props> = ({fullScreenMode, children}) => {
+export const FullScreenModeLayout: React.FC<Props> = ({fullScreenMode, children, classNames}) => {
     const router = useRouter();
 
 
     return (
-        <div className={fullScreenMode ? styles.fullScreenModeContainer : ''}>
+        <div className={fullScreenMode ? `${classNames} ${styles.fullScreenModeContainer}` : classNames}>
             {fullScreenMode && (
                 <button onClick={() => router.push('/')} className={styles.backButton}>
                     <FontAwesomeIcon icon={faChevronLeft} color='#6366F1' height='40px' width='40px' fontWeight={800}/>

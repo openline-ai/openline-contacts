@@ -15,6 +15,7 @@ import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 import {Organization} from "../../models/organization";
 import {CreateOrganization, DeleteOrganization, GetOrganization, UpdateOrganization} from "../../services/organizationService";
 import {faChevronCircleLeft, faUser} from "@fortawesome/free-solid-svg-icons";
+import {FullScreenModeLayout} from "../organisms/fullscreen-mode-layout";
 
 function OrganizationEdit() {
     const client = new GraphQLClient(`/customer-os-api/query`);
@@ -101,12 +102,8 @@ function OrganizationEdit() {
     const home = {icon: 'pi pi-home', url: '/'}
 
     return (
-        <div className="flex p-3">
-
+        <FullScreenModeLayout fullScreenMode>
             <div className="flex-grow-0 mr-5">
-                <div>
-                    <FontAwesomeIcon icon={faChevronCircleLeft} role="button" tabIndex={0} onClick={() => router.push('/')}/>
-                </div>
 
 
                 <div className="card-fieldset" style={{width: '25rem'}}>

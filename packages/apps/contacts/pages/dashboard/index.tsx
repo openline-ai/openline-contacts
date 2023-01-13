@@ -1,7 +1,7 @@
 import type {NextPage} from 'next'
 import {getSession} from "next-auth/react";
 import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
-import {ContactList} from "../../components/contact";
+import {ContactList} from "../../components/contact/ContactList";
 import {OrganizationList} from "../../components/organization/OrganizationList";
 import {Divider} from "../../components/atoms";
 

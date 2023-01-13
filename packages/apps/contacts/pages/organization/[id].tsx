@@ -14,6 +14,7 @@ import {getSession} from "next-auth/react";
 import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 import {Organization} from "../../models/organization";
 import {CreateOrganization, DeleteOrganization, GetOrganization, UpdateOrganization} from "../../services/organizationService";
+import {FullScreenModeLayout} from "../../components/organisms/fullscreen-mode-layout";
 
 function OrganizationEdit() {
     const client = new GraphQLClient(`/customer-os-api/query`);
@@ -100,133 +101,132 @@ function OrganizationEdit() {
     const home = {icon: 'pi pi-home', url: '/'}
 
     return (
-        <div className="flex p-3">
+        <FullScreenModeLayout fullScreenMode>
 
-            <div className="flex-grow-0 mr-5">
-
-                    <div>
-                        <FontAwesomeIcon icon={faChevronCircleLeft} role="button" tabIndex={0} onClick={() => router.push('/')}/>
-                    </div>
-
-                <div className="card-fieldset" style={{width: '25rem'}}>
-                    <div className="card-header">
-                        <div className="flex flex-row w-full">
-                            <div className="flex-grow-1">Organization details</div>
-                            <div className="flex">
-                                {
-                                    !editDetails &&
-                                    <Button className="p-button-text p-0" onClick={() => {
-                                        console.log(organization)
-                                        setValue('id', organization.id);
-                                        setValue('name', organization.name);
-                                        setValue('description', organization.description);
-                                        setValue('industry', organization.industry);
-                                        setValue('domain', organization.domain);
-                                        setValue('website', organization.website);
-                                        setEditDetails(true);
-                                    }}>
-                                        <FontAwesomeIcon size="xs" icon={faEdit} style={{color: 'black'}}/>
-                                    </Button>
-                                }
+            <div className="flex flex-column justify-content-center align-items-center">
+                <div className="flex align-content-center justify-content-center" >
+                    <div className="card-fieldset" style={{width: '25rem'}}>
+                        <div className="card-header">
+                            <div className="flex flex-row w-full">
+                                <div className="flex-grow-1">Organization details</div>
+                                <div className="flex">
+                                    {
+                                        !editDetails &&
+                                        <Button className="p-button-text p-0" onClick={() => {
+                                            console.log(organization)
+                                            setValue('id', organization.id);
+                                            setValue('name', organization.name);
+                                            setValue('description', organization.description);
+                                            setValue('industry', organization.industry);
+                                            setValue('domain', organization.domain);
+                                            setValue('website', organization.website);
+                                            setEditDetails(true);
+                                        }}>
+                                            <FontAwesomeIcon size="xs" icon={faEdit} style={{color: 'black'}}/>
+                                        </Button>
+                                    }
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="card-body">
+                        <div className="card-body">
 
-                        {
-                            !editDetails &&
-                            <div className="display">
-                                <div className="grid grid-nogutter">
-                                    <div className="col-4">Name</div>
-                                    <div className="col-8 overflow-hidden text-overflow-ellipsis">{organization.name}</div>
+                            {
+                                !editDetails &&
+                                <div className="display">
+                                    <div className="grid grid-nogutter">
+                                        <div className="col-4">Name</div>
+                                        <div className="col-8 overflow-hidden text-overflow-ellipsis">{organization.name}</div>
+                                    </div>
+                                    <div className="grid grid-nogutter mt-3">
+                                        <div className="col-4">Description</div>
+                                        <div
+                                            className="col-8 overflow-hidden text-overflow-ellipsis">{organization.description}</div>
+                                    </div>
+                                    <div className="grid grid-nogutter mt-3">
+                                        <div className="col-4">Industry</div>
+                                        <div
+                                            className="col-8 overflow-hidden text-overflow-ellipsis">{organization.industry}</div>
+                                    </div>
+                                    <div className="grid grid-nogutter mt-3">
+                                        <div className="col-4">Domain</div>
+                                        <div
+                                            className="col-8 overflow-hidden text-overflow-ellipsis">{organization.domain}</div>
+                                    </div>
+                                    <div className="grid grid-nogutter mt-3">
+                                        <div className="col-4">Website</div>
+                                        <div
+                                            className="col-8 overflow-hidden text-overflow-ellipsis">{organization.website}</div>
+                                    </div>
                                 </div>
-                                <div className="grid grid-nogutter mt-3">
-                                    <div className="col-4">Description</div>
-                                    <div
-                                        className="col-8 overflow-hidden text-overflow-ellipsis">{organization.description}</div>
-                                </div>
-                                <div className="grid grid-nogutter mt-3">
-                                    <div className="col-4">Industry</div>
-                                    <div
-                                        className="col-8 overflow-hidden text-overflow-ellipsis">{organization.industry}</div>
-                                </div>
-                                <div className="grid grid-nogutter mt-3">
-                                    <div className="col-4">Domain</div>
-                                    <div
-                                        className="col-8 overflow-hidden text-overflow-ellipsis">{organization.domain}</div>
-                                </div>
-                                <div className="grid grid-nogutter mt-3">
-                                    <div className="col-4">Website</div>
-                                    <div
-                                        className="col-8 overflow-hidden text-overflow-ellipsis">{organization.website}</div>
-                                </div>
-                            </div>
-                        }
+                            }
 
-                        {
-                            editDetails &&
-                            <div className="content">
-                                <form onSubmit={onSubmit}>
-                                    <div className="field w-full">
-                                        <label htmlFor="name" className="block">Name *</label>
-                                        <InputText id="name" autoFocus {...register("name")} className="w-full"/>
-                                    </div>
-                                    <div className="field w-full">
-                                        <label htmlFor="description" className="block">Description</label>
-                                        <InputText id="description"  {...register("description")} className="w-full"/>
-                                    </div>
-                                    <div className="field w-full">
-                                        <label htmlFor="industry" className="block">Industry</label>
-                                        <InputText id="industry"  {...register("industry")} className="w-full"/>
-                                    </div>
-                                    <div className="field w-full">
-                                        <label htmlFor="domain" className="block">Domain</label>
-                                        <InputText id="domain"  {...register("domain")} className="w-full"/>
-                                    </div>
-                                    <div className="field w-full">
-                                        <label htmlFor="website" className="block">Website</label>
-                                        <InputText id="website"  {...register("website")} className="w-full"/>
-                                    </div>
-                                </form>
+                            {
+                                editDetails &&
+                                <div className="content" style={{width: '25rem'}}>
+                                    <form onSubmit={onSubmit}>
+                                        <div className="field w-full">
+                                            <label htmlFor="name" className="block">Name *</label>
+                                            <InputText id="name" autoFocus {...register("name")} className="w-full"/>
+                                        </div>
+                                        <div className="field w-full">
+                                            <label htmlFor="description" className="block">Description</label>
+                                            <InputText id="description"  {...register("description")} className="w-full"/>
+                                        </div>
+                                        <div className="field w-full">
+                                            <label htmlFor="industry" className="block">Industry</label>
+                                            <InputText id="industry"  {...register("industry")} className="w-full"/>
+                                        </div>
+                                        <div className="field w-full">
+                                            <label htmlFor="domain" className="block">Domain</label>
+                                            <InputText id="domain"  {...register("domain")} className="w-full"/>
+                                        </div>
+                                        <div className="field w-full">
+                                            <label htmlFor="website" className="block">Website</label>
+                                            <InputText id="website"  {...register("website")} className="w-full"/>
+                                        </div>
+                                    </form>
 
-                                <div className="flex justify-content-end">
-                                    <Button onClick={(e: any) => setEditDetails(e.value)}
-                                            className='p-button-link text-gray-600'
-                                            label="Cancel"/>
-                                    <Button onClick={() => onSubmit()} label="Save"/>
+                                    <div className="flex justify-content-end">
+                                        <Button onClick={(e: any) => setEditDetails(e.value)}
+                                                className='p-button-link text-gray-600'
+                                                label="Cancel"/>
+                                        <Button onClick={() => onSubmit()} label="Save"/>
+                                    </div>
                                 </div>
-                            </div>
-                        }
+                            }
 
+                        </div>
                     </div>
                 </div>
 
-                {
-                    !editDetails &&
-                    <>
-                        <div className="flex align-items-center mt-2 ml-1">
-                            <FontAwesomeIcon icon={faTrashCan} className="text-gray-600" style={{color: 'black'}}/>
-                            <Button onClick={(e: any) => setDeleteConfirmationModalVisible(true)} className='p-button-link text-gray-600'
-                                    label="Delete"/>
+                    {
+                        !editDetails &&
+                        <div className='flex justify-content-end'>
+                            <div className="flex align-items-center mt-2 ml-1">
+                                <FontAwesomeIcon icon={faTrashCan} className="text-gray-600" style={{color: 'black'}}/>
+                                <Button onClick={(e: any) => setDeleteConfirmationModalVisible(true)} className='p-button-link text-gray-600'
+                                        label="Delete"/>
+                            </div>
+                            <Dialog header="Organization delete confirmation"
+                                    draggable={false}
+                                    visible={deleteConfirmationModalVisible}
+                                    footer={
+                                        <div className="flex flex-grow-1 justify-content-between align-items-center">
+                                            <Button label="Delete the organization" icon="pi pi-check" onClick={() => deleteOrganization()}/>
+                                            <Button label="Cancel" icon="pi pi-times" onClick={() => setDeleteConfirmationModalVisible(false)} className="p-button-text"/>
+                                        </div>
+                                    }
+                                    onHide={() => setDeleteConfirmationModalVisible(false)}>
+                                <p>Please confirm that you want to delete this organization.</p>
+                                <p>The contacts will not be changed, but the associations to this organization will be removed.</p>
+                            </Dialog>
                         </div>
-                        <Dialog header="Organization delete confirmation"
-                                draggable={false}
-                                visible={deleteConfirmationModalVisible}
-                                footer={
-                                    <div className="flex flex-grow-1 justify-content-between align-items-center">
-                                        <Button label="Delete the organization" icon="pi pi-check" onClick={() => deleteOrganization()}/>
-                                        <Button label="Cancel" icon="pi pi-times" onClick={() => setDeleteConfirmationModalVisible(false)} className="p-button-text"/>
-                                    </div>
-                                }
-                                onHide={() => setDeleteConfirmationModalVisible(false)}>
-                            <p>Please confirm that you want to delete this organization.</p>
-                            <p>The contacts will not be changed, but the associations to this organization will be removed.</p>
-                        </Dialog>
-                    </>
-                }
+                    }
+
+
             </div>
 
-        </div>
+        </FullScreenModeLayout>
     );
 }
 

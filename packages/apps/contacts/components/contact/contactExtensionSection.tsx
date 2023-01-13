@@ -167,7 +167,7 @@ function ContactExtensionSection(props: any) {
     return <>
         {
             definitionId &&
-            <div className='card-fieldset mt-3' style={{width: '25rem'}}>
+            <div className='card-fieldset'>
                 <div className="card-header">
                     <div className="flex flex-row w-full">
                         <div className="flex-grow-1">Custom fields</div>
