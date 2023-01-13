@@ -5,8 +5,8 @@ import styles from "./avatar-button.module.scss";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faChevronCircleRight, faUser} from "@fortawesome/free-solid-svg-icons";
 
-interface Props extends HTMLButtonElement {
-    image: StaticImageData;
+interface Props extends Partial<HTMLButtonElement> {
+    image?: StaticImageData;
     onClick: () => void;
     ariaLabel: string;
 }
