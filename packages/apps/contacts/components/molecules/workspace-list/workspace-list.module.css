@@ -1,8 +1,0 @@
-.workspace {
-   display: flex;
-   flex-direction: column;
-   justify-content: space-between;
-   padding: 12px;
-   height: 100%;
-   width: 150px;
-}
