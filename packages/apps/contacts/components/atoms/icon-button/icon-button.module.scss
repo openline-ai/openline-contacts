@@ -39,4 +39,9 @@
       background: linear-gradient(-45deg, #b072f1, #f696b6);
     }
   }
+
+
+  &:disabled {
+    pointer-events: none;
+  }
 }

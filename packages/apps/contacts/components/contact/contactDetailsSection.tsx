@@ -22,7 +22,12 @@ import {CustomField, CustomFieldDefinition, EntityDefinition, FieldSetDefinition
 import {CustomFieldTemplateProps, EntityDefinitionEditTemplate, EntityDefinitionTemplateProps, FieldSetTemplateProps, mapEntityExtensionDataFromFormData} from "../generic/entityExtensionTemplates";
 import {toast} from "react-toastify";
 
-export default function ContactDetailsSection(props: any) {
+interface Props {
+    editDetails:boolean
+     setEditDetails: (state: boolean) => void
+    contactId: string
+}
+export default function ContactDetailsSection({editDetails, setEditDetails, contactId}: Props) {
     const client = new GraphQLClient(`/customer-os-api/query`);
 
     const router = useRouter();
@@ -42,47 +47,7 @@ export default function ContactDetailsSection(props: any) {
     const {register, handleSubmit, setValue, control} = useForm();
 
     const [contactTypeList, setContactTypeList] = useState([] as any);
-    const [editDetails, setEditDetails] = useState(false);
 
-    useEffect(() => {
-        if (props.contactId) {
-            setEditDetails(false);
-
-            GetContactTypes(client).then((contactTypes: ContactType[]) => {
-                setContactTypeList(contactTypes);
-            }).catch((reason: any) => {
-                //todo log an error in server side
-                toast.error("There was a problem on our side and we are doing our best to solve it!");
-            });
-        }
-
-        if (props.contactId && props.contactId === 'new') {
-            setEditDetails(true);
-        } else if (props.contactId && props.contactId !== 'new') {
-            GetContactDetails(client, props.contactId).then((contact: Contact) => {
-                setContact(getContactObjectFromResponse(contact));
-            }).catch((reason: any) => {
-                //todo log an error in server side
-                toast.error("There was a problem on our side and we are doing our best to solve it!");
-            });
-        }
-
-    }, [props.contactId, reloadDetails]);
-
-    const getContactObjectFromResponse = (contact: Contact) => {
-        return {
-            id: contact.id,
-            title: contact.title,
-            firstName: contact.firstName,
-            lastName: contact.lastName,
-            ownerId: contact.owner?.id ?? undefined,
-            ownerFullName: contact.owner ? contact.owner.firstName + ' ' + contact.owner.lastName : '',
-            contactTypeId: contact.contactType?.id ?? undefined,
-            contactTypeName: contact.contactType?.name ?? '',
-            label: contact.label,
-            definitionId: contact.definition?.id
-        };
-    }
 
     const onSubmit = handleSubmit(data => {
         let entityExtension = mapEntityExtensionDataFromFormData(data, entityDefinitionTemplateData);
@@ -124,7 +89,7 @@ export default function ContactDetailsSection(props: any) {
     const [entityDefinitionTemplateData, setEntityDefinitionTemplateData] = useState({} as EntityDefinitionTemplateProps);
 
     const contactTypeChanged = (selectedContactTypeId: string) => {
-        if (props.contactId !== 'new') {
+        if (contactId !== 'new') {
             return;
         }
 
@@ -151,7 +116,7 @@ export default function ContactDetailsSection(props: any) {
                     return;
                 }
 
-                if (props.contactId === 'new') {
+                if (contactId === 'new') {
                     const obj = {} as EntityDefinitionTemplateProps;
                     obj.register = register;
                     obj.fields = entityDefinitionsSelected.fields.map((f: (CustomFieldDefinition | FieldSetDefinition)) => {
@@ -198,66 +163,8 @@ export default function ContactDetailsSection(props: any) {
     }
 
     return (
-        <div className="card-fieldset" style={{width: '100%'}}>
-            <div className="card-header">
-                <div className="flex flex-row w-full">
-                    <div className="flex-grow-1">Contact details</div>
-                    <div className="flex">
-                        {
-                            !editDetails &&
-                            <Button className="p-button-text p-0" onClick={() => {
-                                setValue('id', contact.id);
-                                setValue('title', contact.title);
-                                setValue('firstName', contact.firstName);
-                                setValue('lastName', contact.lastName);
-                                setValue('ownerId', contact.ownerId);
-                                setValue('ownerFullName', contact.ownerFullName);
-                                setValue('contactTypeId', contact.contactTypeId);
-                                setValue('contactTypeName', contact.contactTypeName);
-                                setValue('label', contact.label);
-                                setValue('definitionId', contact.definitionId);
-                                setEditDetails(true);
-                            }}>
-                                <FontAwesomeIcon size="xs" icon={faEdit} style={{color: 'black'}}/>
-                            </Button>
-                        }
-                    </div>
-                </div>
-            </div>
+        <div style={{width: '100%'}}>
             <div className="card-body">
-
-                {
-                    !editDetails &&
-                    <div className="display">
-                        <div className="grid grid-nogutter">
-                            <div className="col-4">Title</div>
-                            <div className="col-8 overflow-hidden text-overflow-ellipsis">{getEnumLabel(ContactTitleEnum, contact.title)}</div>
-                        </div>
-                        <div className="grid grid-nogutter mt-3">
-                            <div className="col-4">First name</div>
-                            <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.firstName}</div>
-                        </div>
-                        <div className="grid grid-nogutter mt-3">
-                            <div className="col-4">Last name</div>
-                            <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.lastName}</div>
-                        </div>
-                        <div className="grid grid-nogutter mt-3">
-                            <div className="col-4">Owner</div>
-                            <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.ownerFullName}</div>
-                        </div>
-                        <div className="grid grid-nogutter mt-3">
-                            <div className="col-4">Type</div>
-                            <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.contactTypeName}</div>
-                        </div>
-                        <div className="grid grid-nogutter mt-3">
-                            <div className="col-4">Label</div>
-                            <div className="col-8 overflow-hidden text-overflow-ellipsis">{contact.label}</div>
-                        </div>
-                    </div>
-                }
-
-                {
-                    editDetails &&
                     <div className="content">
                         <form>
                             <div className="field w-full">
@@ -323,18 +230,17 @@ export default function ContactDetailsSection(props: any) {
                             </div>
 
                             {
-                                props.contactId === 'new' && entityDefinitionTemplateData.fields && entityDefinitionTemplateData.fields.length > 0 &&
+                                contactId === 'new' && entityDefinitionTemplateData.fields && entityDefinitionTemplateData.fields.length > 0 &&
                                 <EntityDefinitionEditTemplate fields={entityDefinitionTemplateData.fields} register={register}/>
                             }
 
                         </form>
 
                         <div className="flex justify-content-end">
-                            <Button onClick={(e: any) => setEditDetails(e.value)} className='p-button-link text-gray-600' label="Cancel"/>
+                            <Button onClick={() => setEditDetails(false)} className='p-button-link text-gray-600' label="Cancel"/>
                             <Button onClick={() => onSubmit()} label="Save"/>
                         </div>
                     </div>
-                }
 
             </div>
         </div>
