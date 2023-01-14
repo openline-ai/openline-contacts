@@ -103,8 +103,8 @@ function OrganizationEdit() {
     return (
         <FullScreenModeLayout fullScreenMode>
 
-            <div className="flex flex-column justify-content-center align-items-center">
-                <div className="flex align-content-center justify-content-center" >
+            <div className="flex flex-column p-5">
+                <div className="flex" >
                     <div className="card-fieldset" style={{width: '25rem'}}>
                         <div className="card-header">
                             <div className="flex flex-row w-full">
@@ -199,9 +199,9 @@ function OrganizationEdit() {
                     </div>
                 </div>
 
-                    {
+                {
                         !editDetails &&
-                        <div className='flex justify-content-end'>
+                        <div className='flex'>
                             <div className="flex align-items-center mt-2 ml-1">
                                 <FontAwesomeIcon icon={faTrashCan} className="text-gray-600" style={{color: 'black'}}/>
                                 <Button onClick={(e: any) => setDeleteConfirmationModalVisible(true)} className='p-button-link text-gray-600'

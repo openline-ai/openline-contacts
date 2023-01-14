@@ -69,6 +69,7 @@ export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScree
                                </div>
                            }
                            onEdit={onEdit}
+                           defaultLimit={fullScreenMode ? 10 : 5}
             />
         </FullScreenModeLayout>
     );
