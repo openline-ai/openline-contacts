@@ -143,3 +143,7 @@ body {
 .p-tabview .p-tabview-nav li .p-tabview-nav-link:not(.p-disabled):focus {
     box-shadow: none;
 }
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item:first-letter {
+    text-transform: capitalize;
+}

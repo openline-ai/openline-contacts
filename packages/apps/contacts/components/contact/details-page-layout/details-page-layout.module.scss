@@ -36,6 +36,7 @@
   font-weight: bold;
   border-radius: 50%;
   color: #fff;
+  margin-right: 8px;
 }
 
 .dataSectionWrapper {
@@ -55,13 +56,13 @@
 }
 
 .userDataSection {
-  padding: 12px;
+  padding: 8px;
 }
 .profileUserData {
   display: flex;
   color: #444;
-  margin-bottom: 8px;
   font-size: 16px;
+  margin-right: 4px;
 
   span {
     margin-right: 8px;

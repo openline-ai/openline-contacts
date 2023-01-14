@@ -21,32 +21,51 @@ import {GetEntityDefinitions} from "../../services/entityDefinitionService";
 import {CustomField, CustomFieldDefinition, EntityDefinition, FieldSetDefinition} from "../../models/customFields";
 import {CustomFieldTemplateProps, EntityDefinitionEditTemplate, EntityDefinitionTemplateProps, FieldSetTemplateProps, mapEntityExtensionDataFromFormData} from "../generic/entityExtensionTemplates";
 import {toast} from "react-toastify";
+import {log} from "util";
 
 interface Props {
     editDetails:boolean
      setEditDetails: (state: boolean) => void
+    setReloadDetails: (state: boolean) => void
     contactId: string
+    contact:any
 }
-export default function ContactDetailsSection({editDetails, setEditDetails, contactId}: Props) {
+export default function ContactDetailsSection({editDetails, setEditDetails, contactId, contact, setReloadDetails}: Props) {
     const client = new GraphQLClient(`/customer-os-api/query`);
 
     const router = useRouter();
 
-    const [reloadDetails, setReloadDetails] = useState(false);
-    const [contact, setContact] = useState({
-        definitionId: undefined,
-        title: '',
-        firstName: '',
-        lastName: '',
-        ownerId: undefined,
-        ownerFullName: '',
-        contactTypeId: undefined,
-        contactTypeName: ''
-    }) as any;
 
-    const {register, handleSubmit, setValue, control} = useForm();
+    const {register, handleSubmit, setValue, control, reset} = useForm();
 
     const [contactTypeList, setContactTypeList] = useState([] as any);
+
+
+    useEffect(() => {
+        if (router.query.id) {
+            GetContactTypes(client).then((contactTypes: ContactType[]) => {
+                setContactTypeList(contactTypes);
+            }).catch((reason: any) => {
+                //todo log an error in server side
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
+            });
+        }
+    }, []);
+
+
+    useEffect(() => {
+        if(editDetails && router.query.id !== 'new') {
+            console.log('here', contact.firstName)
+            reset({
+                title: contact.title || '',
+                firstName: contact.firstName || '',
+                lastName: contact.lastName || '',
+                ownerFullName: contact.ownerFullName || '',
+                contactTypeName: contact.contactTypeName || ''
+            })
+        }
+
+    },[editDetails])
 
 
     const onSubmit = handleSubmit(data => {
@@ -54,8 +73,7 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
 
         data.customFields = entityExtension.customFields;
         data.fieldSets = entityExtension.fieldSets;
-
-        if (!data.id) {
+        if (contactId === 'new') {
             CreateContact(client, data).then((savedContact: Contact) => {
                 router.push('/contact/' + savedContact.id);
                 toast.success("Contact added successfully!");
@@ -64,8 +82,10 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         } else {
-            UpdateContact(client, data).then((savedContact: Contact) => {
-                setReloadDetails(!reloadDetails);
+            console.log('update')
+            UpdateContact(client, {id: contactId, ...data}).then((savedContact: Contact) => {
+                setEditDetails(false)
+                setReloadDetails(true)
                 toast.success("Contact updated successfully!");
             }).catch((reason: any) => {
                 //todo log an error in server side
@@ -162,6 +182,8 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
         } as CustomFieldTemplateProps;
     }
 
+    console.log('contactTypeList',contactTypeList)
+
     return (
         <div style={{width: '100%'}}>
             <div className="card-body">
@@ -215,12 +237,21 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
                                 {
                                     !contact.id &&
                                     <Controller name="contactTypeId" control={control} render={({field}) => (
-                                        <Dropdown id={field.name} value={field.value} onChange={(e) => {
-                                            field.onChange(e.value);
-                                            contactTypeChanged(e.value);
-                                        }} options={contactTypeList}
-                                                  optionValue="id" optionLabel="name" className="w-full"/>
-                                    )}/>
+                                        <>
+                                            <Dropdown id={field.name}
+                                                      value={field.value}
+                                                      onChange={(e) => {
+                                                          field.onChange(e.value);
+                                                          contactTypeChanged(e.value);
+                                                      }}
+                                                      options={contactTypeList.map((e:any) => ({...e, name: e.name.split('_').join(' ').toLowerCase()}))}
+                                                      optionValue="id"
+                                                      optionLabel="name"
+                                                      className="w-full"/>
+                                        </>
+                                    )}
+                                                />
+                                   
                                 }
 
                             </div>
