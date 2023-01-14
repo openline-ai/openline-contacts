@@ -92,7 +92,7 @@ function ContactHistory(props: any) {
                                 </div>
 
                                 <div className="flex flex-grow-0 ">
-                                    ${e.user.firstName} ${e.user.lastName}
+                                    ${e.user?.firstName} ${e.user?.lastName}
                                 </div>
 
                             </div>

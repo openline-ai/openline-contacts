@@ -144,6 +144,8 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
                                </div>
                            }
                            onEdit={onEdit}
+                           defaultLimit={fullScreenMode ? 10 : 5}
+
             />
         </FullScreenModeLayout>
 

@@ -64,6 +64,9 @@ const GridComponent = (props: any) => {
         layout: 'CurrentPageReport PrevPageLink NextPageLink RowsPerPageDropdown',
         'RowsPerPageDropdown': (options: any) => {
             const dropdownOptions = [
+                {label: '5', value: 5},
+                {label: '10', value: 10},
+                {label: '15', value: 15},
                 {label: '25', value: 25},
                 {label: '50', value: 50},
                 {label: '100', value: 100}
@@ -96,7 +99,7 @@ const GridComponent = (props: any) => {
     const [totalRecords, setTotalRecords] = useState(0);
     const [lazyParams, setLazyParams] = useState({
         first: 0,
-        limit: 25,
+        limit: props.defaultLimit,
         page: 1
     });
 
@@ -392,6 +395,7 @@ GridComponent.propTypes = {
     columnSelectorEnabled: PropTypes.bool,
     gridTitle: PropTypes.string,
     gridActions: PropTypes.object,
+    defaultLimit: PropTypes.number,
 
     columns: PropTypes.arrayOf(PropTypes.shape({
         field: PropTypes.string.isRequired,
@@ -434,7 +438,8 @@ GridComponent.defaultProps = {
     sorting: [],
     showHeader: true,
     gridTitle: 'Title',
-    columnSelectorEnabled: true
+    columnSelectorEnabled: true,
+    defaultLimit: 5
 }
 
 export default GridComponent
