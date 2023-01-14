@@ -14,6 +14,7 @@ export default withAuth(function middleware(request: NextRequestWithAuth) {
             if (request.nextUrl.pathname.startsWith('/customer-os-api/')) {
                 newURL = process.env.CUSTOMER_OS_API_PATH + "/" + request.nextUrl.pathname.substring(("/customer-os-api/").length);
                 requestHeaders.set('X-Openline-API-KEY', process.env.CUSTOMER_OS_API_KEY as string)
+                requestHeaders.set('X-Openline-USERNAME', request.nextauth.token?.email as string)
             } else if (request.nextUrl.pathname.startsWith('/fs/')) {
                 newURL = process.env.FILE_STORAGE_API_PATH + "/" + request.nextUrl.pathname.substring(("/fs/").length);
                 requestHeaders.set('X-Openline-API-KEY', process.env.FILE_STORAGE_API_KEY as string)
