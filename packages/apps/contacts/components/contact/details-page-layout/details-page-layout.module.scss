@@ -17,9 +17,11 @@
     flex-direction: row;
     padding: 24px 12px;
     grid-template-columns: 2fr 3fr;
-    grid-template-rows: 150px 1fr;
+    grid-template-rows: 80px 50px 50px 1fr;
     grid-gap: 48px;
     grid-template-areas: "profile message"
+                          "contactFields message"
+                         "contactFields contactHistory"
                          "contactFields contactHistory"
   }
 

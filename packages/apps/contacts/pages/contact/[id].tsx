@@ -3,6 +3,7 @@ import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 import {EditContact} from "../../components/contact";
 
 function ContactDetails() {
+    
     return (
         <EditContact />
     );

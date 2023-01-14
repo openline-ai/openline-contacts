@@ -12,7 +12,6 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export const Button: FC<Props> = ({ icon, onClick, children, mode="default", ...rest}) => {
-    console.log('mode', mode)
     return (
         <button {...rest} onClick={onClick} className={`${styles.button} ${styles[mode]}`}>
             <>

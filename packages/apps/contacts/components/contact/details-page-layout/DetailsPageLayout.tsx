@@ -4,7 +4,7 @@ import "@openline-ai/openline-web-chat/dist/esm/index.css"
 import styles from './details-page-layout.module.scss'
 import {generateGradient} from "./utils";
 import {GraphQLClient} from "graphql-request";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import {GetContactTypes} from "../../../services/contactTypeService";
 import {Contact, ContactType} from "../../../models/contact";
@@ -27,6 +27,8 @@ import ContactNotes from "../note/contactNotes";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faImage} from "@fortawesome/free-solid-svg-icons";
 import ContactNoteModalTemplate from "../note/contactNoteModalTemplate";
+import ContactDetailsSection from "../contactDetailsSection";
+import {Divider} from "../../atoms";
 
 // TODO Move atom components to ui-kit
 // TODO refactor this so it is layout that can be reused
@@ -35,7 +37,6 @@ export const DetailsPageLayout = () => {
     const {data: session} = useSession();
     const client = new GraphQLClient(`/customer-os-api/query`);
     const [reload, setReload] = useState(false);
-
     const router = useRouter();
 
     const [reloadDetails, setReloadDetails] = useState(false);
@@ -208,11 +209,6 @@ export const DetailsPageLayout = () => {
         } as CustomFieldTemplateProps;
     }
 
-    console.log('user', contact)
-    console.log('user',  generateGradient())
-
-
-
     // EDITOR
     const richTextHeader = () => {
         return (
@@ -239,12 +235,21 @@ export const DetailsPageLayout = () => {
             </span>
         );
     }
-
     return (
         <div className={styles.pageWrapper}>
-            <ProfileLayout />
+            <ProfileLayout editMode={editDetails} onSetEditMode={setEditDetails}/>
 
             <section className={styles.contactFieldSection}>
+                {editDetails && (
+                    <>
+                        <ContactDetailsSection 
+                            editDetails={editDetails}
+                            setEditDetails={setEditDetails}
+                            contactId={router.query.id as string}/>
+                        <Divider/>
+                    </>
+
+                )}
                 <ContactCommunicationSection contactId={router.query.id}/>
             </section>
             
@@ -275,7 +280,6 @@ export const DetailsPageLayout = () => {
                         </article>
                     </>
                 )}
-
             </section>
         </div>
     )

@@ -125,7 +125,7 @@ function ContactCommunication(props: any) {
                     <div className="flex ml-3">
                         {/* fixme */}
                         <div className='flex flex-1 justify-content-end'>
-                            <Button mode="primary" onClick={(e: OverlayPanelEventType) => addCommunicationChannelContainerRef?.current?.toggle(e)}>
+                            <Button onClick={(e: OverlayPanelEventType) => addCommunicationChannelContainerRef?.current?.toggle(e)}>
                                 <FontAwesomeIcon icon={faPlus} />
                                 Add
                             </Button>

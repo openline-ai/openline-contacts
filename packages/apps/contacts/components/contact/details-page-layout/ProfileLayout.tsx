@@ -4,7 +4,7 @@ import "@openline-ai/openline-web-chat/dist/esm/index.css"
 import styles from './details-page-layout.module.scss'
 import {generateGradient} from "./utils";
 import {GraphQLClient} from "graphql-request";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import {GetContactTypes} from "../../../services/contactTypeService";
 import {Contact, ContactType} from "../../../models/contact";
@@ -21,12 +21,15 @@ import {User} from "../../../models/user";
 import {GetEntityDefinitions} from "../../../services/entityDefinitionService";
 import {CustomField, CustomFieldDefinition, EntityDefinition, FieldSetDefinition} from "../../../models/customFields";
 import {IconButton} from "../../atoms/icon-button";
-import {faEnvelope, faMailBulk, faMessage, faPhoneAlt, faShare} from "@fortawesome/free-solid-svg-icons";
+import {faEdit, faEnvelope, faMailBulk, faMessage, faPhoneAlt, faShare} from "@fortawesome/free-solid-svg-icons";
+import {Button, Divider} from "../../atoms";
+import ContactDetailsSection from "../contactDetailsSection";
 
 interface Props {
-    children: React.ReactNode
+    editMode: boolean
+    onSetEditMode: (state: boolean) => void
 }
-export const ProfileLayout = ({children}: any) => {
+export const ProfileLayout = ({editMode, onSetEditMode}: Props) => {
     const {data: session} = useSession();
     const client = new GraphQLClient(`/customer-os-api/query`);
 
@@ -204,26 +207,45 @@ export const ProfileLayout = ({children}: any) => {
 
     return (
             <section className={styles.profileSection}>
-                <div className={styles.avatar} style={{background: generateGradient()}}>
-                    {contact.firstName[0]} {' '} {contact.lastName[0]}
-                </div>
+                {router.query.id !== 'new' ? (
+                    <>
+                        <div className={styles.avatar} style={{background: generateGradient()}}>
+                            {contact.firstName[0]} {' '} {contact.lastName[0]}
+                        </div>
 
-                <div className={styles.userDataSection}>
-                    <div className={styles.profileUserData}>
-                            <span>
-                                 {contact.firstName}
-                            </span>
-                        {contact.lastName}
-                    </div>
 
-                    <div className={styles.quickActionRow}>
-                        <IconButton disabled onClick={() => console.log('')} icon={faPhoneAlt} />
-                        <IconButton disabled onClick={() => console.log('')} icon={faMessage} />
-                        <IconButton disabled onClick={() => console.log('')} icon={faEnvelope} />
-                        <IconButton disabled onClick={() => console.log('')} icon={faShare} />
-                    </div>
 
-                </div>
+
+                        <div className={styles.userDataSection}>
+
+                            <div className='flex align-items-center justify-content-between'>
+                                <div className={styles.profileUserData}>
+                    <span>
+                {contact.firstName}
+                    </span>
+                                    {contact.lastName}
+                                </div>
+                                <Button onClick={() => onSetEditMode(true)} icon={faEdit}>
+                                    Edit
+                                </Button>
+                            </div>
+
+                            <div className={styles.quickActionRow}>
+                                <IconButton disabled onClick={() => console.log('')} icon={faPhoneAlt} />
+                                <IconButton disabled onClick={() => console.log('')} icon={faMessage} />
+                                <IconButton disabled onClick={() => console.log('')} icon={faEnvelope} />
+                                <IconButton disabled onClick={() => console.log('')} icon={faShare} />
+                            </div>
+                        </div>
+                    </>
+                   
+                ) : (
+                    <h2>Add new contact</h2>
+                )}
+
+
+          
+
             </section>
 
     )
