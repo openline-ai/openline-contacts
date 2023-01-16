@@ -3,7 +3,8 @@ import styles from './side-panel.module.scss'
 import {AvatarButton} from "../../atoms";
 import {signOut} from "next-auth/react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faSignOut} from "@fortawesome/free-solid-svg-icons";
+import {faSignOut, faCog} from "@fortawesome/free-solid-svg-icons";
+import {useRouter} from "next/router";
 
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
 
 export const SidePanel: React.FC<Props> = ({ user}) => {
     const [isSidePanelVisible, setSidePanelVisible] = useState(false);
+    const router = useRouter();
 
     return (
         <div className={styles.panelWrapper} style={{background: isSidePanelVisible ? "white" : "transparent"}}>
@@ -30,13 +32,17 @@ export const SidePanel: React.FC<Props> = ({ user}) => {
                             </div>
                         </div>
                         <div className={styles.signOutSection}>
+                            <button className={styles.signOutButton} onClick={() => router.push('/settings')}>
+                                <FontAwesomeIcon icon={faCog} />
+                                <span>
+                                    Settings
+                                </span>
+                            </button>
                             <button className={styles.signOutButton} onClick={() => signOut()}>
                                 <FontAwesomeIcon icon={faSignOut} />
                                 <span>
-                        Log out
-
-                        </span>
-
+                                    Log out
+                                </span>
                             </button>
                         </div>
 

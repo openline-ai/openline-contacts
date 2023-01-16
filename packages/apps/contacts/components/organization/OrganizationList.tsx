@@ -1,9 +1,8 @@
 import type {NextPage} from 'next'
 import {useRouter} from "next/router";
 import GridComponent from "../../components/generic/GridComponent";
-import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCirclePlus, faWindowRestore} from "@fortawesome/free-solid-svg-icons";
+import {faPlus, faWindowRestore} from "@fortawesome/free-solid-svg-icons";
 import {GraphQLClient} from "graphql-request";
 import {PaginatedRequest, PaginatedResponse} from "../../utils/pagination";
 import {getSession} from "next-auth/react";
@@ -12,6 +11,7 @@ import {toast} from "react-toastify";
 import {GetOrganizations} from "../../services/organizationService";
 import {Organization} from "../../models/organization";
 import {FullScreenModeLayout} from "../organisms/fullscreen-mode-layout";
+import {Button} from "../atoms";
 
 export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScreenMode}) => {
     const client = new GraphQLClient(`/customer-os-api/query`);
@@ -59,12 +59,12 @@ export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScree
                            gridActions={
                                <div className="flex align-items-center">
                                    {!fullScreenMode && (
-                                       <Button onClick={() => router.push(`/organization`)} className='p-button-text'>
+                                       <Button onClick={() => router.push(`/organization`)}>
                                            <FontAwesomeIcon icon={faWindowRestore} className="mr-2"/>Full screen
                                        </Button>
                                    )}
-                                   <Button onClick={() => router.push(`/organization/new`)} className='p-button-text'>
-                                       <FontAwesomeIcon icon={faCirclePlus} className="mr-2"/>Add an organization
+                                   <Button onClick={() => router.push(`/organization/new`)}>
+                                       <FontAwesomeIcon icon={faPlus} className="mr-2"/> Add an organization
                                    </Button>
                                </div>
                            }

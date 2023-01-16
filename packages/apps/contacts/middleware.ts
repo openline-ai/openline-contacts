@@ -4,10 +4,9 @@ import {NextResponse} from "next/server";
 // More on how NextAuth.js middleware works: https://next-auth.js.org/configuration/nextjs#middleware
 
 export default withAuth(function middleware(request: NextRequestWithAuth) {
-        if (!request.nextUrl.pathname.startsWith('/customer-os-api/') && !request.nextUrl.pathname.startsWith('/fs/')) {
+        if (!request.nextUrl.pathname.startsWith('/customer-os-api/') && !request.nextUrl.pathname.startsWith('/sa/') && !request.nextUrl.pathname.startsWith('/fs/')) {
             return NextResponse.next()
         } else {
-
             var newURL = '';
             const requestHeaders = new Headers(request.headers);
 
@@ -18,6 +17,11 @@ export default withAuth(function middleware(request: NextRequestWithAuth) {
             } else if (request.nextUrl.pathname.startsWith('/fs/')) {
                 newURL = process.env.FILE_STORAGE_API_PATH + "/" + request.nextUrl.pathname.substring(("/fs/").length);
                 requestHeaders.set('X-Openline-API-KEY', process.env.FILE_STORAGE_API_KEY as string)
+            }else if (request.nextUrl.pathname.startsWith('/sa/')) {
+                newURL = process.env.SETTINGS_API_PATH + "/" + request.nextUrl.pathname.substring(("/sa/").length);
+                requestHeaders.set('X-Openline-API-KEY', process.env.SETTINGS_API_KEY as string)
+                requestHeaders.set('X-Openline-USERNAME', request.nextauth.token?.email as string)
+                requestHeaders.set('Content-Type', "application/json")
             }
 
             if (request.nextUrl.searchParams) {
@@ -45,5 +49,5 @@ export default withAuth(function middleware(request: NextRequestWithAuth) {
     })
 
 export const config = {
-    matcher: ['/customer-os-api/(.*)', '/fs/(.*)'],
+    matcher: ['/customer-os-api/(.*)', '/fs/(.*)', '/sa/(.*)'],
 }

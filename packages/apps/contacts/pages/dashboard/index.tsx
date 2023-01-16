@@ -1,18 +1,18 @@
 import type {NextPage} from 'next'
 import {getSession} from "next-auth/react";
 import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
-import {ContactList} from "../../components/contact/ContactList";
+import {ContactList} from "../../components/contact";
 import {OrganizationList} from "../../components/organization/OrganizationList";
-import {Divider} from "../../components/atoms";
-import {DetailsPageLayout} from "../../components/contact/details-page-layout/DetailsPageLayout";
 
 const Dashboard: NextPage = () => {
     return (
-        // <details-page-layout />
-        <div style={{padding: '40px'}}>
-            <OrganizationList fullScreenMode={false}/>
-            <Divider />
-            <ContactList fullScreenMode={false} />
+        <div className="mt-5 mr-6 ml-5 ">
+            <div className="mt-7">
+                <OrganizationList fullScreenMode={false}/>
+            </div>
+             <div className="mt-7">
+                 <ContactList fullScreenMode={false} />
+             </div>
         </div>
     )
 }
