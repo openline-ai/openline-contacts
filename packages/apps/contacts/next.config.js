@@ -6,6 +6,9 @@ const nextConfig = {
     CUSTOMER_OS_API_PATH: process.env.CUSTOMER_OS_API_PATH,
     CUSTOMER_OS_API_KEY: process.env.CUSTOMER_OS_API_KEY,
 
+    SETTINGS_API_PATH: process.env.SETTINGS_API_PATH,
+    SETTINGS_API_KEY: process.env.SETTINGS_API_KEY,
+
     OASIS_GUI_PATH: process.env.OASIS_GUI_PATH,
 
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
