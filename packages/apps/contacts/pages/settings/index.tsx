@@ -62,7 +62,7 @@ const Settings: NextPage = () => {
             <article className="flex flex-column mb-3">
                 <h2 className="text-lg text-gray-800 mb-3">Hubspot</h2>
                 <div style={{ maxWidth: '25rem', width: '100%'}}>
-                    <label htmlFor="openline-hubspot-api-key" className="mb-2 block text-gray-800">API key</label>
+                    <label htmlFor="openline-hubspot-api-key" className="mb-2 block text-gray-800">Private App key</label>
                     <input value={hubspotPrivateAppKey} id="openline-hubspot-api-key"  className="flex w-full mb-3 pt-2 pb-1 pr-2 pl-2"  onChange={({target: {value}}) => setHubspotPrivateAppKey(value)}/>
                     <div className="flex justify-content-end">
                         <Button onClick={handleSubmitHubspotSettings} mode="primary">
