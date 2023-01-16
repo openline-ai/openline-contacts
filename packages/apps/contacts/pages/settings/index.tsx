@@ -29,9 +29,9 @@ const Settings: NextPage = () => {
             setAdminEmail(settings.zendeskAdminEmail || '')
 
         }).catch((reason: any) => {
-            if(reason.response.status !== 404) {
-                toast.error("There was a problem on our side and we cannot load settings data at the moment,  we are doing our best to solve it! ");
-            }
+            // if(reason.response.status !== 404) {
+            //     // toast.error("There was a problem on our side and we cannot load settings data at the moment,  we are doing our best to solve it! ");
+            // }
         });
     }, [])
 
