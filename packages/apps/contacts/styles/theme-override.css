@@ -95,17 +95,20 @@ body {
 
 /*Data table*/
 .p-datatable {
-    border: solid 1px var(--gray-color-1);
+    border-radius: 4px;
+    border-top: none;
+}
+.p-datatable.p-component {
+    border-top: solid 1px var(--gray-color-1);
 }
 
 .p-datatable.filters {
-    background: white;
+    /*background: white;*/
     padding: 5px 12px;
     border-bottom: none;
 }
 
 .p-datatable.header {
-    background: white;
     padding: 15px 15px;
     border-bottom: none;
 }
@@ -123,9 +126,19 @@ body {
     border: none;
 }
 
+.p-datatable .p-datatable-thead > tr > th {
+    background: transparent;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.p-datatable .p-datatable-thead > tr > th:not(:last-of-type) {
+    background: transparent;
+    border-right: 1px solid #dee2e6;
+}
+
 .p-tabview .p-tabview-panels {
     background: transparent;
-    padding: 0px;
+    padding: 0;
 }
 .p-tabview-nav-container .p-tabview-nav-content .p-tabview-nav{
     background: transparent;

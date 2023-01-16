@@ -1,9 +1,9 @@
 import type {NextPage} from 'next'
 import {useRouter} from "next/router";
 import GridComponent from "../../components/generic/GridComponent";
-import {Button} from "primereact/button";
+import {Button} from "../atoms";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCirclePlus, faWindowRestore} from "@fortawesome/free-solid-svg-icons";
+import {faPlus, faWindowRestore} from "@fortawesome/free-solid-svg-icons";
 import {getEnumLabel} from "../../model/enums";
 import {ContactTitleEnum} from "../../model/enum-contactTitle";
 import {gql, GraphQLClient} from "graphql-request";
@@ -139,7 +139,7 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
                                    )}
 
                                    <Button onClick={() => router.push(`/contact/new`)} className='p-button-text'>
-                                       <FontAwesomeIcon icon={faCirclePlus} className="mr-2"/>Add a new contact
+                                       <FontAwesomeIcon icon={faPlus} className="mr-2"/>Add a new contact
                                    </Button>
                                </div>
                            }

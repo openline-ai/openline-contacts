@@ -10,8 +10,6 @@ import '../styles/card-fieldset.css'
 import '../styles/button.css'
 import '../styles/search-component.css'
 import 'react-toastify/dist/ReactToastify.css';
-
-
 import {AppProps} from "next/app";
 import {Session} from "next-auth";
 import {ToastContainer} from "react-toastify";
@@ -22,8 +20,6 @@ export default function App({
                                 Component,
                                 pageProps: {session, ...pageProps},
                             }: AppProps<{ session: Session }>) {
-
-
     return (
         <SessionProvider session={session}>
             <Layout>
