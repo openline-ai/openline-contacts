@@ -15,8 +15,8 @@ export function GetSettings(): Promise<any> {
 export function UpdateHubspotSettings(data: HubspotSettings): Promise<HubspotSettings> {
     return new Promise((resolve, reject) => axios.post(`/sa/settings/hubspot`, data).then((response: any) => {
 
-        if (response.settings) {
-            resolve(response.settings);
+        if (response.data) {
+            resolve(response.data);
         } else {
             reject(response.error);
         }
@@ -26,8 +26,8 @@ export function UpdateHubspotSettings(data: HubspotSettings): Promise<HubspotSet
 }
 export function UpdateZendeskSettings(data: ZendeskSettings): Promise<ZendeskSettings> {
     return new Promise((resolve, reject) => axios.post(`/sa/settings/zendesk`, data).then((response: any) => {
-        if (response.settings) {
-            resolve(response.settings);
+        if (response.data) {
+            resolve(response.data);
         } else {
             reject(response.error);
         }
