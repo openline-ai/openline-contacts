@@ -23,6 +23,7 @@ const Settings: NextPage = () => {
         smartSheetExists: false,
         hubspotExists: false,
     })
+
     const [hubspotPrivateAppKey, setHubspotPrivateAppKey] = useState<string>('')
     const [zendeskAPIKey, setZendeskApiKey] = useState<string>('')
     const [zendeskSubdomain, setZendeskSubdomain] = useState<string>('')
@@ -144,6 +145,7 @@ const Settings: NextPage = () => {
                                 <label htmlFor="openline-hubspot-api-key" className="mb-2 block text-gray-800">API key</label>
                                 <input value={settings.hubspotExists ? "************" : hubspotPrivateAppKey}
                                        id="openline-hubspot-api-key"
+                                       disabled={settings.hubspotExists}
                                        className="flex w-full mb-3 pt-2 pb-1 pr-2 pl-2"
                                        onChange={({target: {value}}) => setHubspotPrivateAppKey(value)}/>
                                 <div className="flex justify-content-end">
@@ -172,16 +174,19 @@ const Settings: NextPage = () => {
                                 </label>
                                 <input value={settings.zendeskExists ? "*************" : zendeskAPIKey}
                                        id="openline-zendesk-api-key"
+                                       disabled={settings.zendeskExists}
                                        className="flex w-full mb-4 pt-2 pb-1 pr-2 pl-2"
                                        onChange={({target: {value}}) => setZendeskApiKey(value)}/>
                                 <label htmlFor="openline-zendesk-subdomain" className="mb-2 block text-gray-800">Subdomain</label>
                                 <input value={settings.zendeskExists ? "*************" : zendeskSubdomain}
                                        id="openline-zendesk-subdomain"
+                                       disabled={settings.zendeskExists}
                                        className="flex w-full mb-4 pt-2 pb-1 pr-2 pl-2"
                                        onChange={({target: {value}}) => setZendeskSubdomain(value)}/>
                                 <label htmlFor="openline-zendesk-admin-email" className="mb-2 block text-gray-800">Admin Email</label>
                                 <input value={settings.zendeskExists ? "*************" : zendeskAdminEmail}
                                        id="openline-zendesk-admin-email"
+                                       disabled={settings.zendeskExists}
                                        className="flex w-full pt-2 pb-1 pr-2 pl-2 mb-3"
                                        onChange={({target: {value}}) => setAdminEmail(value)}/>
                                 <div className="flex justify-content-end">
@@ -207,12 +212,14 @@ const Settings: NextPage = () => {
                                 <label htmlFor="openline-smartsheet-id" className="mb-2 block text-gray-800">ID</label>
                                 <input value={settings.smartSheetExists ? "******************" : smartSheetId}
                                        id="openline-zendesk-api-key"
+                                       disabled={settings.smartSheetExists}
                                        className="flex w-full mb-4 pt-2 pb-1 pr-2 pl-2"
                                        onChange={({target: {value}}) => setSmartsheetId(value)}/>
                                 <label htmlFor="openline-smartsheet-api-key" className="mb-2 block text-gray-800">API key</label>
                                 <input value={settings.smartSheetExists ? "******************" : smartSheetAccessToken}
                                        id="openline-zendesk-api-key"
                                        className="flex w-full mb-4 pt-2 pb-1 pr-2 pl-2"
+                                       disabled={settings.smartSheetExists}
                                        onChange={({target: {value}}) => setSmartsheetAccessToken(value)}/>
                                 <div className="flex justify-content-end">
                                     {settings.smartSheetExists ? (
