@@ -38,10 +38,30 @@ const Settings: NextPage = () => {
         });
     }, [])
 
+    const resetZendesk = () => {
+        setZendeskApiKey('')
+        setZendeskSubdomain('')
+        setAdminEmail('')
+    }
+
+    const resetHubspot = () => {
+        setHubspotPrivateAppKey('')
+    }
+
+    const resetSmartsheet = () =>{
+        setSmartsheetId('')
+        setSmartsheetAccessToken('')
+    }
+
 
     const handleSubmitHubspotSettings = (data: HubspotSettings) => {
         UpdateHubspotSettings({hubspotPrivateAppKey}).then(() => {
             toast.success("Settings updated successfully!");
+            setSettingsExist({
+                ...settings,
+                hubspotExists: true,
+            })
+            resetHubspot()
         }).catch(() => {
             toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
@@ -54,6 +74,11 @@ const Settings: NextPage = () => {
             zendeskAPIKey
         }).then(() => {
             toast.success("Settings updated successfully!");
+            setSettingsExist({
+                ...settings,
+                zendeskExists: true,
+            })
+            resetZendesk()
         }).catch(() => {
             toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
@@ -64,6 +89,11 @@ const Settings: NextPage = () => {
             smartSheetId
         }).then(() => {
             toast.success("Settings updated successfully!");
+            setSettingsExist({
+                ...settings,
+                smartSheetExists: true,
+            })
+            resetSmartsheet()
         }).catch(() => {
             toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
@@ -74,6 +104,7 @@ const Settings: NextPage = () => {
                 ...settings,
                 hubspotExists: false,
             })
+            resetHubspot()
         }).catch(() => {
             toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
@@ -84,6 +115,7 @@ const Settings: NextPage = () => {
                 ...settings,
                 zendeskExists: false,
             })
+            resetZendesk()
         }).catch(() => {
             toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
@@ -94,6 +126,7 @@ const Settings: NextPage = () => {
                 ...settings,
                 smartSheetExists: false,
             })
+           resetSmartsheet()
         }).catch(() => {
             toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
@@ -107,54 +140,62 @@ const Settings: NextPage = () => {
                 <h2 className="text-lg text-gray-800 mb-3">Hubspot</h2>
 
                 <div style={{maxWidth: '25rem', width: '100%'}}>
-                    {
-                        !settings.hubspotExists ? (
                             <>
                                 <label htmlFor="openline-hubspot-api-key" className="mb-2 block text-gray-800">API key</label>
-                                <input value={hubspotPrivateAppKey} id="openline-hubspot-api-key" className="flex w-full mb-3 pt-2 pb-1 pr-2 pl-2"
+                                <input value={settings.hubspotExists ? "************" : hubspotPrivateAppKey}
+                                       id="openline-hubspot-api-key"
+                                       className="flex w-full mb-3 pt-2 pb-1 pr-2 pl-2"
                                        onChange={({target: {value}}) => setHubspotPrivateAppKey(value)}/>
                                 <div className="flex justify-content-end">
-                                    <Button onClick={handleSubmitHubspotSettings} mode="primary">
-                                        Save
-                                    </Button>
+                                    {settings.hubspotExists ? (
+                                        <Button onClick={handleDeleteHubspot} mode='danger'>
+                                            Revoke
+                                        </Button>
+                                    ): (
+                                        <Button onClick={handleSubmitHubspotSettings} mode="primary">
+                                            Save
+                                        </Button>
+                                    )}
+
                                 </div>
                             </>
-                        ) : (
-                            <Button onClick={handleDeleteHubspot} mode='danger'>
-                                Revoke
-                            </Button>
-                        )}
-
-
                 </div>
             </article>
             <article className="flex flex-column mb-3">
                 <h2 className="text-lg text-gray-800 mb-3">Zendesk</h2>
                 <div style={{maxWidth: '25rem', width: '100%'}}>
 
-                    {
-                        !settings.zendeskExists ? (
                             <>
-                                <label htmlFor="openline-zendesk-api-key" className="mb-2 block text-gray-800">API key</label>
-                                <input value={zendeskAPIKey} id="openline-zendesk-api-key" className="flex w-full mb-4 pt-2 pb-1 pr-2 pl-2" onChange={({target: {value}}) => setZendeskApiKey(value)}/>
+                                <label htmlFor="openline-zendesk-api-key"
+                                       className="mb-2 block text-gray-800">
+                                    API key
+                                </label>
+                                <input value={settings.zendeskExists ? "*************" : zendeskAPIKey}
+                                       id="openline-zendesk-api-key"
+                                       className="flex w-full mb-4 pt-2 pb-1 pr-2 pl-2"
+                                       onChange={({target: {value}}) => setZendeskApiKey(value)}/>
                                 <label htmlFor="openline-zendesk-subdomain" className="mb-2 block text-gray-800">Subdomain</label>
-                                <input value={zendeskSubdomain} id="openline-zendesk-subdomain" className="flex w-full mb-4 pt-2 pb-1 pr-2 pl-2"
+                                <input value={settings.zendeskExists ? "*************" : zendeskSubdomain}
+                                       id="openline-zendesk-subdomain"
+                                       className="flex w-full mb-4 pt-2 pb-1 pr-2 pl-2"
                                        onChange={({target: {value}}) => setZendeskSubdomain(value)}/>
                                 <label htmlFor="openline-zendesk-admin-email" className="mb-2 block text-gray-800">Admin Email</label>
-                                <input value={zendeskAdminEmail} id="openline-zendesk-admin-email" className="flex w-full pt-2 pb-1 pr-2 pl-2 mb-3"
+                                <input value={settings.zendeskExists ? "*************" : zendeskAdminEmail}
+                                       id="openline-zendesk-admin-email"
+                                       className="flex w-full pt-2 pb-1 pr-2 pl-2 mb-3"
                                        onChange={({target: {value}}) => setAdminEmail(value)}/>
                                 <div className="flex justify-content-end">
-                                    <Button onClick={handleSubmitZendeskSettings} mode="primary">
-                                        Save
-                                    </Button>
+                                    {settings.zendeskExists ? (
+                                        <Button onClick={handleDeleteZendesk} mode='danger'>
+                                            Revoke
+                                        </Button>
+                                    ): (
+                                        <Button onClick={handleSubmitZendeskSettings} mode="primary">
+                                            Save
+                                        </Button>
+                                    )}
                                 </div>
                             </>
-                        ) : (
-                            <Button onClick={handleDeleteZendesk} mode='danger'>
-                                Revoke
-                            </Button>
-                        )
-                    }
 
 
                 </div>
@@ -162,31 +203,30 @@ const Settings: NextPage = () => {
             <article className="flex flex-column">
                 <h2 className="text-lg text-gray-800 mb-3">Smartsheet</h2>
                 <div style={{maxWidth: '25rem', width: '100%'}}>
-                    {
-                        !settings.smartSheetExists ? (
                             <>
                                 <label htmlFor="openline-smartsheet-id" className="mb-2 block text-gray-800">ID</label>
-                                <input value={smartSheetId}
+                                <input value={settings.smartSheetExists ? "******************" : smartSheetId}
                                        id="openline-zendesk-api-key"
                                        className="flex w-full mb-4 pt-2 pb-1 pr-2 pl-2"
                                        onChange={({target: {value}}) => setSmartsheetId(value)}/>
                                 <label htmlFor="openline-smartsheet-api-key" className="mb-2 block text-gray-800">API key</label>
-                                <input value={smartSheetAccessToken}
+                                <input value={settings.smartSheetExists ? "******************" : smartSheetAccessToken}
                                        id="openline-zendesk-api-key"
                                        className="flex w-full mb-4 pt-2 pb-1 pr-2 pl-2"
                                        onChange={({target: {value}}) => setSmartsheetAccessToken(value)}/>
                                 <div className="flex justify-content-end">
-                                    <Button onClick={handleSubmitSmartsheetSettings} mode="primary">
-                                        Save
-                                    </Button>
+                                    {settings.smartSheetExists ? (
+                                        <Button onClick={handleDeleteSmartsheetSettings} mode='danger'>
+                                            Revoke
+                                        </Button>
+                                    ): (
+                                        <Button onClick={handleSubmitSmartsheetSettings} mode="primary">
+                                            Save
+                                        </Button>
+                                    )}
                                 </div>
 
                             </>
-                        ) : (
-                            <Button onClick={handleDeleteZendesk} mode='danger'>
-                                Revoke
-                            </Button>
-                        )}
 
                 </div>
             </article>
