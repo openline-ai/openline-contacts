@@ -46,4 +46,18 @@
 
     }
   }
+
+  &.danger {
+    color: var(--red-600);
+    background: transparent;
+
+    &:hover,
+    &:focus,
+    &:active {
+      background: transparent;
+      color: var(--red-500);
+      text-decoration: underline;
+
+    }
+  }
 }
