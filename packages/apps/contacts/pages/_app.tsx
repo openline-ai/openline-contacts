@@ -15,6 +15,7 @@ import {Session} from "next-auth";
 import {ToastContainer} from "react-toastify";
 import Layout from "../layout/layout";
 import {SessionProvider} from "next-auth/react";
+import Head from "next/head";
 
 export default function App({
                                 Component,
@@ -23,6 +24,9 @@ export default function App({
     return (
         <SessionProvider session={session}>
             <Layout>
+                <Head>
+                    <title>Openline</title>
+                </Head>
                 <ToastContainer position="bottom-right"
                                 autoClose={3000}
                                 closeOnClick={true}

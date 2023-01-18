@@ -56,6 +56,10 @@
    color: #525252;
    display:flex;
    font-size: 12px;
+   overflow: hidden;
+   white-space: nowrap;
+   text-overflow: ellipsis;
+   display: block;
 
    & span {
       margin-right: 4px;
