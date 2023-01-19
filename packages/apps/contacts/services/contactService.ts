@@ -210,6 +210,49 @@ export function DeleteContact(client: GraphQLClient, id: any): Promise<boolean> 
 
 }
 
+
+
+export function GetConversationsForContact(client: GraphQLClient, contactId: string, pagination: Pagination): Promise<PaginatedResponse<Note>> {
+    return new Promise((resolve, reject) => {
+
+        const query = gql`query GetConversationsForContact($id: ID!, $pagination: Pagination!) {
+            contact(id: $id) {
+                id
+                conversations(pagination: $pagination) {
+                    content {
+                        id
+                        startedAt
+                        updatedAt
+                        status
+                        channel
+                        messageCount
+                        source
+                        initiatorFirstName
+                        initiatorLastName
+
+                    }
+                }
+            }
+        }`
+
+        client.request(query, {
+            id: contactId,
+            pagination: pagination
+        }).then((response: any) => {
+            console.log(response.contact.conversations)
+            if (response.contact.conversations) {
+                resolve({
+                    content: response.contact?.conversations.content,
+                    totalElements: response.contact?.conversations.totalElements
+                });
+            } else {
+                reject(response.error);
+            }
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
+}
 export function GetContactNotes(client: GraphQLClient, contactId: string, pagination: Pagination): Promise<PaginatedResponse<Note>> {
     return new Promise((resolve, reject) => {
 
@@ -219,8 +262,15 @@ export function GetContactNotes(client: GraphQLClient, contactId: string, pagina
                     content {
                         id
                         html
+                        createdAt
+                        createdBy {
+                            firstName
+                            lastName
+                        }
+                        source
                     }
                     totalElements
+                    
                 }
             }
         }`

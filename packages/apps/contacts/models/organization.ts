@@ -5,4 +5,5 @@ export type Organization = {
     industry: string;
     domain: string;
     website: string;
+    contactRoles: any
 }

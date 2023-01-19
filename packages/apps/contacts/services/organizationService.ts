@@ -42,10 +42,38 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
                 industry
                 domain
                 website
+                contactRoles {
+                    id
+                    contact {
+                        id
+                        title
+                        firstName
+                        lastName
+                        source
+                        contactType {
+                            id
+                        }
+                        phoneNumbers {
+                            id
+                            e164
+                            label
+                            primary
+                            source
+                        }
+                        emails {
+                            id
+                            email
+                            primary
+                            source
+                        }
+                    }
+                }
             }
         }`
 
         client.request(query, {id: id}).then((response: any) => {
+            console.log('🏷️[Fn:r][L:75]: response.organization(): '
+                , response.organization);
             response.organization ? resolve(response.organization) : reject(response.errors);
         }).catch(reason => {
             reject(reason);

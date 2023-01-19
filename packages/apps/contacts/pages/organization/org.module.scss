@@ -1,0 +1,39 @@
+.grid {
+  max-width: 1280px; // todo move to variable, web standard
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(4, 1fr);
+  height:100%;
+  //width: 100%;
+  padding: 12px;
+  grid-gap: 24px;
+  grid-template-areas: "details"
+                       "contactList"
+                       "history";
+
+  @media (min-width:801px)  {
+    /* tablet, landscape iPad, lo-res laptops ands desktops */
+    flex-direction: row;
+    padding: 24px 12px;
+    grid-template-columns: 2fr 3fr;
+    grid-template-rows: auto 80px 1fr;
+    grid-gap: 64px;
+    grid-template-areas: "details history "
+                         "details history"
+                         "contactList history"
+  }
+}
+
+.details {
+  grid-area: details;
+}
+
+.composeBox {
+  grid-area: composeBox;
+}
+
+.contactList {
+  grid-area: contactList;
+}
+
