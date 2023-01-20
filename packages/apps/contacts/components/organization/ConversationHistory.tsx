@@ -46,7 +46,7 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
                 .map((e: { content: any; }) => e.content)
                 .flat()
                 .map((e: any) => ({...e, type: "NOTE"}))
-            setHistoryNotes([...newNotes, ...newNotes, ...newNotes]);
+            setHistoryNotes(newNotes);
             setLoadingNotes(false);
         });
     }, []);
