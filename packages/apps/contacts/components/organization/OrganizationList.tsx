@@ -5,8 +5,6 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPlus, faWindowRestore} from "@fortawesome/free-solid-svg-icons";
 import {GraphQLClient} from "graphql-request";
 import {PaginatedRequest, PaginatedResponse} from "../../utils/pagination";
-import {getSession} from "next-auth/react";
-import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 import {toast} from "react-toastify";
 import {GetOrganizations} from "../../services/organizationService";
 import {Organization} from "../../models/organization";
@@ -74,8 +72,3 @@ export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScree
         </FullScreenModeLayout>
     );
 }
-
-export async function getServerSideProps(context: any) {
-    return loggedInOrRedirectToLogin(await getSession(context));
-}
-

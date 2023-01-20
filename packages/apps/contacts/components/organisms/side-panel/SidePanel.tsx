@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import styles from './side-panel.module.scss'
 import {AvatarButton} from "../../atoms";
-import {signOut} from "next-auth/react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faSignOut, faCog} from "@fortawesome/free-solid-svg-icons";
 import {useRouter} from "next/router";
@@ -28,7 +27,7 @@ export const SidePanel: React.FC<Props> = ({ user}) => {
                         <span>
                             Email:
                         </span>
-                                {user.user.email}
+                                {user?.user?.email}
                             </div>
                         </div>
                         <div className={styles.signOutSection}>
@@ -38,7 +37,7 @@ export const SidePanel: React.FC<Props> = ({ user}) => {
                                     Settings
                                 </span>
                             </button>
-                            <button className={styles.signOutButton} onClick={() => signOut()}>
+                            <button className={styles.signOutButton} onClick={() => console.log("TODO EDI")}>
                                 <FontAwesomeIcon icon={faSignOut} />
                                 <span>
                                     Log out

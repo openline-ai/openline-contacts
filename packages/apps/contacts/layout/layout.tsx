@@ -1,18 +1,16 @@
 import {useRouter} from "next/router";
-import {useSession} from "next-auth/react";
 import {WebChat} from "@openline-ai/openline-web-chat";
 import "@openline-ai/openline-web-chat/dist/esm/index.css"
 import {SidePanel} from "../components/organisms";
 
 export default function Layout({children}: any) {
     const router = useRouter();
-    const {data: session} = useSession();
 
     return (
         <div className="flex h-full w-full">
 
             {router.pathname === '/' && (
-                <SidePanel user={session}/>
+                <SidePanel user={undefined}/> //TODO EDI
             )}
 
 
@@ -33,7 +31,8 @@ export default function Layout({children}: any) {
                      trackerBufferSize={`${process.env.WEB_CHAT_TRACKER_BUFFER_SIZE}`}
                      trackerMinimumVisitLength={`${process.env.WEB_CHAT_TRACKER_MINIMUM_VISIT_LENGTH}`}
                      trackerHeartbeatDelay={`${process.env.WEB_CHAT_TRACKER_HEARTBEAT_DELAY}`}
-                     userEmail={session?.user?.email || ''}
+                     // userEmail={session?.user?.email || ''}
+                     userEmail={''} //TODO EDI
             />
         </div>
     )

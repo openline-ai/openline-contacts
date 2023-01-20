@@ -7,8 +7,6 @@ import {faCirclePlus} from "@fortawesome/free-solid-svg-icons";
 import {gql, GraphQLClient} from "graphql-request";
 import {MapGridFilters} from "../../utils/converters";
 import {PaginatedRequest} from "../../utils/pagination";
-import {getSession} from "next-auth/react";
-import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 
 const ContactGroupList: NextPage = () => {
     const client = new GraphQLClient(`/customer-os-api/query`);
@@ -77,10 +75,6 @@ const ContactGroupList: NextPage = () => {
                        onEdit={(id: any) => router.push(`/contactGroup/${id}`)}
         />
     );
-}
-
-export async function getServerSideProps(context: any) {
-    return loggedInOrRedirectToLogin(await getSession(context));
 }
 
 export default ContactGroupList

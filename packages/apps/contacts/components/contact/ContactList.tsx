@@ -9,9 +9,8 @@ import {ContactTitleEnum} from "../../model/enum-contactTitle";
 import {gql, GraphQLClient} from "graphql-request";
 import {MapGridFilters} from "../../utils/converters";
 import {PaginatedRequest} from "../../utils/pagination";
-import {getSession} from "next-auth/react";
-import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 import {FullScreenModeLayout} from "../organisms/fullscreen-mode-layout";
+
 export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMode}) => {
     const client = new GraphQLClient(`/customer-os-api/query`);
     const router = useRouter();
@@ -151,8 +150,4 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
 
 
     );
-}
-
-export async function getServerSideProps(context: any) {
-    return loggedInOrRedirectToLogin(await getSession(context));
 }

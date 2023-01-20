@@ -1,6 +1,4 @@
 import type { NextPage } from 'next'
-import { getSession } from "next-auth/react";
-import { loggedInOrRedirectToLogin } from "../../utils/logged-in";
 import { FullScreenModeLayout } from "../../components/organisms/fullscreen-mode-layout";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -241,10 +239,6 @@ const Settings: NextPage = () => {
             </div>
         </FullScreenModeLayout>
     )
-}
-
-export async function getServerSideProps(context: any) {
-    return loggedInOrRedirectToLogin(await getSession(context));
 }
 
 export default Settings

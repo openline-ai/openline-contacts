@@ -10,8 +10,6 @@ import {BreadCrumb} from "primereact/breadcrumb";
 import {Dialog} from "primereact/dialog";
 import {DeleteContactGroup} from "../../services/contactGroupService";
 import {toast} from "react-toastify";
-import {getSession} from "next-auth/react";
-import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 import {Organization} from "../../models/organization";
 import {CreateOrganization, DeleteOrganization, GetOrganization, UpdateOrganization} from "../../services/organizationService";
 import {FullScreenModeLayout} from "../../components/organisms/fullscreen-mode-layout";
@@ -228,10 +226,6 @@ function OrganizationEdit() {
 
         </FullScreenModeLayout>
     );
-}
-
-export async function getServerSideProps(context: any) {
-    return loggedInOrRedirectToLogin(await getSession(context));
 }
 
 export default OrganizationEdit
