@@ -1,20 +1,8 @@
-div.loginPanel {
-   display: block;
-   width: 100%;
-   height: 100%;
-   box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.2);
-   box-sizing: border-box;
-}
-
-.loginPanel__content {
-   padding-top: 20px;
+.loginPanel {
+   position: block;
+   margin-top: 100px;
    margin-left: auto;
    margin-right: auto;
-   transition: all 0.25s ease-in-out;
-   height: 100%;
-   display: flex;
-   justify-content: center;
-   align-items: center;
 }
 
 .loginPanel__logo {

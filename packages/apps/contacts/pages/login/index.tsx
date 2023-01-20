@@ -1,7 +1,7 @@
 import type { NextPage } from 'next'
 import React from 'react';
-import { getSession } from "next-auth/react";
-import { loggedInOrRedirectToLogin } from "../../utils/logged-in";
+// import { getSession } from "next-auth/react";
+// import { loggedInOrRedirectToLogin } from "../../utils/logged-in";
 import { LoginPanel } from '../../components/organisms/login-panel';
 
 

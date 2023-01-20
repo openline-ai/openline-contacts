@@ -1,4 +1,3 @@
-import { Checkbox } from 'primereact/checkbox';
 import { InputText } from 'primereact/inputtext';
 import React from 'react';
 import { toast } from 'react-toastify';
@@ -14,9 +13,9 @@ export const LoginPanel: React.FC<Props> = () => {
     const forgot = () => toast.error("Much forgetful...");
 
     return (
-        <div className={styles.loginPanel}>
-            <div className={styles.loginPanel__content}>
-                <div className="surface-card p-6 shadow-2 border-round w-full sm:w-25rem">
+        <div className="flex w-full">
+            <div className={styles.loginPanel}>
+                <div className="surface-card pt-6 px-6 pb-5 shadow-2 border-round w-full sm:w-25rem">
                     <div className="text-center mb-5">
                         <img src="./logos/openline.svg" alt="Openline" height={50} className="mb-3" />
                         <div>
@@ -36,7 +35,12 @@ export const LoginPanel: React.FC<Props> = () => {
                             <a className="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" onClick={forgot}>Forgot your password?</a>
                         </div>
 
-                        <Button label="Sign In" className="w-full p-button-secondary" onClick={success}/>
+                        <Button label="Sign In" className="w-full p-button-secondary" onClick={success} />
+
+                        <div className="pt-5 text-center">
+                            <span className="font-medium line-height-3 text-sm" style={{ color: '#9E9E9E' }}>Protected by </span>
+                            <img src="./logos/ory-small.svg" alt="Ory" height={14} style={{ verticalAlign: 'middle' }} />
+                        </div>
                     </div>
                 </div>
             </div>
