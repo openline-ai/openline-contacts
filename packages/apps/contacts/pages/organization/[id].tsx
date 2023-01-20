@@ -11,6 +11,7 @@ import {OrganizationHistory} from "../../components/organization/ConversationHis
 import {Skeleton} from "primereact/skeleton";
 import {Button} from "../../components/atoms";
 import {useGraphQLClient} from "../../utils/graphQLClient";
+import {CardHeading} from "../../components/atoms/cardHeading";
 
 function OrganizationEdit() {
     const client =  useGraphQLClient();
@@ -87,7 +88,7 @@ function OrganizationEdit() {
                         </div>
                     ) : (
                         <>
-                            <h1 className={`text-xxl text-gray-600 m-0 ${styles.heading}`}>  Contacts </h1>
+                            <CardHeading>  Contacts </CardHeading>
                             <OrganizationContactList contacts={contactInOrganisation} />
                         </>
                     )}
@@ -119,7 +120,7 @@ function OrganizationEdit() {
                             </div>
                         ) : (
                             <>
-                                <h1 className={`text-xxl text-gray-600 m-0 ${styles.heading}`}> Contact history </h1>
+                                <CardHeading> Contact history </CardHeading>
                                 <OrganizationHistory  contacts={contactInOrganisation}/>
                             </>
 

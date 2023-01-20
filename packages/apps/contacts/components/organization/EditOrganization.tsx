@@ -10,6 +10,7 @@ import {Organization} from "../../models/organization";
 import {CreateOrganization, DeleteOrganization, UpdateOrganization} from "../../services/organizationService";
 import {useGraphQLClient} from "../../utils/graphQLClient";
 import {IconButton} from "../atoms/icon-button";
+import {CardHeading} from "../atoms/cardHeading";
 
 function OrganizationEdit({organisation}: {organisation:any}) {
     const client =  useGraphQLClient();
@@ -81,13 +82,13 @@ function OrganizationEdit({organisation}: {organisation:any}) {
             <div className="h-full">
                 <div className="flex flex-column">
                     <div className="flex align-items-center  mb-3">
-                            <h1 className="text-gray-600 text-xxl mr-2 mb-0 mt-0 ">Details</h1>
-                            <div className="flex align-content-center ">
+                            <CardHeading>Details</CardHeading>
+                            <div className="flex align-content-center ml-5 " style={{marginBottom: '24px'}}>
                                 {
                                     !editDetails &&(
                                         <>
                                             <div>
-                                            <IconButton icon={faEdit} ariaLabel="Edit" className="text-gray-700 mr-1" onClick={() => {
+                                            <IconButton icon={faEdit} ariaLabel="Edit" className="text-gray-800 mr-1" onClick={() => {
                                                 setValue('id', organizationDetails.id);
                                                 setValue('name', organizationDetails?.name);
                                                 setValue('description', organizationDetails.description);
@@ -98,7 +99,7 @@ function OrganizationEdit({organisation}: {organisation:any}) {
                                             }}/>
                                             </div>
                                             <div>
-                                                <IconButton icon={faTrashCan}  ariaLabel="Delete" onClick={() => setDeleteConfirmationModalVisible(true)} className='text-gray-700'/>
+                                                <IconButton icon={faTrashCan}  ariaLabel="Delete" onClick={() => setDeleteConfirmationModalVisible(true)} className='text-gray-800'/>
                                             </div>
                                         </>
                                     )

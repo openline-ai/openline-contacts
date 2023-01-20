@@ -5,7 +5,7 @@ export const OrganizationContactList = ({contacts = []}: {contacts: any}) => {
 
     return (
             <ul className={styles.contactList}>
-                {contacts.map((e:any)=> (
+                {[...contacts].map((e:any)=> (
                     <li key={e.id}
                         className={`text-gray-600 line-height-2 pt-3 pb-3 ${styles.listItem}`}>
                         <div>
