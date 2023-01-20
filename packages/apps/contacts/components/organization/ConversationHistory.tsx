@@ -96,7 +96,7 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
                                     <div className={`${styles.noteContent} text-gray-700`} dangerouslySetInnerHTML={{__html: e.html}}></div>
                                     <div className={styles.noteData}>
                                         <Moment className="text-sm text-gray-600" date={e.startedAt} format={'h:m d MMM yy'}>{e.createdAt}</Moment>
-                                        <div className="text-sm text-gray-600"> {e.createdBy?.firstName || 'Anna Nowak'} {" "} {e.createdBy?.lastName}</div>
+                                        <div className="text-sm text-gray-600"> {e.createdBy?.firstName} {" "} {e.createdBy?.lastName}</div>
 
                                     </div>
 
