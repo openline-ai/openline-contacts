@@ -20,7 +20,7 @@ export const LoginPanel: React.FC<Props> = () => {
                     <div className="text-center mb-5">
                         <img src="./logos/openline.svg" alt="Openline" height={50} className="mb-3" />
                         <div>
-                            <span className="text-600 font-medium line-height-3 text-sm">Don't have an account?</span>
+                            <span className="text-600 font-medium line-height-3 text-sm">Don&apos;t have an account?</span>
                             <a className="font-medium no-underline ml-2 text-blue-500 cursor-pointer text-sm" href="/waitlist">Join the waitlist!</a>
                         </div>
                     </div>
