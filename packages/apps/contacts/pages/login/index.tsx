@@ -27,8 +27,8 @@ const Login: NextPage = () => {
     )
 }
 
-export async function getServerSideProps(context: any) {
-    return loggedInOrRedirectToLogin(await getSession(context));
-}
+// export async function getServerSideProps(context: any) {
+//     return loggedInOrRedirectToLogin(await getSession(context));
+// }
 
 export default Login
