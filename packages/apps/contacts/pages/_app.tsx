@@ -8,6 +8,7 @@ import '../styles/theme-override.css'
 import '../styles/layout.css'
 import '../styles/card-fieldset.css'
 import '../styles/button.css'
+import '../styles/login.css'
 import '../styles/search-component.css'
 import 'react-toastify/dist/ReactToastify.css';
 import {AppProps} from "next/app";
