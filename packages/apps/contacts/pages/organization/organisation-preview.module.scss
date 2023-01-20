@@ -4,10 +4,10 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: repeat(4, 1fr);
-  height:100%;
   //width: 100%;
-  padding: 12px;
   grid-gap: 24px;
+  height: calc(100vh - 75px);
+
   grid-template-areas: "details"
                        "contactList"
                        "history";
@@ -15,10 +15,10 @@
   @media (min-width:801px)  {
     /* tablet, landscape iPad, lo-res laptops ands desktops */
     flex-direction: row;
-    padding: 24px 12px;
     grid-template-columns: 2fr 3fr;
-    grid-template-rows: auto 80px 1fr;
+    grid-template-rows: auto 80px minmax(1fr, auto);
     grid-gap: 64px;
+    padding: 42px;
     grid-template-areas: "details history "
                          "details history"
                          "contactList history"
@@ -27,13 +27,46 @@
 
 .details {
   grid-area: details;
+  background: #fff;
+  border-radius: 30px;
+  padding: 32px;
+
+
 }
 
 .composeBox {
   grid-area: composeBox;
+    background: #fff;
+  border-radius: 30px;
+  padding: 32px;
+
+
 }
 
 .contactList {
   grid-area: contactList;
+  background: #fff;
+  border-radius: 30px;
+  padding: 32px;
+}
+.history {
+  grid-area: history;
+    background: #fff;
+  border-radius: 30px;
+  padding: 32px;
+  height: fit-content;
+}
+
+.heading {
+  position: relative;
+  display: block;
+  &::before {
+    content: " ";
+    position: absolute;
+    width: 200px;
+    height: 2px;
+    //background: var(--gray-color-2);
+    bottom: -9px;
+  }
 }
 
