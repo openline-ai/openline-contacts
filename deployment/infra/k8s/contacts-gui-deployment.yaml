@@ -15,7 +15,7 @@ spec:
       containers:
         - image: ghcr.io/openline-ai/openline-contacts:latest
           name: contacts-gui
-          imagePullPolicy: Always
+          imagePullPolicy: Never
           ports:
             - containerPort: 3001
               name: http-port
