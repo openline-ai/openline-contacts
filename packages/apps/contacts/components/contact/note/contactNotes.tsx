@@ -7,6 +7,7 @@ import {GetContactNotes} from "../../../services/contactService";
 import {Note} from "../../../models/contact";
 import {Skeleton} from "primereact/skeleton";
 import ContactNoteTemplate from "./contactNoteTemplate";
+import {useGraphQLClient} from "../../../utils/graphQLClient";
 
 
 interface Props {
@@ -16,7 +17,7 @@ interface Props {
    setReload: (newState: boolean) => void
 }
 function ContactNotes(props: Props) {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
 
     const [noteTotalElements, setNoteTotalElements] = useState(0);
     const [noteItems, setNoteItems] = useState([] as any);

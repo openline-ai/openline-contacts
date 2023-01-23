@@ -8,14 +8,13 @@ import {InputText} from "primereact/inputtext";
 import {useForm} from "react-hook-form";
 import {Dialog} from "primereact/dialog";
 import {toast} from "react-toastify";
-import {getSession} from "next-auth/react";
-import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 import {Organization} from "../../models/organization";
 import {CreateOrganization, DeleteOrganization, GetOrganization, UpdateOrganization} from "../../services/organizationService";
 import {FullScreenModeLayout} from "../organisms/fullscreen-mode-layout";
+import {useGraphQLClient} from "../../utils/graphQLClient";
 
 function OrganizationEdit() {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
 
     const [organization, setOrganization] = useState({
         id: undefined,
@@ -217,10 +216,6 @@ function OrganizationEdit() {
 
         </FullScreenModeLayout>
     );
-}
-
-export async function getServerSideProps(context: any) {
-    return loggedInOrRedirectToLogin(await getSession(context));
 }
 
 export default OrganizationEdit

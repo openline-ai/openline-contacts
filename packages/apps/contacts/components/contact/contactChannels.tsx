@@ -9,9 +9,10 @@ import ContactPhoneNumberTemplate from "./contact-detail-preview-template/contac
 import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
 import {Button, Divider} from "../atoms";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {useGraphQLClient} from "../../utils/graphQLClient";
 
 function ContactCommunication(props: any) {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
 
     const addCommunicationChannelContainerRef = useRef<OverlayPanel>(null);
 

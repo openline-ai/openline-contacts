@@ -7,9 +7,10 @@ import {Pagination} from "../../utils/pagination";
 import Moment from "react-moment";
 import Link from "next/link";
 import {Skeleton} from "primereact/skeleton";
+import {useGraphQLClient} from "../../utils/graphQLClient";
 
 function ContactHistory(props: any) {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
 
     const [loading, setLoading] = useState(true);
     const [historyItems, setHistoryItems] = useState([] as any);

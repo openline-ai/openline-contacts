@@ -1,6 +1,4 @@
 import type {NextPage} from 'next'
-import {getSession} from "next-auth/react";
-import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
 import {ContactList} from "../../components/contact";
 import {OrganizationList} from "../../components/organization/OrganizationList";
 
@@ -15,10 +13,6 @@ const Dashboard: NextPage = () => {
              </div>
         </div>
     )
-}
-
-export async function getServerSideProps(context: any) {
-    return loggedInOrRedirectToLogin(await getSession(context));
 }
 
 export default Dashboard

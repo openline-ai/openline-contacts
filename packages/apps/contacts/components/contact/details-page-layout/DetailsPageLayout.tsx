@@ -1,41 +1,26 @@
 import {useRouter} from "next/router";
-import {useSession} from "next-auth/react";
 import "@openline-ai/openline-web-chat/dist/esm/index.css"
 import styles from './details-page-layout.module.scss'
-import {generateGradient} from "./utils";
 import {GraphQLClient} from "graphql-request";
 import React, {useEffect, useState} from "react";
-import {useForm} from "react-hook-form";
 import {GetContactTypes} from "../../../services/contactTypeService";
 import {Contact, ContactType} from "../../../models/contact";
 import {toast} from "react-toastify";
-import {CreateContact, GetContactDetails, UpdateContact} from "../../../services/contactService";
-import {
-    CustomFieldTemplateProps,
-    EntityDefinitionTemplateProps, FieldSetTemplateProps,
-    mapEntityExtensionDataFromFormData
-} from "../../generic/entityExtensionTemplates";
-import {GetUsersPage} from "../../../services/userService";
-import {Page, PaginationOf} from "../../../models/pagination";
-import {User} from "../../../models/user";
-import {GetEntityDefinitions} from "../../../services/entityDefinitionService";
-import {CustomField, CustomFieldDefinition, EntityDefinition, FieldSetDefinition} from "../../../models/customFields";
+import {GetContactDetails} from "../../../services/contactService";
 import {ProfileLayout} from "./ProfileLayout";
 import ContactCommunicationSection from "../contactChannels";
 import ContactHistory from "../contactHistory";
 import ContactNotes from "../note/contactNotes";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faImage} from "@fortawesome/free-solid-svg-icons";
 import ContactNoteModalTemplate from "../note/contactNoteModalTemplate";
 import ContactDetailsSection from "../contactDetailsSection";
 import {Divider} from "../../atoms";
+import {useGraphQLClient} from "../../../utils/graphQLClient";
 
 // TODO Move atom components to ui-kit
 // TODO refactor this so it is layout that can be reused
 
 export const DetailsPageLayout = () => {
-    const {data: session} = useSession();
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
     const [reload, setReload] = useState(false);
     const router = useRouter();
 
@@ -50,7 +35,6 @@ export const DetailsPageLayout = () => {
         contactTypeId: undefined,
         contactTypeName: ''
     }) as any;
-
 
 
     const [contactTypeList, setContactTypeList] = useState([] as any);
@@ -69,7 +53,6 @@ export const DetailsPageLayout = () => {
             definitionId: contact.definition?.id
         };
     }
-
 
 
     useEffect(() => {
@@ -99,20 +82,17 @@ export const DetailsPageLayout = () => {
     }, [router.query.id, reloadDetails]);
 
 
-
-
-    
     // EDITOR
     return (
         <div className={styles.pageWrapper}>
-            <ProfileLayout 
-                           contact={contact}
-                           onSetEditMode={setEditDetails}/>
+            <ProfileLayout
+                contact={contact}
+                onSetEditMode={setEditDetails}/>
 
             <section className={styles.contactFieldSection}>
                 {editDetails && (
                     <>
-                        <ContactDetailsSection 
+                        <ContactDetailsSection
                             contact={contact}
                             editDetails={editDetails}
                             setReloadDetails={setReloadDetails}
@@ -124,7 +104,7 @@ export const DetailsPageLayout = () => {
                 )}
                 <ContactCommunicationSection contactId={router.query.id}/>
             </section>
-            
+
             <section className={styles.messageEditorSection}>
                 {router.query.id && router.query.id !== 'new' && (
                     <ContactNoteModalTemplate
@@ -135,11 +115,11 @@ export const DetailsPageLayout = () => {
                         notifyChanged={() => setReload(true)}
                         contactId={router.query?.id as string}
                     />
-                ) }
+                )}
 
             </section>
 
-            <section className={styles.contactHistorySection} >
+            <section className={styles.contactHistorySection}>
                 {router.query.id && router.query.id !== 'new' && (
                     <>
                         <article>
