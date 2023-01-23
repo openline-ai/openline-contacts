@@ -31,6 +31,10 @@
   font-size: 0.6rem;
 }
 
+.listItem {
+  cursor: pointer;
+}
+
 .listItem:not(:last-of-type) {
   border-bottom: 1px solid var(--gray-300);
 }

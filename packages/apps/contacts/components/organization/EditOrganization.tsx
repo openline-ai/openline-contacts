@@ -7,30 +7,21 @@ import {useForm} from "react-hook-form";
 import {Dialog} from "primereact/dialog";
 import {toast} from "react-toastify";
 import {Organization} from "../../models/organization";
-import {CreateOrganization, DeleteOrganization, UpdateOrganization} from "../../services/organizationService";
+import {CreateOrganization, DeleteOrganization, GetOrganization, UpdateOrganization} from "../../services/organizationService";
 import {useGraphQLClient} from "../../utils/graphQLClient";
 import {IconButton} from "../atoms/icon-button";
 import {CardHeading} from "../atoms/cardHeading";
+import Link from "next/link";
+import * as domain from "domain";
 
-function OrganizationEdit({organisation}: {organisation:any}) {
+// todo add reload
+function OrganizationEdit({organisation, onReload, createMode}: {organisation:any, createMode:boolean, onReload: () =>void}) {
     const client =  useGraphQLClient();
 
-    const [organizationDetails, setOrganizationDetails] = useState(organisation as Organization);
-    const [editDetails, setEditDetails] = useState(false);
+    const [editDetails, setEditDetails] = useState(createMode);
 
     const router = useRouter();
     const {id} = router.query;
-
-    const [reloadDetails, setReloadDetails] = useState(false);
-    useEffect(() => {
-
-        if (id !== undefined && id === 'new') {
-            setEditDetails(true);
-        } else if (id !== undefined && id !== 'new') {
-            setEditDetails(false);
-        }
-
-    }, [id, reloadDetails]);
 
     const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
     const deleteOrganization = () => {
@@ -55,6 +46,7 @@ function OrganizationEdit({organisation}: {organisation:any}) {
             CreateOrganization(client, data).then((result: Organization) => {
                 if (result) {
                     router.push(`/organization/${result.id}`);
+                    setEditDetails(false);
                     toast.success("Organization added successfully!");
                 } else {
                     //todo log an error in server side
@@ -66,7 +58,8 @@ function OrganizationEdit({organisation}: {organisation:any}) {
         } else {
             UpdateOrganization(client, data).then((result: Organization) => {
                 if (result) {
-                    setReloadDetails(!reloadDetails);
+                    onReload()
+                    setEditDetails(false);
                     toast.success("Organization updated successfully!");
                 } else {
                     //todo log an error in server side
@@ -81,20 +74,20 @@ function OrganizationEdit({organisation}: {organisation:any}) {
     return (
             <div className="h-full">
                 <div className="flex flex-column">
-                    <div className="flex align-items-center  mb-3">
-                            <CardHeading>Details</CardHeading>
+                    <div className="flex align-items-center justify-content-between">
+                            <CardHeading>{organisation?.name || 'Unknown'}</CardHeading>
                             <div className="flex align-content-center ml-5 " style={{marginBottom: '24px'}}>
                                 {
                                     !editDetails &&(
                                         <>
                                             <div>
                                             <IconButton icon={faEdit} ariaLabel="Edit" className="text-gray-800 mr-1" onClick={() => {
-                                                setValue('id', organizationDetails.id);
-                                                setValue('name', organizationDetails?.name);
-                                                setValue('description', organizationDetails.description);
-                                                setValue('industry', organizationDetails.industry);
-                                                setValue('domain', organizationDetails.domain);
-                                                setValue('website', organizationDetails.website);
+                                                setValue('id', organisation?.id);
+                                                setValue('name', organisation?.name);
+                                                setValue('description', organisation?.description);
+                                                setValue('industry', organisation?.industry);
+                                                setValue('domain', organisation?.domain);
+                                                setValue('website', organisation?.website);
                                                 setEditDetails(true);
                                             }}/>
                                             </div>
@@ -110,30 +103,21 @@ function OrganizationEdit({organisation}: {organisation:any}) {
 
                         {
                             !editDetails &&
-                            <div className="flex flex-column justify-content-evenly mt-2 flex-grow-1">
-                                <div className="flex mr-3">
-                                    <span className="mr-3 text-gray-600 font-bold">Name</span>
-                                    <span className="mr-3 overflow-hidden text-overflow-ellipsis">{organizationDetails.name}</span>
+                            <div className="flex flex-column justify-content-evenly flex-grow-1">
+                                <div className="flex">
+                                    <span
+                                        className="mr-3 overflow-hidden text-overflow-ellipsis">{organisation?.description}</span>
                                 </div>
                                 <div className="flex mr-3 mt-3">
-                                    <span className="mr-3 text-gray-600 font-bold">Description</span>
                                     <span
-                                        className="mr-3 overflow-hidden text-overflow-ellipsis">{organizationDetails.description}</span>
+                                        className="mr-3 overflow-hidden text-gray-500 text-overflow-ellipsis">{organisation?.industry}</span>
                                 </div>
                                 <div className="flex mr-3 mt-3">
-                                    <span className="mr-3 text-gray-600 font-bold">Industry</span>
-                                    <span
-                                        className="mr-3 overflow-hidden text-overflow-ellipsis">{organizationDetails.industry}</span>
-                                </div>
-                                <div className="flex mr-3 mt-3">
-                                    <span className="mr-3 text-gray-600 font-bold">Domain</span>
-                                    <span
-                                        className="mr-3 overflow-hidden text-overflow-ellipsis">{organizationDetails.domain}</span>
-                                </div>
-                                <div className="flex mr-3 mt-3">
-                                    <span className="mr-3 text-gray-600 font-bold">Website</span>
-                                    <span
-                                        className="mr-3 overflow-hidden text-overflow-ellipsis">{organizationDetails.website}</span>
+                                    <Link href={organisation?.website || `https://${organisation?.domain}` }
+                                          target="_blank"
+                                          className='cta'>
+                                        {organisation?.domain}
+                                    </Link>
                                 </div>
                             </div>
                         }

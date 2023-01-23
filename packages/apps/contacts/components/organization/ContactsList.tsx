@@ -1,16 +1,19 @@
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEnvelope, faPhone} from "@fortawesome/free-solid-svg-icons";
 import styles from './organisation.module.scss'
+import {useRouter} from "next/router";
 export const OrganizationContactList = ({contacts = []}: {contacts: any}) => {
-
+    const router = useRouter();
     return (
             <ul className={styles.contactList}>
                 {[...contacts].map((e:any)=> (
                     <li key={e.id}
-                        className={`text-gray-600 line-height-2 pt-3 pb-3 ${styles.listItem}`}>
+                        onClick={() => router.push(`/contact/${e.id}`)}
+                        className={`text-gray-800 line-height-2 pt-3 pb-3 ${styles.listItem}`}>
                         <div>
                             <span> {e.firstName} </span>
                             <span> {e.lastName} </span>
+                            <span className="text-xs ml-2 text-gray-600"> {e?.jobTitle}</span>
                         </div>
                         <div className={`mb-2 ${styles.contactType}`}>
                             <span> {e.contactType?.name}</span>
@@ -20,7 +23,6 @@ export const OrganizationContactList = ({contacts = []}: {contacts: any}) => {
                                 {!!e.phoneNumbers.length && (
                                     <>
                                         <span className="mr-2"> <FontAwesomeIcon icon={faPhone}/> </span>
-                                        {}
                                         {e.phoneNumbers.find((d:any ) => d.primary)?.e164 || e.phoneNumbers[0]?.e164}
                                     </>
                                 )}

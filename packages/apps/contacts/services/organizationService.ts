@@ -44,12 +44,14 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
                 website
                 contactRoles {
                     id
+                    jobTitle
                     contact {
                         id
                         title
                         firstName
                         lastName
                         source
+                        title
                         contactType {
                             id
                         }

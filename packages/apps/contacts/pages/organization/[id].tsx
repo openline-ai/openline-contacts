@@ -20,27 +20,45 @@ function OrganizationEdit() {
     const [loading, setLoading] = useState(true);
     const [organization, setOrganization] = useState(null);
     const [contactInOrganisation, setContactInOrganization] = useState([]);
+    const [reloadDetails, setReloadDetails] = useState(false);
+    const [createMode, setCreateMode] = useState(false);
+
 
     useEffect(() => {
+        if (router.query.id !== undefined && router.query.id === 'new') {
+            setCreateMode(true);
+            setLoading(false)
+        }
+    }, [router.query.id]);
 
+    useEffect(() => {
+        if(router.query.id !== undefined && router.query.id !== 'new') {
+            setLoading(true)
+            setCreateMode(false)
             GetOrganization(client, router.query.id as string).then((org: Organization) => {
                 const {contactRoles ,...data} = org
-                const contactsInOrg = contactRoles.map((d: { contact: any; }) => ({
-                    ...d.contact
+                const contactsInOrg = contactRoles.map((d: {jobTitle:string, contact: any; }) => ({
+                    ...d.contact,
+                    jobTitle: d.jobTitle
                 }))
                 // @ts-ignore
                 setOrganization(data);
                 setContactInOrganization(contactsInOrg)
                 setLoading(false)
+                setReloadDetails(false)
             }).catch(() => {
                 setLoading(false)
-                //todo log error on server side
+                setReloadDetails(false)
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
+        }
 
-    }, [router.query.id]);
 
-    if (organization === null && !loading) {
+
+    }, [router.query.id, reloadDetails]);
+
+
+    if (organization === null && !loading && !createMode) {
         return <FullScreenModeLayout fullScreenMode >
                 <div className="flex flex-column align-items-center justify-items-center">
                     <h1 >Error</h1>
@@ -59,8 +77,6 @@ function OrganizationEdit() {
         </FullScreenModeLayout>
     }
 
-
-
     return (
         <FullScreenModeLayout fullScreenMode>
             <div className={styles.grid}>
@@ -74,26 +90,33 @@ function OrganizationEdit() {
                             <Skeleton className="mb-3"/>
                         </div>
                     ) : (
-                        <EditOrganization organisation={organization} />
+                        <EditOrganization
+                            createMode={createMode}
+                            organisation={organization}
+                            onReload={() => setReloadDetails(true)}
+                        />
                     )}
                 </article>
-                <article className={styles.contactList}>
-                    {loading ? (
-                        <div className="p-3">
-                            <Skeleton className="mb-3"/>
-                            <Skeleton className="mb-3"/>
-                            <Skeleton className="mb-3"/>
-                            <Skeleton className="mb-3"/>
-                            <Skeleton className="mb-3"/>
-                        </div>
-                    ) : (
-                        <>
-                            <CardHeading>  Contacts </CardHeading>
-                            <OrganizationContactList contacts={contactInOrganisation} />
-                        </>
-                    )}
 
-                </article>
+                {!createMode && (
+                <>
+                    <article className={styles.contactList}>
+                        {loading ? (
+                            <div className="p-3">
+                                <Skeleton className="mb-3"/>
+                                <Skeleton className="mb-3"/>
+                                <Skeleton className="mb-3"/>
+                                <Skeleton className="mb-3"/>
+                                <Skeleton className="mb-3"/>
+                            </div>
+                        ) : (
+                            <>
+                                <CardHeading>  Contacts </CardHeading>
+                                <OrganizationContactList contacts={contactInOrganisation} />
+                            </>
+                        )}
+
+                    </article>
 
                     {/*<section className={styles.composeBox}>*/}
                     {/*    <Editor*/}
@@ -120,12 +143,15 @@ function OrganizationEdit() {
                             </div>
                         ) : (
                             <>
-                                <CardHeading> Contact history </CardHeading>
+                                <CardHeading> Timeline </CardHeading>
                                 <OrganizationHistory  contacts={contactInOrganisation}/>
                             </>
 
                         )}
                     </article>
+                </>
+                    )}
+
 
             </div>
 
