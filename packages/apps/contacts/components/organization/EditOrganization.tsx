@@ -1,13 +1,14 @@
 import {useRouter} from "next/router";
+import {GraphQLClient} from "graphql-request";
 import {Button} from "../atoms";
 import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {InputText} from "primereact/inputtext";
 import {useForm} from "react-hook-form";
 import {Dialog} from "primereact/dialog";
 import {toast} from "react-toastify";
 import {Organization} from "../../models/organization";
-import {CreateOrganization, DeleteOrganization, GetOrganization, UpdateOrganization} from "../../services/organizationService";
+import {CreateOrganization, DeleteOrganization, UpdateOrganization} from "../../services/organizationService";
 import {useGraphQLClient} from "../../utils/graphQLClient";
 import {IconButton} from "../atoms/icon-button";
 import {CardHeading} from "../atoms/cardHeading";
@@ -75,7 +76,7 @@ function OrganizationEdit({organisation, onReload, createMode}: {organisation:an
             <div className="h-full">
                 <div className="flex flex-column">
                     <div className="flex align-items-center justify-content-between">
-                            <CardHeading>{organisation?.name || 'Unknown'}</CardHeading>
+                            <CardHeading subheading={organisation?.industry}>{organisation?.name || 'Unknown'}</CardHeading>
                             <div className="flex align-content-center ml-5 " style={{marginBottom: '24px'}}>
                                 {
                                     !editDetails &&(
@@ -101,16 +102,13 @@ function OrganizationEdit({organisation, onReload, createMode}: {organisation:an
                             </div>
                     </div>
 
+
                         {
                             !editDetails &&
                             <div className="flex flex-column justify-content-evenly flex-grow-1">
                                 <div className="flex">
                                     <span
                                         className="mr-3 overflow-hidden text-overflow-ellipsis">{organisation?.description}</span>
-                                </div>
-                                <div className="flex mr-3 mt-3">
-                                    <span
-                                        className="mr-3 overflow-hidden text-gray-500 text-overflow-ellipsis">{organisation?.industry}</span>
                                 </div>
                                 <div className="flex mr-3 mt-3">
                                     <Link href={organisation?.website || `https://${organisation?.domain}` }

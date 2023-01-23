@@ -94,7 +94,7 @@ function ContactNoteTemplate(props: any) {
             if (result) {
                 props.notifyDeleted(props.note.id);
                 setDeleteConfirmationModalVisible(false);
-                toast.success("Note removed successfully!");
+                toast.success("TimelineItem removed successfully!");
             } else {
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             }

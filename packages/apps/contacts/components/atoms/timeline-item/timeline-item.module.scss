@@ -1,0 +1,31 @@
+.timelineItem {
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+
+}
+
+.timelineLine {
+  width: 1px;
+  background: var(--gray-400);
+
+  &:first-of-type {
+    height: 24px;
+    margin-bottom: 4px;
+  }
+
+  &:not(:first-of-type) {
+    height: 12px;
+    margin-top: 4px;
+  }
+}
+
+.content {
+  background: #fff;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--gray-300);
+  width: 100%;
+}

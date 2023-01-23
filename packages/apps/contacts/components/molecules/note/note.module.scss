@@ -1,0 +1,25 @@
+.noteContainer {
+
+  display: flex;
+  flex-direction: column;
+}
+
+.noteContent {
+  width: fit-content;
+  & * {
+    margin: 4px 0;
+    border-bottom: 1px solid var(--gray-300)
+  }
+}
+
+
+.note {
+  padding: 12px;
+  margin-bottom: 8px;
+  //border-radius: 4px;
+  border: 1px solid var(--gray-200);
+
+}
+.noteContent {
+
+}

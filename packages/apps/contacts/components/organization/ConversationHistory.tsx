@@ -1,10 +1,10 @@
 import {gql, GraphQLClient} from "graphql-request";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCommentDots, faStickyNote} from "@fortawesome/free-solid-svg-icons";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import styles from './organisation.module.scss'
 import {useRouter} from "next/router";
-import {Contact, Note} from "../../models/contact";
+import {Contact, } from "../../models/contact";
 import Moment from "react-moment";
 import Link from "next/link";
 import {
@@ -12,6 +12,9 @@ import {
     GetConversationsForContact,
 } from "../../services/contactService";
 import {Skeleton} from "primereact/skeleton";
+import {Note} from "../molecules";
+import {PhoneCallTimelineItem} from "../molecules/phoneCallTimelineItem";
+import {TimelineItem} from "../atoms/timeline-item";
 
 
 
@@ -53,10 +56,8 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
 
     const getSortedItems = (data1: Array<any>, data2:Array<any>) => {
         return [...data1, ...data2].sort((a, b) => {
-            const date1 = a?.createdAt
-            const date2 = b?.createdAt
             // @ts-ignore
-            return date1 ?  new Date(date1) - new Date(date2) : 0;
+            return  Date.parse(b?.createdAt) - Date.parse(a?.createdAt);
         })
     }
 
@@ -83,27 +84,16 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
 
     return (
         <div className="mt-5">
+            <div className="text-sm text-gray-500 flex justify-content-center mb-1"> Now </div>
+
             {
-                getSortedItems(historyItems, historyNotes).map((e: any) => (
+                getSortedItems(historyItems, historyNotes).map((e: any, index) => (
                     <div key={e.id}>
                         {e.type === "NOTE" && (
-                            <div className="flex  w-full mt-2 mb-3">
-                                <div className="flex flex-grow-0 mr-2">
-                                    <FontAwesomeIcon icon={faStickyNote} className="mr-2" style={{fontSize: '1.2rem', color: `var(--gray-color-5)`}}/>
-                                </div>
-                                <div className="w-full ">
+                            <TimelineItem createdAt={e.createdAt}>
+                                <Note createdAt={e.createdAt} createdBy={e.createdBy} noteContent={e.html}  />
 
-                                    <div className={`${styles.noteContent} text-gray-700`} dangerouslySetInnerHTML={{__html: e.html}}></div>
-                                    <div className={styles.noteData}>
-                                        <Moment className="text-sm text-gray-600" date={e.startedAt} format={'h:m d MMM yy'}>{e.createdAt}</Moment>
-                                        <div className="text-sm text-gray-600"> {e.createdBy?.firstName} {" "} {e.createdBy?.lastName}</div>
-
-                                    </div>
-
-
-                                </div>
-                            </div>
-
+                            </TimelineItem>
                         )}
                         {e.type === "CONVERSATION" && (
                             <div  className={`flex align-items-center w-full mt-4 mb-3`}>

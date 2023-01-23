@@ -12,24 +12,7 @@
   padding: 0;
 }
 
-.note {
-  padding: 12px;
-  margin-bottom: 8px;
-  //border-radius: 4px;
-  border: 1px solid var(--gray-200);
 
-}
-.noteContent {
-  & * {
-    margin: 4px 0;
-  }
-}
-.noteData {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  font-size: 0.6rem;
-}
 
 .listItem {
   cursor: pointer;

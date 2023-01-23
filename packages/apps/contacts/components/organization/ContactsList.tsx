@@ -4,6 +4,15 @@ import styles from './organisation.module.scss'
 import {useRouter} from "next/router";
 export const OrganizationContactList = ({contacts = []}: {contacts: any}) => {
     const router = useRouter();
+
+    if(contacts.length === 0) {
+        return (
+            <p className="text-gray-600 font-italic mt-4">
+                No contacts in this organisation
+            </p>
+        )
+    }
+
     return (
             <ul className={styles.contactList}>
                 {[...contacts].map((e:any)=> (
