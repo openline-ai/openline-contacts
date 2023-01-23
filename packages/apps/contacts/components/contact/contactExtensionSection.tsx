@@ -19,9 +19,10 @@ import {CustomField, FieldSet} from "../../models/customFields";
 import {GetContactCustomFields} from "../../services/contactService";
 import {Contact} from "../../models/contact";
 import {toast} from "react-toastify";
+import {useGraphQLClient} from "../../utils/graphQLClient";
 
 function ContactExtensionSection(props: any) {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
 
     const [reloadCustomFields, setReloadCustomFields] = useState(false);
     const [definitionId, setDefinitionId] = useState('');

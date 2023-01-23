@@ -1,20 +1,55 @@
 import {useRouter} from "next/router";
-import {useSession} from "next-auth/react";
 import {WebChat} from "@openline-ai/openline-web-chat";
 import "@openline-ai/openline-web-chat/dist/esm/index.css"
 import {SidePanel} from "../components/organisms";
+import {Configuration, FrontendApi, Session} from "@ory/client";
+import {edgeConfig} from "@ory/integrations/next"
+import {useEffect, useState} from "react";
+import {getUserName} from "../utils/logged-in";
+import {setClient} from "../utils/graphQLClient";
+
+const ory = new FrontendApi(new Configuration(edgeConfig))
 
 export default function Layout({children}: any) {
     const router = useRouter();
-    const {data: session} = useSession();
+
+    const [session, setSession] = useState<Session | undefined>()
+    const [userEmail, setUserEmail] = useState<string | undefined>()
+    const [logoutUrl, setLogoutUrl] = useState<string | undefined>()
+
+    useEffect(() => {
+        ory
+            .toSession()
+            .then(({data}) => {
+                // User has a session!
+                setSession(data)
+                let userName = getUserName(data.identity);
+                setUserEmail(userName)
+
+                setClient(userName)
+
+                // Create a logout url
+                ory.createBrowserLogoutFlow().then(({data}) => {
+                    setLogoutUrl(data.logout_url)
+                })
+            })
+            .catch(() => {
+                // Redirect to login page
+                return router.push(edgeConfig.basePath + "/ui/login")
+            })
+    }, [router])
+
+    if (!session) {
+        // Still loading
+        return null
+    }
 
     return (
         <div className="flex h-full w-full">
 
             {router.pathname === '/' && (
-                <SidePanel user={session}/>
+                <SidePanel userEmail={userEmail} logoutUrl={logoutUrl}/>
             )}
-
 
             <div className="flex-grow-1 flex h-full overflow-auto">
                 <div className="w-full h-full">
@@ -33,7 +68,7 @@ export default function Layout({children}: any) {
                      trackerBufferSize={`${process.env.WEB_CHAT_TRACKER_BUFFER_SIZE}`}
                      trackerMinimumVisitLength={`${process.env.WEB_CHAT_TRACKER_MINIMUM_VISIT_LENGTH}`}
                      trackerHeartbeatDelay={`${process.env.WEB_CHAT_TRACKER_HEARTBEAT_DELAY}`}
-                     userEmail={session?.user?.email || ''}
+                     userEmail={userEmail || ''}
             />
         </div>
     )

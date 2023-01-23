@@ -15,11 +15,10 @@ import SearchComponent from "../../components/generic/SearchComponent";
 import {AddContactToContactGroup, CreateContactGroup, DeleteContactGroup, GetContactGroup, RemoveContactFromGroup, UpdateContactGroup} from "../../services/contactGroupService";
 import {ContactGroup} from "../../models/contactGroup";
 import {toast} from "react-toastify";
-import {getSession} from "next-auth/react";
-import {loggedInOrRedirectToLogin} from "../../utils/logged-in";
+import {useGraphQLClient} from "../../utils/graphQLClient";
 
 function ContactGroupEdit() {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
 
     const [contactGroup, setContactGroup] = useState({
         id: undefined,
@@ -326,10 +325,6 @@ function ContactGroupEdit() {
 
         </div>
     );
-}
-
-export async function getServerSideProps(context: any) {
-    return loggedInOrRedirectToLogin(await getSession(context));
 }
 
 export default ContactGroupEdit

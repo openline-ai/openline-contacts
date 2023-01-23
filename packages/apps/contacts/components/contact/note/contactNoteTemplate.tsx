@@ -12,9 +12,10 @@ import {DeleteNote} from "../../../services/contactService";
 import {GraphQLClient} from "graphql-request";
 import ContactNoteModalTemplate from "./contactNoteModalTemplate";
 import axios from "axios";
+import {useGraphQLClient} from "../../../utils/graphQLClient";
 
 function ContactNoteTemplate(props: any) {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
 
     const [images, setImages] = useState({});
     const [editNote, setEditNote] = useState(false);

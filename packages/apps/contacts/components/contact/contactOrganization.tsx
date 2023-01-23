@@ -6,9 +6,10 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCirclePlus} from "@fortawesome/free-solid-svg-icons";
 import {uuidv4} from "../../utils/uuid-generator";
 import ContactOrganizationTemplate from "./contactOrganizationTemplate";
+import {useGraphQLClient} from "../../utils/graphQLClient";
 
 function ContactOrganization(props: any) {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
 
     const [roles, setRoles] = useState([] as any);
 

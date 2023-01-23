@@ -14,9 +14,10 @@ import {PaginatedRequest, PaginatedResponse} from "../../utils/pagination";
 import {GetContactTypes} from "../../services/contactTypeService";
 import {ContactType} from "../../models/contact";
 import {Organization} from "../../models/organization";
+import {useGraphQLClient} from "../../utils/graphQLClient";
 
 function ContactOrganizationTemplate(props: any) {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
 
     const {register, setValue, handleSubmit, control} = useForm({
         defaultValues: props.organizationRole
