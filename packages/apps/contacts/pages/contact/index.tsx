@@ -4,7 +4,6 @@ import {ContactList as ContactListComponent} from "../../components/contact/inde
 
 const ContactList: NextPage = () => {
 
-
     return (
         <ContactListComponent fullScreenMode />
     );

@@ -11,9 +11,10 @@ import {toast} from "react-toastify";
 import {Organization} from "../../models/organization";
 import {CreateOrganization, DeleteOrganization, GetOrganization, UpdateOrganization} from "../../services/organizationService";
 import {FullScreenModeLayout} from "../organisms/fullscreen-mode-layout";
+import {useGraphQLClient} from "../../utils/graphQLClient";
 
 function OrganizationEdit() {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
 
     const [organization, setOrganization] = useState({
         id: undefined,

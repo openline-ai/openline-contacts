@@ -10,10 +10,11 @@ import {CreateContactNote, UpdateContactNote} from "../../../services/contactSer
 import {GraphQLClient} from "graphql-request";
 import {Note} from "../../../models/contact";
 import {Button} from "../../atoms";
+import {useGraphQLClient} from "../../../utils/graphQLClient";
 
 
 function ContactNoteModalTemplate(props: any) {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
 
     const {register, handleSubmit, setValue, getValues, control} = useForm({
         defaultValues: {

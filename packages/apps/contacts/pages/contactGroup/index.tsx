@@ -7,9 +7,10 @@ import {faCirclePlus} from "@fortawesome/free-solid-svg-icons";
 import {gql, GraphQLClient} from "graphql-request";
 import {MapGridFilters} from "../../utils/converters";
 import {PaginatedRequest} from "../../utils/pagination";
+import {useGraphQLClient} from "../../utils/graphQLClient";
 
 const ContactGroupList: NextPage = () => {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
     const router = useRouter();
 
     const loadData = function (params: PaginatedRequest) {

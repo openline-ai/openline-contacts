@@ -14,12 +14,13 @@ import ContactNotes from "../note/contactNotes";
 import ContactNoteModalTemplate from "../note/contactNoteModalTemplate";
 import ContactDetailsSection from "../contactDetailsSection";
 import {Divider} from "../../atoms";
+import {useGraphQLClient} from "../../../utils/graphQLClient";
 
 // TODO Move atom components to ui-kit
 // TODO refactor this so it is layout that can be reused
 
 export const DetailsPageLayout = () => {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
     const [reload, setReload] = useState(false);
     const router = useRouter();
 

@@ -1,15 +1,5 @@
+import {Identity} from "@ory/client";
 
-export async function loggedInOrRedirectToLogin(session: any) {
-    // if (!session) {
-    //     return {
-    //         redirect: {
-    //             destination: '/api/auth/signin',
-    //             permanent: false,
-    //         },
-    //     }
-    // }
-
-    return {
-        props: { session }
-    }
+export function getUserName(identity: Identity): string {
+    return identity.traits.email || identity.traits.username
 }

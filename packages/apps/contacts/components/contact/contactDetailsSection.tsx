@@ -22,6 +22,7 @@ import {CustomField, CustomFieldDefinition, EntityDefinition, FieldSetDefinition
 import {CustomFieldTemplateProps, EntityDefinitionEditTemplate, EntityDefinitionTemplateProps, FieldSetTemplateProps, mapEntityExtensionDataFromFormData} from "../generic/entityExtensionTemplates";
 import {toast} from "react-toastify";
 import {log} from "util";
+import {useGraphQLClient} from "../../utils/graphQLClient";
 
 interface Props {
     editDetails:boolean
@@ -31,7 +32,7 @@ interface Props {
     contact:any
 }
 export default function ContactDetailsSection({editDetails, setEditDetails, contactId, contact, setReloadDetails}: Props) {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
 
     const router = useRouter();
 

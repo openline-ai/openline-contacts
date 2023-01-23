@@ -10,9 +10,10 @@ import {GetOrganizations} from "../../services/organizationService";
 import {Organization} from "../../models/organization";
 import {FullScreenModeLayout} from "../organisms/fullscreen-mode-layout";
 import {Button} from "../atoms";
+import {useGraphQLClient} from "../../utils/graphQLClient";
 
 export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScreenMode}) => {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient()
     const router = useRouter();
 
     let onEdit = (id: any) => router.push(`/organization/${id}`);
