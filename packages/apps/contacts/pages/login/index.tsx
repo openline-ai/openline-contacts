@@ -22,15 +22,6 @@ const Login: NextPage = () => {
         <>
             <div className="flex flex-row h-full">
                 <div className="login-panel flex-grow-1">
-                    {/* <div className='light x1'></div>
-                    <div className='light x2'></div>
-                    <div className='light x3'></div>
-                    <div className='light x4'></div>
-                    <div className='light x5'></div>
-                    <div className='light x6'></div>
-                    <div className='light x7'></div>
-                    <div className='light x8'></div>
-                    <div className='light x9'></div> */}
                     <LoginPanel />
                 </div>
             </div>
