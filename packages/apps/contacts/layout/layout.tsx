@@ -7,6 +7,7 @@ import {edgeConfig} from "@ory/integrations/next"
 import {useEffect, useState} from "react";
 import {getUserName} from "../utils/logged-in";
 import {setClient} from "../utils/graphQLClient";
+import axios from "axios";
 
 const ory = new FrontendApi(new Configuration(edgeConfig))
 
@@ -27,6 +28,7 @@ export default function Layout({children}: any) {
                 setUserEmail(userName)
 
                 setClient(userName)
+                axios.defaults.headers.common['X-Openline-USERNAME'] = userName;
 
                 // Create a logout url
                 ory.createBrowserLogoutFlow().then(({data}) => {
