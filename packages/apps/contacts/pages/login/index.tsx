@@ -15,7 +15,7 @@ const Login: NextPage = () => {
             return min + Math.floor(Math.random() * (max - min + 1));
         }
         const backgroundImageUrlNumber = String(getRandom(1,5)).padStart(2, '0');
-        const backgroundImageUrl = `url(http://localhost:3001/backgrounds/blueprint-000${backgroundImageUrlNumber}.png)`;
+        const backgroundImageUrl = `url(/backgrounds/blueprint-000${backgroundImageUrlNumber}.png)`;
         setBackgroundImage(backgroundImageUrl);
     }, [])
     return (
