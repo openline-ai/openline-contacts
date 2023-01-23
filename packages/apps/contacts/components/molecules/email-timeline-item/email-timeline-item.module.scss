@@ -1,0 +1,58 @@
+.emailContainer {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+
+}
+
+.emailData {
+  border-bottom: 1px solid var(--gray-300);
+}
+
+.emailParty {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 8px;
+
+  & > span {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-right: 8px;
+  }
+}
+
+.emailContentContainer {
+  position:relative;
+  display: block;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.emailContent {
+  min-height: 40px;
+  & * {
+    margin-bottom: 2px;
+  }
+}
+
+.eclipse {
+
+  &:after {
+    content: '';
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    height: 50%;
+    bottom: 0px;
+    background: linear-gradient(0deg, rgba(255,255,255,.8) 0%, rgba(255,255,255,0.4) 90%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+  }
+
+}
+
+.toggleExpandButton {
+  display: flex;
+  justify-content: flex-end;
+
+}

@@ -1,1 +1,3 @@
-export {Note} from './note'
+export {NoteTimelineItem} from './note-timeline-item'
+export {PhoneCallTimelineItem} from './phone-call-timeline-item'
+export {EmailTimelineItem} from './email-timeline-item'

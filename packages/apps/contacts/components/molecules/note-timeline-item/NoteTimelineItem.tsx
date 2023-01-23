@@ -10,8 +10,8 @@ interface Props  {
     }
 }
 
-export const Note: React.FC<Props> = ({ noteContent, createdBy, createdAt}) => {
-    console.log('🏷️[Fn:Note][L:14]: createdBy(): '
+export const NoteTimelineItem: React.FC<Props> = ({ noteContent, createdBy, createdAt}) => {
+    console.log('🏷️[Fn:EmailTimelineItem][L:14]: createdBy(): '
         , createdBy);
     return (
         <div className={styles.noteContainer}>

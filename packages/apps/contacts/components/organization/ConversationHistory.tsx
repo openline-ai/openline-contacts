@@ -12,10 +12,8 @@ import {
     GetConversationsForContact,
 } from "../../services/contactService";
 import {Skeleton} from "primereact/skeleton";
-import {Note} from "../molecules";
-import {PhoneCallTimelineItem} from "../molecules/phoneCallTimelineItem";
+import {NoteTimelineItem} from "../molecules";
 import {TimelineItem} from "../atoms/timeline-item";
-
 
 
 export const OrganizationHistory = ({contacts}: {contacts: any}) => {
@@ -91,7 +89,7 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
                     <div key={e.id}>
                         {e.type === "NOTE" && (
                             <TimelineItem createdAt={e.createdAt}>
-                                <Note createdAt={e.createdAt} createdBy={e.createdBy} noteContent={e.html}  />
+                                <NoteTimelineItem createdAt={e.createdAt} createdBy={e.createdBy} noteContent={e.html}  />
 
                             </TimelineItem>
                         )}

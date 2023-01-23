@@ -34,7 +34,7 @@ function ContactNoteModalTemplate(props: any) {
         if (!dataToSubmit.id) {
             CreateContactNote(client, props.contactId, dataToSubmit).then((savedNote: Note) => {
                 props.notifyChanged(savedNote);
-                toast.success("Contact note added successfully!");
+                toast.success("Contact note-timeline-item added successfully!");
             }).catch((reason: any) => {
                 //todo log an error in server side
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
@@ -42,7 +42,7 @@ function ContactNoteModalTemplate(props: any) {
         } else {
             UpdateContactNote(client, props.contactId, dataToSubmit).then((savedNote: Note) => {
                 props.notifyChanged(savedNote);
-                toast.success("Contact note updated successfully!");
+                toast.success("Contact note-timeline-item updated successfully!");
             }).catch((reason: any) => {
                 //todo log an error in server side
                 toast.error("There was a problem on our side and we are doing our best to solve it!");

@@ -60,4 +60,17 @@
 
     }
   }
+  &.link {
+    color: var(--blue-500);
+    background: transparent;
+
+    &:hover,
+    &:focus,
+    &:active {
+      background: transparent;
+      color: var(--blue-600);
+      text-decoration: underline;
+
+    }
+  }
 }
