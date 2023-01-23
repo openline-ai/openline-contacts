@@ -1,8 +1,9 @@
 .loginPanel {
-   position: block;
-   margin-top: 100px;
-   margin-left: auto;
-   margin-right: auto;
+   position: absolute;
+   left: 50%;
+   top: 50%;
+   -ms-transform: translate(-50%, -50%);
+   transform: translate(-50%, -50%);
 }
 
 .loginPanel__logo {
