@@ -10,28 +10,35 @@ interface Props  {
 }
 
 export const EmailTimelineItem: React.FC<Props> = (
-    { emailContent, sender,recipients}
+    { emailContent, sender,recipients, subject}
 ) => {
     const [expanded, toggleExpanded] = useState(false)
 
     return (
         <article className={`${styles.emailContainer}`}>
                 <div className={styles.emailData}>
-                    <div className={styles.emailParty}>
-                        <span> From: </span>
-                        <div>
-                            {sender}
+                    <div className="flex">
+                        <div className={styles.emailDataColumn}>
+                            <span className={styles.emailParty}>From:</span>
+                            <span className={styles.emailParty}>To:</span>
+                            <span className={styles.emailParty}>Subject:</span>
                         </div>
-                    </div>
-                    <div className={styles.emailParty}>
-                        <span> To: </span>
-                        <div>
-                            {typeof recipients === "string" ? recipients : recipients.map((recipient) => (
-                                <span className={styles.emailRecipient} key={recipient}>
+                        <div className={styles.emailDataColumn}>
+                            <span>{sender}</span>
+                            <div>
+                                {typeof recipients === "string" ? recipients : recipients.map((recipient) => (
+                                    <span className={styles.emailRecipient} key={recipient}>
                                     {recipient}
                                 </span>
-                            ))}
+                                ))}
+                            </div>
+                            <span>{subject}</span>
                         </div>
+                    </div>
+
+
+                    <div className={styles.stamp}>
+                        <div/>
                     </div>
 
                 </div>
@@ -39,7 +46,6 @@ export const EmailTimelineItem: React.FC<Props> = (
                     <div className={`text-overflow-ellipsis ${styles.emailContent}`} dangerouslySetInnerHTML={{__html: emailContent}}></div>
                     {!expanded && (
                         <div className={styles.eclipse}/>
-
                     )}
                 </div>
                 <div className={styles.toggleExpandButton}>

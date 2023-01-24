@@ -62,12 +62,11 @@
   }
   &.link {
     color: var(--blue-500);
-    background: transparent;
+    background: white;
 
     &:hover,
     &:focus,
     &:active {
-      background: transparent;
       color: var(--blue-600);
       text-decoration: underline;
 
