@@ -1,0 +1,50 @@
+.messageContainer {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.message {
+    position: relative;
+    text-align: left;
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 16px;
+    z-index: 2;
+    background: white;
+}
+
+.message.left:after {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 0;
+    z-index: 1;
+    border-style: solid;
+    border-width: 12px 12px 12px 12px;
+    border-color: #ffffff transparent transparent transparent;
+    left: 0;
+    margin-left: -10px;
+    top: 0;
+}
+.right {
+  margin-left: 50px ;
+}
+
+.left {
+    margin-right: 50px ;
+}
+
+.message.right:after {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 0;
+    z-index: 1;
+    border-style: solid;
+    border-width: 12px 12px 12px 12px;
+    border-color:  transparent  transparent #C5EDCE transparent;
+    margin-left: -10px;
+    bottom: 0;
+    right: -10px;
+}
+

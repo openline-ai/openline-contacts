@@ -12,7 +12,7 @@ import {
     GetConversationsForContact,
 } from "../../services/contactService";
 import {Skeleton} from "primereact/skeleton";
-import {NoteTimelineItem} from "../molecules";
+import {ConversationTimelineItem, EmailTimelineItem, NoteTimelineItem} from "../molecules";
 import {TimelineItem} from "../atoms/timeline-item";
 
 
@@ -83,16 +83,19 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
     return (
         <div className="mt-5">
             <div className="text-sm text-gray-500 flex justify-content-center mb-1"> Now </div>
-
             {
                 getSortedItems(historyItems, historyNotes).map((e: any, index) => (
                     <div key={e.id}>
                         {e.type === "NOTE" && (
-                            <TimelineItem createdAt={e.createdAt}>
-                                <NoteTimelineItem createdAt={e.createdAt} createdBy={e.createdBy} noteContent={e.html}  />
-
+                            // <TimelineItem createdAt={e.createdAt}>
+                            //     <NoteTimelineItem createdAt={e.createdAt} createdBy={e.createdBy} noteContent={e.html}  />
+                            //
+                            // </TimelineItem>
+                            <TimelineItem createdAt={new Date(new Date().setDate(new Date().getDate() - (index + 1))).toISOString()} >
+                                <EmailTimelineItem emailContent={e.html} sender="jane.doe@acme.com" subject="Follow up" recipients={['adam.smith@org.com']}/>
                             </TimelineItem>
                         )}
+
                         {e.type === "CONVERSATION" && (
                             <div  className={`flex align-items-center w-full mt-4 mb-3`}>
 

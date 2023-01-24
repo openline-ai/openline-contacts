@@ -3,8 +3,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-
 }
 
 .timelineLine {
@@ -28,4 +26,6 @@
   border-radius: 6px;
   border: 1px solid var(--gray-300);
   width: 100%;
+  position: relative;
+
 }

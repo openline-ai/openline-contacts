@@ -1,22 +1,41 @@
 import PropTypes, {string} from "prop-types";
-import {useEffect, useState} from "react";
-import {gql, GraphQLClient} from "graphql-request";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCommentDots} from "@fortawesome/free-solid-svg-icons";
-import {Pagination} from "../../utils/pagination";
-import Moment from "react-moment";
-import Link from "next/link";
+import React, {useEffect, useState} from "react";
+import {gql} from "graphql-request";
+import {PaginatedResponse, Pagination} from "../../utils/pagination";
 import {Skeleton} from "primereact/skeleton";
 import {useGraphQLClient} from "../../utils/graphQLClient";
+import {GetContactNotes} from "../../services/contactService";
+import {Note} from "../../models/contact";
+import {toast} from "react-toastify";
+import {Timeline} from "../organisms";
 
 function ContactHistory(props: any) {
     const client =  useGraphQLClient();
 
-    const [loading, setLoading] = useState(true);
-    const [historyItems, setHistoryItems] = useState([] as any);
+    const [conversationsLoading, setConversationLoading] = useState(true);
+    const [notesLoading, setNoteLoading] = useState(true);
+    const [noteTotalElements, setNoteTotalElements] = useState(0);
+
+    const [conversationHistory, setConversationHistory] = useState([] as any);
+    const [noteItems, setNoteItems] = useState([] as any);
 
     useEffect(() => {
         if (props.contactId) {
+
+            GetContactNotes(client, (props.contactId as string), {page: 0, limit: 100}).then(async (result: PaginatedResponse<Note>) => {
+                if (result) {
+                    setNoteItems(result.content.map((data) => ({...data, type: "NOTE"})));
+                    setNoteTotalElements(result.totalElements);
+                    setNoteLoading(false);
+                } else {
+                    setNoteLoading(false)
+                    //todo log an error in server side
+                    toast.error("There was a problem on our side and we are doing our best to solve it!");
+                }
+            }).catch((reason: any) => {
+                setNoteLoading(false)
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
+            });
 
             const query = gql`query GetConversationsForContact($id: ID!, $pagination: Pagination!) {
                 contact(id: $id) {
@@ -24,11 +43,6 @@ function ContactHistory(props: any) {
                         content {
                             id
                             startedAt
-                            users {
-                                id
-                                firstName
-                                lastName
-                            }
                         }
                     }
                 }
@@ -41,20 +55,34 @@ function ContactHistory(props: any) {
                     limit: 10
                 } as Pagination
             }).then((response: any) => {
-                setHistoryItems(response.contact.conversations.content);
-                setLoading(false);
+                const conversationsHistory = response.contact.conversations.content
+                    .map((data:any) => ({...data, type: "CONVERSATION", createdAt: data.startedAt}))
+                setConversationHistory(conversationsHistory);
+                setConversationLoading(false);
+            }).catch(() => {
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
+                setConversationLoading(false);
             });
         }
 
     }, [props.contactId]);
 
+    const noHistoryItemsAvailable =  !conversationsLoading && conversationHistory.length == 0 && !notesLoading && noteItems.length == 0
+
+    const getSortedItems = (data1: Array<any>, data2:Array<any>) => {
+        return [...data1, ...data2].sort((a, b) => {
+            // @ts-ignore
+            return  Date.parse(b?.createdAt) - Date.parse(a?.createdAt);
+        })
+    }
+
+
     return (
         <div>
-            
             <div>
 
                 {
-                    loading &&
+                    conversationsLoading || notesLoading &&
                     <>
                         <Skeleton className="w-full mt-3" height="1rem"/>
                         <Skeleton className="w-full mt-3" height="1rem"/>
@@ -65,7 +93,7 @@ function ContactHistory(props: any) {
                 }
 
                 {
-                    !loading && historyItems.length == 0 &&
+                    noHistoryItemsAvailable &&
                     <div className="flex">
                         <div className="flex flex-grow-1 p-2 bg-white border-dark-1 mt-3">
                             No activity logged yet
@@ -73,35 +101,9 @@ function ContactHistory(props: any) {
                     </div>
                 }
 
-                {
-                    !loading && historyItems.map((e: any) => {
-                        return <div key={e.id} className="flex align-items-center w-full mt-3">
-
-                            <div className="flex flex-grow-0">
-                                <FontAwesomeIcon icon={faCommentDots} className="mr-2" style={{fontSize: '1.2rem', color: `var(--gray-color-5)`}}/>
-                            </div>
-
-                            <div className="flex flex-grow-1 p-2 bg-white">
-
-                                <div className="flex flex-grow-1 align-items-center">
-                                    <div className="mr-3">Conversation</div>
-                                    <Moment className="text-sm text-gray-600" date={e.startedAt} format={'d MMM yy'}></Moment>
-
-                                    <div className="ml-3">
-                                        <Link href={`${process.env.OASIS_GUI_PATH}/feed?id=${e.id}`} target="_blank" className='cta'>Show more details...</Link>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-grow-0 ">
-                                    ${e.user?.firstName} ${e.user?.lastName}
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    })
-                }
+                <Timeline loading={conversationsLoading || notesLoading}
+                          noActivity={noHistoryItemsAvailable}
+                          loggedActivities={getSortedItems(conversationHistory, noteItems)} />
 
             </div>
         </div>
