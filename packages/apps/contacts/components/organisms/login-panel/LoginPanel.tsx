@@ -12,15 +12,104 @@ export const LoginPanel: React.FC<Props> = () => {
     const success = () => toast.success("Well done!");
 
     const [loginForm, setLoginForm] = useState('login');
-    const waitlist = () => {
-        setLoginForm('waitlist');
+
+    const waitlist = () => setLoginForm('waitlist');
+    const login = () => setLoginForm('login');
+    const forgotPassword = () => setLoginForm('forgotPassword');
+
+    var INIT = "INIT";
+    var SUBMITTING = "SUBMITTING";
+    var SUCCESS = "SUCCESS";
+
+    const [email, setEmail] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [formState, setFormState] = useState(INIT);
+    const [errorMessage, setErrorMessage] = useState("");
+
+    const SignUpFormError = (errorMessage?: string) => toast.error(errorMessage || "Oops! Something went wrong, please try again");
+
+    const isValidEmail = (email: string) => {
+        return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(email);
+        // return true;
     }
-    const login = () => {
-        setLoginForm('login');
-    }
-    const forgotPassword = () => {
-        setLoginForm('forgotPassword');
-    }
+
+    /**
+         * Rate limit the number of submissions allowed
+         * @returns {boolean} true if the form has been successfully submitted in the past minute
+         */
+    const hasRecentSubmission = () => {
+        const time = new Date();
+        const timestamp = time.valueOf();
+        const previousTimestamp = localStorage.getItem("loops-form-timestamp");
+
+        // Indicate if the last sign up was less than a minute ago
+        if (
+            previousTimestamp &&
+            Number(previousTimestamp) + 60 * 1000 > timestamp
+        ) {
+            setErrorMessage("Too many signups, please try again in a little while");
+            SignUpFormError(errorMessage)
+            return true;
+        }
+
+        localStorage.setItem("loops-form-timestamp", timestamp.toString());
+        return false;
+    };
+
+    const resetForm = () => {
+        setEmail("");
+        setFormState(INIT);
+        setErrorMessage("");
+    };
+
+    const handleSubmit = (event: any) => {
+        // Prevent the default form submission
+        event.preventDefault();
+
+        // boundary conditions for submission
+        if (formState !== INIT) return;
+        if (!isValidEmail(email)) {
+            setErrorMessage("Please enter a valid email");
+            SignUpFormError(errorMessage)
+            return;
+        }
+        if (hasRecentSubmission()) return;
+        setFormState(SUBMITTING);
+
+        // build body
+        const formBody = `userGroup=${encodeURIComponent("Waitlist")}&email=${encodeURIComponent(email)}&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`;
+
+        // API request to add user to newsletter
+        fetch(`https://app.loops.so/api/newsletter-form/cl7hzfqge458409jvsbqy93u9`, {
+            method: "POST",
+            body: formBody,
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+        })
+            .then((res) => {
+                if (res) {
+                    resetForm();
+                    setFormState(SUCCESS);
+                } else {
+                    setErrorMessage(res.statusText);
+                    localStorage.setItem("loops-form-timestamp", "");
+                    SignUpFormError(errorMessage)
+                }
+            })
+            .catch(error => {
+                // check for cloudflare error
+                if (error.message === "Failed to fetch") {
+                    setErrorMessage("Too many signups, please try again in a little while");
+                    SignUpFormError(errorMessage)
+                } else if (error.message) {
+                    setErrorMessage(error.message);
+                    SignUpFormError(errorMessage)
+                }
+                localStorage.setItem("loops-form-timestamp", "");
+            });
+    };
 
     return (
         <div className="flex w-full">
@@ -50,7 +139,7 @@ export const LoginPanel: React.FC<Props> = () => {
                                 </div>
 
                                 <Button label="Sign In" className="w-full p-button-secondary" onClick={success} />
-                                
+
                                 <div className="pt-5 text-center">
                                     <span className="font-medium line-height-3 text-sm" style={{ color: '#9E9E9E' }}>Protected by </span>
                                     <img src="./logos/ory-small.svg" alt="Ory" height={14} style={{ verticalAlign: 'middle' }} />
@@ -71,19 +160,34 @@ export const LoginPanel: React.FC<Props> = () => {
                                 </div>
                             </div>
 
-                            <div>
+                            {formState === SUCCESS &&
+                                <>
+                                    <div className="text-800 font-medium line-height-3 text-center py-8">
+                                        Thanks for joining the waitlist - you should have a welcome email in your inbox already!
+                                    </div>
+                                    <div className='pt-5 text-center'>
+                                        <a className="font-medium no-underline ml-2 text-blue-500 cursor-pointer text-sm" href="https://www.openline.ai">Head back to the Openline website!</a>
+                                    </div>
+                                </>
+                            }
 
-                                <label htmlFor="firstName" className="block text-600 font-medium mb-2 text-sm">First Name</label>
-                                <InputText type="firstName" className="w-full mb-3" />
+                            {formState === INIT &&
+                                <div>
+                                    <form onSubmit={handleSubmit}>
+                                        <label htmlFor="firstName" className="block text-600 font-medium mb-2 text-sm">First Name</label>
+                                        <InputText type="firstName" className="w-full mb-3" onChange={(e) => setFirstName(e.target.value)} />
 
-                                <label htmlFor="lastName" className="block text-600 font-medium mb-2 text-sm">Last Name</label>
-                                <InputText type="lastName" className="w-full mb-3" />
+                                        <label htmlFor="lastName" className="block text-600 font-medium mb-2 text-sm">Last Name</label>
+                                        <InputText type="lastName" className="w-full mb-3" onChange={(e) => setLastName(e.target.value)} />
 
-                                <label htmlFor="email" className="block text-600 font-medium mb-2 text-sm">Email</label>
-                                <InputText id="email" type="text" className="w-full mb-6" />
+                                        <label htmlFor="email" className="block text-600 font-medium mb-2 text-sm">Email</label>
+                                        <InputText id="email" type="text" className="w-full mb-6" onChange={(e) => setEmail(e.target.value)} />
 
-                                <Button label="Join the Waitlist" className="w-full p-button-secondary" onClick={success} />
-                            </div>
+                                        <Button label={formState === SUBMITTING ? "Please wait..." : "Join the Waitlist"} className="w-full p-button-secondary" type="submit" />
+                                    </form>
+                                </div>
+                            }
+
                         </>
                     }
 
