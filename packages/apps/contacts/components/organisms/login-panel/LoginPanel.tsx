@@ -9,15 +9,17 @@ interface Props {
 }
 
 export const LoginPanel: React.FC<Props> = () => {
-    const success = () => toast.success("Wow such login!");
-    const forgot = () => toast.error("Much forgetful...");
+    const success = () => toast.success("Well done!");
 
-    const [loginForm, setLoginForm] = useState(true);
+    const [loginForm, setLoginForm] = useState('login');
     const waitlist = () => {
-        setLoginForm(false);
+        setLoginForm('waitlist');
     }
     const login = () => {
-        setLoginForm(true);
+        setLoginForm('login');
+    }
+    const forgotPassword = () => {
+        setLoginForm('forgotPassword');
     }
 
     return (
@@ -25,7 +27,7 @@ export const LoginPanel: React.FC<Props> = () => {
             <div className={styles.loginPanel}>
                 <div className="surface-card pt-6 px-6 pb-5 shadow-2 border-round w-full sm:w-25rem">
                     {
-                        loginForm &&
+                        loginForm === 'login' &&
                         <>
                             <div className="text-center mb-5">
                                 <img src="./logos/openline.svg" alt="Openline" height={50} className="mb-3" />
@@ -44,10 +46,11 @@ export const LoginPanel: React.FC<Props> = () => {
                                 <InputText type="password" className="w-full mb-3" />
 
                                 <div className="flex align-items-center justify-content-between mb-6">
-                                    <a className="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer" onClick={forgot}>Forgot your password?</a>
+                                    <a className="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer text-sm" onClick={forgotPassword}>Forgot your password?</a>
                                 </div>
 
                                 <Button label="Sign In" className="w-full p-button-secondary" onClick={success} />
+                                
                                 <div className="pt-5 text-center">
                                     <span className="font-medium line-height-3 text-sm" style={{ color: '#9E9E9E' }}>Protected by </span>
                                     <img src="./logos/ory-small.svg" alt="Ory" height={14} style={{ verticalAlign: 'middle' }} />
@@ -57,7 +60,7 @@ export const LoginPanel: React.FC<Props> = () => {
                     }
 
                     {
-                        loginForm ||
+                        loginForm === 'waitlist' &&
                         <>
                             <div className="text-center mb-5">
                                 <img src="./logos/openline.svg" alt="Openline" height={50} className="mb-3" />
@@ -80,6 +83,33 @@ export const LoginPanel: React.FC<Props> = () => {
                                 <InputText id="email" type="text" className="w-full mb-6" />
 
                                 <Button label="Join the Waitlist" className="w-full p-button-secondary" onClick={success} />
+                            </div>
+                        </>
+                    }
+
+                    {
+                        loginForm === 'forgotPassword' &&
+                        <>
+                            <div className="text-center mb-5">
+                                <img src="./logos/openline.svg" alt="Openline" height={50} className="mb-3" />
+
+                                <div>
+                                    <span className="text-600 font-medium line-height-3 text-sm">Remembered already?</span>
+                                    <a className="font-medium no-underline ml-2 text-blue-500 cursor-pointer text-sm" onClick={() => login()}>Login now!</a>
+                                </div>
+                            </div>
+
+                            <div>
+
+                                <label htmlFor="email" className="block text-600 font-medium mb-3 text-sm">Enter your email here for a password reset</label>
+                                <InputText id="email" type="text" className="w-full mb-5" />
+
+                                <Button label="Reset Password" className="w-full p-button-secondary" onClick={success} />
+
+                                <div className="pt-5 text-center">
+                                    <span className="font-medium line-height-3 text-sm" style={{ color: '#9E9E9E' }}>Protected by </span>
+                                    <img src="./logos/ory-small.svg" alt="Ory" height={14} style={{ verticalAlign: 'middle' }} />
+                                </div>
                             </div>
                         </>
                     }
