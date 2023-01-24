@@ -1,17 +1,21 @@
 import type { NextPage } from 'next'
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image'
 import { LoginPanel } from '../../components/organisms/login-panel';
 
 
 const Login: NextPage = () => {
 
-    function getRandom(min: number, max: number) {
-        return min + Math.floor(Math.random() * (max - min + 1));
-    }
+    const [backgroundImageUrl, setBackgroundImageUrl] = useState('')
 
-    const backgroundImageUrlNumber = String(getRandom(1, 5)).padStart(2, '0');
-    const backgroundImageUrl = `/backgrounds/blueprint-000${backgroundImageUrlNumber}.png`;
+    useEffect(() => {
+        function getRandom(min: number, max: number) {
+            return min + Math.floor(Math.random() * (max - min + 1));
+        }
+        let backgroundImageUrlNumber = String(getRandom(1, 5)).padStart(2, '0')
+        let backgroundImageUrl = `/backgrounds/blueprint-000${backgroundImageUrlNumber}.png`;
+        setBackgroundImageUrl(backgroundImageUrl);
+    });
 
     return (
         <>
