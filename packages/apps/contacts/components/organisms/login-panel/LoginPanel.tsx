@@ -88,7 +88,7 @@ export const LoginPanel: React.FC<Props> = () => {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
         })
-            .then((res) => {
+            .then((res:any) => {
                 if (res) {
                     resetForm();
                     setFormState(SUCCESS);
