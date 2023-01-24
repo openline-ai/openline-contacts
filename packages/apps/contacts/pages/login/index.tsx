@@ -12,8 +12,8 @@ const Login: NextPage = () => {
         function getRandom(min: number, max: number) {
             return min + Math.floor(Math.random() * (max - min + 1));
         }
-        let backgroundImageUrlNumber = String(getRandom(1, 5)).padStart(2, '0')
-        let backgroundImageUrl = `/backgrounds/blueprint-000${backgroundImageUrlNumber}.png`;
+        let backgroundImageUrlNumber = String(getRandom(1, 75)).padStart(2, '0')
+        let backgroundImageUrl = `/backgrounds/blueprint/background-000${backgroundImageUrlNumber}.jpg`;
         setBackgroundImageUrl(backgroundImageUrl);
     });
 
@@ -25,7 +25,7 @@ const Login: NextPage = () => {
                     src={backgroundImageUrl}
                     quality={100}
                     fill
-                    priority
+                    priority={true}
                     sizes="100vw"
                     style={{
                         objectFit: 'cover',
