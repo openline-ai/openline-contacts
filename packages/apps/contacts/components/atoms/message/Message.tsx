@@ -11,8 +11,10 @@ interface Props {
         phoneNumber: string
     }
     date: any
+    previousMessage: any
+    index: number
 }
-export const Message = ({message, feedInitiator, date}:Props) => {
+export const Message = ({message, feedInitiator, date, previousMessage, index}:Props) => {
     const decodeChannel = (channel: number) => {
         switch (channel) {
             case 0:
@@ -30,8 +32,6 @@ export const Message = ({message, feedInitiator, date}:Props) => {
         }
         return "";
     }
-    console.log('🏷️[Fn:Message][L:33]: message(): '
-            , message);
 
     return (
             <>
@@ -39,17 +39,17 @@ export const Message = ({message, feedInitiator, date}:Props) => {
                         message.direction == 0 &&
                         <>
                             {
-                                    // (index == 0 || (index > 0 && messages[index - 1].direction !== messages[index].direction)) &&
-                                    // <div className="mb-1 pl-3">
-                                    //     {
-                                    //             feedInitiator.firstName && feedInitiator.lastName &&
-                                    //             <>{feedInitiator.firstName} {feedInitiator.lastName}</>
-                                    //     }
-                                    //     {
-                                    //             !feedInitiator.firstName && !feedInitiator.lastName &&
-                                    //             <>{feedInitiator.email}</>
-                                    //     }
-                                    // </div>
+                                    (index === 0) &&
+                                    <div className="mb-1 text-gray-600">
+                                        {
+                                                feedInitiator.firstName && feedInitiator.lastName &&
+                                                <>{feedInitiator.firstName} {feedInitiator.lastName}</>
+                                        }
+                                        {
+                                                !feedInitiator.firstName && !feedInitiator.lastName &&
+                                                <>{feedInitiator.email}</>
+                                        }
+                                    </div>
                             }
                             <div className={styles.messageContainer}>
                                 <div  className={`${styles.message} ${styles.left}`}>
@@ -59,7 +59,6 @@ export const Message = ({message, feedInitiator, date}:Props) => {
                                         width: '100%',
                                         textAlign: 'right',
                                         fontSize: '12px',
-                                        paddingTop: '15px',
                                         color: '#C1C1C1'
                                     }}>
                                         <span className="flex-grow-1"></span>
@@ -77,11 +76,11 @@ export const Message = ({message, feedInitiator, date}:Props) => {
                         <>
 
                             {
-                                    // (index === 0 || (index > 0 && messages[index - 1].direction !== messages[index].direction)) &&
-                                    // <div className="w-full flex">
-                                    //     <div className="flex-grow-1"></div>
-                                    //     <div className="flex-grow-0 mb-1 pr-3">To be added</div>
-                                    // </div>
+                                    (index === 0 || (index > 0 && previousMessage !== message.direction)) &&
+                                    <div className="w-full flex">
+                                        <div className="flex-grow-1"></div>
+                                        {/*<div className="flex-grow-0 mb-1 pr-3">To be added</div>*/}
+                                    </div>
                             }
 
                             <div className={styles.messageContainer} style={{justifyContent: 'flex-end'}}>
@@ -93,7 +92,6 @@ export const Message = ({message, feedInitiator, date}:Props) => {
                                         width: '100%',
                                         textAlign: 'right',
                                         fontSize: '12px',
-                                        paddingTop: '15px',
                                         color: '#C1C1C1'
                                     }}>
                                         <span className="flex-grow-1"></span>

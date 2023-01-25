@@ -137,8 +137,11 @@ function ContactNoteModalTemplate(props: any) {
                
             )}/>
             <div className="flex justify-content-end mt-3">
-                <Button onClick={onSubmit} mode="primary" className='mt-3'>
-                    Save
+                <Button onClick={onSubmit} mode="secondary" className='mr-3'>
+                    Add note
+                </Button>
+                <Button onClick={onSubmit} mode="primary">
+                    Send message
                 </Button>
             </div>
 

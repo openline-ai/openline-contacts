@@ -5,12 +5,13 @@ import ReactTimeAgo from "react-time-ago";
 interface Props  {
     children: React.ReactNode;
     createdAt: string
+    last?: boolean
 }
 
-export const TimelineItem: React.FC<Props> = ({ children,  createdAt}) => {
+export const TimelineItem: React.FC<Props> = ({ children,  createdAt, last}) => {
 
     return (
-        <div className={styles.timelineItem}>
+        <div className={`${styles.timelineItem} ${last ? styles.last : ''}`}>
 
             <span className={styles.timelineLine}/>
             <ReactTimeAgo className="text-sm text-gray-500 mb-1" date={new Date(createdAt)} locale="en-US"/>

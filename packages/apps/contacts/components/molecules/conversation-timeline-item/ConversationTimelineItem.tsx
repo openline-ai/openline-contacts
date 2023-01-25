@@ -8,6 +8,7 @@ import {toast} from "react-toastify";
 import useWebSocket from "react-use-websocket";
 import {ConversationItem} from "../../../models/conversation-item";
 import {ProgressSpinner} from "primereact/progressspinner";
+import {Skeleton} from "primereact/skeleton";
 interface Props  {
     feedId: string
 
@@ -40,13 +41,17 @@ export const ConversationTimelineItem: React.FC<Props> = (
 
     useEffect(() => {
             setLoadingMessages(true);
-            axios.get(`/oasis-api/feed/${feedId}`)
+        console.log('🏷️ ----- feedId: '
+            , feedId);
+        axios.get(`/oasis-api/feed/${feedId}`)
             .then(res => {
                 const feedItem = res.data as FeedItem;
-
-                if (feedItem.initiatorType === 'CONTACT') {
-
-                    const query = gql`query GetContactDetails($email: String!) {
+            console.log('🏷️ ----- res: '
+                , res);
+            if (feedItem.initiatorType === 'CONTACT') {
+                console.log('🏷️ ----- "CONTACT": '
+                    , "CONTACT");
+                const query = gql`query GetContactDetails($email: String!) {
                         contact_ByEmail(email: $email) {
                             id
                             firstName
@@ -80,8 +85,16 @@ export const ConversationTimelineItem: React.FC<Props> = (
 
                     //TODO move initiator in index
                 } else if (feedItem.initiatorUsername === 'USER') {
-
-                    const query = gql`query GetUserById {
+                console.log('🏷️ ----- "USER": '
+                    , "USER");
+                
+                
+                
+                
+                
+                
+                
+                const query = gql`query GetUserById {
                         user(id: "${feedItem.initiatorUsername}") {
                             id
                             firstName
@@ -116,13 +129,13 @@ export const ConversationTimelineItem: React.FC<Props> = (
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
 
-            // axios.get(`/oasis-api/feed/${props.feedId}/item`)
-            //     .then(res => {
-            //         setMessages(res.data ?? []);
-            //     }).catch((reason: any) => {
-            //     //todo log on backend
-            //     toast.error("There was a problem on our side and we are doing our best to solve it!");
-            // });
+            axios.get(`/oasis-api/feed/${feedId}/item`)
+                .then(res => {
+                    setMessages(res.data ?? []);
+                }).catch((reason: any) => {
+                //todo log on backend
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
+            });
     }, []);
 
     //when a new message appears, scroll to the end of container
@@ -155,30 +168,45 @@ export const ConversationTimelineItem: React.FC<Props> = (
     }
 
     return (
-        <div className='flex flex-column h-full w-full overflow-hidden'>
-            <div className="flex-grow-1 w-full overflow-x-hidden overflow-y-auto p-5 pb-0">
+        <div className='flex flex-column h-full w-full'>
+            <div className="flex-grow-1 w-full">
                 {
                     loadingMessages &&
-                    <div className="flex w-full h-full align-content-center align-items-center">
-                        <ProgressSpinner/>
+                    <div className="flex flex-column mb-2">
+                        <div className="mb-2 flex justify-content-end">
+                            <Skeleton height="40px" width="50%" />
+                        </div>
+                        <div className="mb-2 flex justify-content-start">
+                            <Skeleton height="50px" width="40%" />
+                        </div>
+                        <div className="flex justify-content-end mb-2">
+                            <Skeleton height="45px" width="50%" />
+                        </div>
+                        <div className="flex justify-content-start">
+                            <Skeleton height="40px" width="45%" />
+                        </div>
                     </div>
                 }
 
                 <div className="flex flex-column">
                     {
                         !loadingMessages &&
-                        messages.map((msg: ConversationItem, index: any) => {
-                            let lines = msg.content.split('\n');
+                        messages.map((msg: ConversationItem, index: number) => {
+                            const lines = msg.content.split('\n');
 
-                            let filtered: string[] = lines.filter(function (line: string) {
+                            const filtered: string[] = lines.filter((line: string) => {
                                 return line.indexOf('>') != 0;
                             });
                             msg.content = filtered.join('\n').trim();
 
-                            var t = new Date(1970, 0, 1);
-                            t.setSeconds(msg.time.seconds);
+                            const time = new Date(1970, 0, 1).setSeconds(msg.time.seconds);
 
-                            return <Message key={msg.id} message={msg} feedInitiator={feedInitiator} date={t} />
+                            return <Message key={msg.id}
+                                            message={msg}
+                                            feedInitiator={feedInitiator}
+                                            date={time}
+                                            previousMessage={messages?.[index - 1]?.direction || null}
+                                            index={index} />
                         })
                     }
                 </div>

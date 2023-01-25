@@ -49,12 +49,12 @@ export const Timeline = ({loading, noActivity, loggedActivities}: Props) => {
     }
 
     return (
-        <div className="mt-5">
+        <div className="mt-5 mb-3">
             <div className="text-sm text-gray-500 flex justify-content-center mb-1"> Now </div>
             {
                 loggedActivities.map((e: any, index) => (
                     <React.Fragment key={e.id}>
-                        <TimelineItem createdAt={new Date(new Date().setDate(new Date().getDate() - (index + 1))).toISOString()} >
+                        <TimelineItem last={loggedActivities.length -1 === index} createdAt={new Date(new Date().setDate(new Date().getDate() - (index + 1))).toISOString()} >
                             {getTimelineItemByTime(e.type, e)}
                         </TimelineItem>
                     </React.Fragment>

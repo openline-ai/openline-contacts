@@ -22,6 +22,17 @@
      margin-right: 8px;
    }
 
+  &.secondary {
+    background: #D3D3D3;
+
+    &:hover,
+    &:focus,
+    &:active {
+      background: linear-gradient(-45deg, var(--primary-color), #f696b6);
+    }
+
+  }
+
   &.default {
     background: transparent;
     color: #474747;

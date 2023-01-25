@@ -3,6 +3,14 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  font-family: Roboto, serif;
+  font-weight: 400;
+  line-height: 1.3rem;
+  font-size: 1rem;
+}
+
+.last {
+  margin-bottom: 24px;
 }
 
 .timelineLine {
@@ -22,10 +30,10 @@
 
 .content {
   background: #fff;
-  padding: 12px;
+  padding: 16px 24px;
+
   border-radius: 6px;
   border: 1px solid var(--gray-300);
   width: 100%;
   position: relative;
-
 }

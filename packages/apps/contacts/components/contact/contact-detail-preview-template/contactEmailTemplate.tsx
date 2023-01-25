@@ -120,7 +120,7 @@ function ContactEmailTemplate(props: any) {
                         </div>
                     </div>
                             <div className='flex'>
-                                <div>
+                                <div className="mr-3">
                                     <IconButton
                                         className="p-button-text p-0"
                                         onClick={(e: any) => {
@@ -182,7 +182,7 @@ function ContactEmailTemplate(props: any) {
                     </form>
 
                     <div className="flex justify-content-end">
-                        <Button onClick={(e: any) => notifyCancelEdit(props.email.uiKey)} className='p-button-link text-gray-600' label="Cancel"/>
+                        <Button onClick={(e: any) => notifyCancelEdit(props.email.uiKey)} className='p-button-link  text-gray-600' label="Cancel"/>
                         <Button onClick={() => onSubmit()} label="Save"/>
                     </div>
                 </div>
