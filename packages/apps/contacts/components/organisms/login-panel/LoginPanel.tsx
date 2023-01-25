@@ -112,6 +112,8 @@ export const LoginPanel: React.FC<Props> = () => {
             });
     };
 
+    //TODO: Update following toasts to be inline errors on the form
+
     const handleLogin = (event: any) => {
         event.preventDefault();
 
