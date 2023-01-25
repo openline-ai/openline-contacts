@@ -13,8 +13,9 @@ import {Checkbox} from "primereact/checkbox";
 import {toast} from "react-toastify";
 import {IconButton} from "../../atoms/icon-button";
 import styles from './contact-detail-preview.module.scss'
+import {useGraphQLClient} from "../../../utils/graphQLClient";
 function ContactEmailTemplate(props: any) {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient();
 
     const {register, setValue, handleSubmit, control} = useForm({
         defaultValues: props.email

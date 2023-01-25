@@ -11,29 +11,25 @@ import '../styles/button.css'
 import '../styles/search-component.css'
 import 'react-toastify/dist/ReactToastify.css';
 import {AppProps} from "next/app";
-import {Session} from "next-auth";
 import {ToastContainer} from "react-toastify";
 import Layout from "../layout/layout";
-import {SessionProvider} from "next-auth/react";
 import Head from "next/head";
 
 export default function App({
                                 Component,
                                 pageProps: {session, ...pageProps},
-                            }: AppProps<{ session: Session }>) {
+                            }: AppProps) {
     return (
-        <SessionProvider session={session}>
-            <Layout>
-                <Head>
-                    <title>Openline</title>
-                </Head>
-                <ToastContainer position="bottom-right"
-                                autoClose={3000}
-                                closeOnClick={true}
-                                hideProgressBar={true}
-                                theme="colored"/>
-                <Component {...pageProps} />
-            </Layout>
-        </SessionProvider>
+        <Layout>
+            <Head>
+                <title>Openline</title>
+            </Head>
+            <ToastContainer position="bottom-right"
+                            autoClose={3000}
+                            closeOnClick={true}
+                            hideProgressBar={true}
+                            theme="colored"/>
+            <Component {...pageProps} />
+        </Layout>
     )
 }
