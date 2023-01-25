@@ -7,7 +7,6 @@ import { edgeConfig } from "@ory/integrations/next"
 import { useEffect, useState } from "react";
 import { getUserName } from "../utils/logged-in";
 import { setClient } from "../utils/graphQLClient";
-import axios from "axios";
 
 const ory = new FrontendApi(new Configuration(edgeConfig))
 
@@ -19,6 +18,7 @@ export default function Layout({ children }: any) {
     const [logoutUrl, setLogoutUrl] = useState<string | undefined>()
 
     useEffect(() => {
+
         if (router.asPath === ("/login")) {
             return;
         } //TODO: remove this check when we switch to the new login page
@@ -35,6 +35,7 @@ export default function Layout({ children }: any) {
 
                 // Create a logout url
                 ory.createBrowserLogoutFlow().then(({ data }) => {
+
                     setLogoutUrl(data.logout_url)
                 })
             })
@@ -58,6 +59,7 @@ export default function Layout({ children }: any) {
         if (router.asPath != ("/login")) {
             return null;
         } //TODO: revert this check to return null; when we switch to the new login page
+
     }
 
     return (
