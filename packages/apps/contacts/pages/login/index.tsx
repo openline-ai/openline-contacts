@@ -20,18 +20,18 @@ const Login: NextPage = () => {
 
     return (
         <>
-            <div className="flex flex-row h-full" style={{background: 'rgb(0,0,50)'}}>
-                <Image
-                    alt=""
-                    src={backgroundImageUrl}
-                    fill
-                    priority={true}
-                    sizes="100vw"
-                    unoptimized={true}
-                    style={{
-                        objectFit: 'cover',
-                    }}
-                />
+            <Image
+                alt=""
+                src={backgroundImageUrl}
+                fill
+                priority={true}
+                sizes="100vw"
+                unoptimized={true}
+                style={{
+                    objectFit: 'cover',
+                }}
+            />
+            <div className="flex flex-row h-full" style={{ background: 'rgb(0,0,50)' }}>
                 <div className="login-panel flex-grow-1">
                     <LoginPanel />
                 </div>

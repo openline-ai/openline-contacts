@@ -1,5 +1,5 @@
 import { InputText } from 'primereact/inputtext';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Button } from 'primereact/button';
 import styles from './login-panel.module.scss'
@@ -22,6 +22,7 @@ export const LoginPanel: React.FC<Props> = () => {
     var SUCCESS = "SUCCESS";
 
     const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [formState, setFormState] = useState(INIT);
@@ -111,6 +112,36 @@ export const LoginPanel: React.FC<Props> = () => {
             });
     };
 
+    const handleLogin = (event: any) => {
+        event.preventDefault();
+
+        if (!isValidEmail(email)) {
+            setErrorMessage("Please enter a valid email");
+            SignUpFormError(errorMessage)
+            return;
+        }
+        if (password === '') {
+            setErrorMessage("Please enter your password");
+            SignUpFormError(errorMessage)
+            return;
+        }
+        else {
+            setErrorMessage("Incorrect login details, please try again");
+            SignUpFormError(errorMessage)
+        }
+    };
+
+    const handleForgotPassword = (event: any) => {
+        event.preventDefault();
+
+        if (!isValidEmail(email)) {
+            setErrorMessage("Please enter a valid email");
+            SignUpFormError(errorMessage)
+            return;
+        }
+        success();
+    };
+
     return (
         <div className="flex w-full">
             <div className={styles.loginPanel}>
@@ -128,18 +159,19 @@ export const LoginPanel: React.FC<Props> = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="email" className="block text-600 font-medium mb-2 text-sm">Email</label>
-                                <InputText id="email" type="text" className="w-full mb-3" />
+                                <form onSubmit={handleLogin}>
+                                    <label htmlFor="email" className="block text-600 font-medium mb-2 text-sm">Email</label>
+                                    <InputText id="email" type="text" autoComplete="username" className="w-full mb-3" onChange={(e) => setEmail(e.target.value)} />
 
-                                <label htmlFor="password" className="block text-600 font-medium mb-2 text-sm">Password</label>
-                                <InputText type="password" className="w-full mb-3" />
+                                    <label htmlFor="password" className="block text-600 font-medium mb-2 text-sm">Password</label>
+                                    <InputText type="password" autoComplete='current-password' className="w-full mb-3" onChange={(e) => setPassword(e.target.value)} />
 
-                                <div className="flex align-items-center justify-content-between mb-6">
-                                    <a className="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer text-sm" onClick={forgotPassword}>Forgot your password?</a>
-                                </div>
+                                    <div className="flex align-items-center justify-content-between mb-6">
+                                        <a className="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer text-sm" onClick={forgotPassword}>Forgot your password?</a>
+                                    </div>
 
-                                <Button label="Sign In" className="w-full p-button-secondary" onClick={success} />
-
+                                    <Button label="Sign In" className="w-full p-button-secondary" type='submit' />
+                                </form>
                                 <div className="pt-5 text-center">
                                     <span className="font-medium line-height-3 text-sm" style={{ color: '#9E9E9E' }}>Protected by </span>
                                     <img src="./logos/ory-small.svg" alt="Ory" height={14} style={{ verticalAlign: 'middle' }} />
@@ -186,7 +218,7 @@ export const LoginPanel: React.FC<Props> = () => {
                                         <Button label={formState === SUBMITTING ? "Please wait..." : "Join the Waitlist"} className="w-full p-button-secondary" type="submit" />
                                     </form>
                                     <div className="pt-5 text-center">
-                                        <a href='https://www.openline.ai'  style={{ color: '#9E9E9E', textDecoration: 'none' }}>
+                                        <a href='https://www.openline.ai' style={{ color: '#9E9E9E', textDecoration: 'none' }}>
                                             <span className="font-medium mr-1 cursor-pointer text-sm">Powered by</span>
                                             <img src="./logos/openline_gray.svg" alt="Ory" height={20} style={{ verticalAlign: 'middle' }} />
                                         </a>
@@ -210,11 +242,12 @@ export const LoginPanel: React.FC<Props> = () => {
                             </div>
 
                             <div>
+                                <form onSubmit={handleForgotPassword}>
+                                    <label htmlFor="email" className="block text-600 font-medium mb-3 text-sm">Enter your email here for a password reset</label>
+                                    <InputText id="email" type="text" autoComplete="username" className="w-full mb-5" onChange={(e) => setEmail(e.target.value)} />
 
-                                <label htmlFor="email" className="block text-600 font-medium mb-3 text-sm">Enter your email here for a password reset</label>
-                                <InputText id="email" type="text" className="w-full mb-5" />
-
-                                <Button label="Reset Password" className="w-full p-button-secondary" onClick={success} />
+                                    <Button label="Reset Password" className="w-full p-button-secondary" onClick={success} />
+                                </form>
 
                                 <div className="pt-5 text-center">
                                     <span className="font-medium line-height-3 text-sm" style={{ color: '#9E9E9E' }}>Protected by </span>
