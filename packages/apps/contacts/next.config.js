@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  images: {
+    minimumCacheTTL: 31536000,
+  },
   env: {
     CUSTOMER_OS_API_PATH: process.env.CUSTOMER_OS_API_PATH,
     CUSTOMER_OS_API_KEY: process.env.CUSTOMER_OS_API_KEY,
@@ -13,8 +16,8 @@ const nextConfig = {
 
     ORY_SDK_URL: process.env.ORY_SDK_URL,
 
-    WEB_CHAT_API_KEY:process.env.WEB_CHAT_API_KEY,
-    WEB_CHAT_HTTP_PATH:process.env.WEB_CHAT_HTTP_PATH,
+    WEB_CHAT_API_KEY: process.env.WEB_CHAT_API_KEY,
+    WEB_CHAT_HTTP_PATH: process.env.WEB_CHAT_HTTP_PATH,
     WEB_CHAT_WS_PATH: process.env.WEB_CHAT_WS_PATH,
 
     WEB_CHAT_TRACKER_ENABLED: process.env.WEB_CHAT_TRACKER_ENABLED,
