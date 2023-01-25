@@ -2,6 +2,9 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  images: {
+    minimumCacheTTL: 31536000,
+},
   env: {
     CUSTOMER_OS_API_PATH: process.env.CUSTOMER_OS_API_PATH,
     CUSTOMER_OS_API_KEY: process.env.CUSTOMER_OS_API_KEY,

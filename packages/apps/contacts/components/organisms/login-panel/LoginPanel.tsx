@@ -88,7 +88,7 @@ export const LoginPanel: React.FC<Props> = () => {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
         })
-            .then((res:any) => {
+            .then((res: any) => {
                 if (res) {
                     resetForm();
                     setFormState(SUCCESS);
@@ -185,6 +185,12 @@ export const LoginPanel: React.FC<Props> = () => {
 
                                         <Button label={formState === SUBMITTING ? "Please wait..." : "Join the Waitlist"} className="w-full p-button-secondary" type="submit" />
                                     </form>
+                                    <div className="pt-5 text-center">
+                                        <a href='https://www.openline.ai'  style={{ color: '#9E9E9E', textDecoration: 'none' }}>
+                                            <span className="font-medium mr-1 cursor-pointer text-sm">Powered by</span>
+                                            <img src="./logos/openline_gray.svg" alt="Ory" height={20} style={{ verticalAlign: 'middle' }} />
+                                        </a>
+                                    </div>
                                 </div>
                             }
 

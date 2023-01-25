@@ -27,6 +27,7 @@ const Login: NextPage = () => {
                     fill
                     priority={true}
                     sizes="100vw"
+                    unoptimized={true}
                     style={{
                         objectFit: 'cover',
                     }}
