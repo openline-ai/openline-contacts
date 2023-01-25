@@ -79,7 +79,7 @@ export const LoginPanel: React.FC<Props> = () => {
         setFormState(SUBMITTING);
 
         // build body
-        const formBody = `userGroup=${encodeURIComponent("Waitlist")}&email=${encodeURIComponent(email)}&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`;
+        const formBody = `userGroup=${encodeURIComponent("Waitlist-Login")}&email=${encodeURIComponent(email)}&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`;
 
         // API request to add user to newsletter
         fetch(`https://app.loops.so/api/newsletter-form/cl7hzfqge458409jvsbqy93u9`, {
