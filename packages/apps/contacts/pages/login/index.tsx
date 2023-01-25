@@ -8,22 +8,22 @@ const Login: NextPage = () => {
 
     const [backgroundImageUrl, setBackgroundImageUrl] = useState('')
 
+    function getRandom(min: number, max: number) {
+        return min + Math.floor(Math.random() * (max - min + 1));
+    }
+
     useEffect(() => {
-        function getRandom(min: number, max: number) {
-            return min + Math.floor(Math.random() * (max - min + 1));
-        }
-        let backgroundImageUrlNumber = String(getRandom(1, 75)).padStart(2, '0')
-        let backgroundImageUrl = `/backgrounds/blueprint/background-000${backgroundImageUrlNumber}.jpg`;
+        const backgroundImageUrlNumber = String(getRandom(1, 75)).padStart(2, '0')
+        const backgroundImageUrl = `/backgrounds/blueprint/background-000${backgroundImageUrlNumber}.jpg`;
         setBackgroundImageUrl(backgroundImageUrl);
-    });
+    }, []);
 
     return (
         <>
-            <div className="flex flex-row h-full">
+            <div className="flex flex-row h-full" style={{background: 'rgb(0,0,50)'}}>
                 <Image
-                    alt="Mountains"
+                    alt=""
                     src={backgroundImageUrl}
-                    quality={100}
                     fill
                     priority={true}
                     sizes="100vw"

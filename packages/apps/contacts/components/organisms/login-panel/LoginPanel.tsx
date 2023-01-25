@@ -114,7 +114,7 @@ export const LoginPanel: React.FC<Props> = () => {
     return (
         <div className="flex w-full">
             <div className={styles.loginPanel}>
-                <div className="surface-card pt-6 px-6 pb-5 shadow-2 border-round w-full sm:w-25rem">
+                <div className="surface-card pt-6 px-6 pb-5 shadow-6 border-round w-full sm:w-25rem">
                     {
                         loginForm === 'login' &&
                         <>
