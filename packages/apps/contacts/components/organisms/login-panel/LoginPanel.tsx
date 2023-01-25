@@ -1,5 +1,5 @@
 import { InputText } from 'primereact/inputtext';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { Button } from 'primereact/button';
 import styles from './login-panel.module.scss'
@@ -9,7 +9,6 @@ interface Props {
 }
 
 export const LoginPanel: React.FC<Props> = () => {
-    const success = () => toast.success("Well done!");
 
     const [loginForm, setLoginForm] = useState('login');
 
@@ -25,6 +24,7 @@ export const LoginPanel: React.FC<Props> = () => {
     const [password, setPassword] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [forgottenPasswordEmail, setForgottenPasswordEmail] = useState("");
     const [formState, setFormState] = useState(INIT);
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -116,30 +116,33 @@ export const LoginPanel: React.FC<Props> = () => {
         event.preventDefault();
 
         if (!isValidEmail(email)) {
-            setErrorMessage("Please enter a valid email");
-            SignUpFormError(errorMessage)
+            SignUpFormError("Please enter a valid email")
             return;
         }
-        if (password === '') {
-            setErrorMessage("Please enter your password");
-            SignUpFormError(errorMessage)
+        if (password === '' || null) {
+            SignUpFormError("Please enter your password")
             return;
         }
         else {
-            setErrorMessage("Incorrect login details, please try again");
-            SignUpFormError(errorMessage)
+            SignUpFormError("Incorrect login details, please try again")
         }
     };
 
     const handleForgotPassword = (event: any) => {
         event.preventDefault();
-
-        if (!isValidEmail(email)) {
-            setErrorMessage("Please enter a valid email");
-            SignUpFormError(errorMessage)
+        
+        if (forgottenPasswordEmail === '' || null) {
+            SignUpFormError("Please enter your email")
             return;
         }
-        success();
+        if (!isValidEmail(forgottenPasswordEmail)) {
+            SignUpFormError("Please enter a valid email")
+            return;
+        }
+        else {
+            toast.success("Please check your email for a password reset link!")
+            return;
+        }
     };
 
     return (
@@ -244,9 +247,9 @@ export const LoginPanel: React.FC<Props> = () => {
                             <div>
                                 <form onSubmit={handleForgotPassword}>
                                     <label htmlFor="email" className="block text-600 font-medium mb-3 text-sm">Enter your email here for a password reset</label>
-                                    <InputText id="email" type="text" autoComplete="username" className="w-full mb-5" onChange={(e) => setEmail(e.target.value)} />
+                                    <InputText id="email" type="text" autoComplete="username" className="w-full mb-5" onChange={(e) => setForgottenPasswordEmail(e.target.value)} />
 
-                                    <Button label="Reset Password" className="w-full p-button-secondary" onClick={success} />
+                                    <Button label="Reset Password" className="w-full p-button-secondary" type='submit' />
                                 </form>
 
                                 <div className="pt-5 text-center">
