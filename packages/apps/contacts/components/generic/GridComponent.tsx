@@ -158,6 +158,13 @@ const GridComponent = (props: any) => {
             };
         });
     }
+    const onCustomSaveState = (state:any) => {
+        sessionStorage.setItem(props.gridTitle.toLowerCase(), JSON.stringify(state));
+    }
+    const onCustomRestoreState = () => {
+        // @ts-ignore
+        return JSON.parse(sessionStorage.getItem(props.gridTitle.toLowerCase()));
+    }
 
     return <>
         {
@@ -221,9 +228,22 @@ const GridComponent = (props: any) => {
             </div>
         }
 
-        <DataTable value={data} lazy responsiveLayout="scroll" dataKey="id" size={'normal'}
-                   paginator paginatorTemplate={paginatorTemplate} paginatorLeft={paginatorLeft}
-                   first={lazyParams.first} rows={lazyParams.limit} totalRecords={totalRecords} onPage={onPage} loading={loading}>
+        <DataTable value={data}
+                   lazy
+                   responsiveLayout="scroll"
+                   dataKey="id"
+                   size={'normal'}
+                   paginator
+                   paginatorTemplate={paginatorTemplate} paginatorLeft={paginatorLeft}
+                   first={lazyParams.first}
+                   rows={lazyParams.limit}
+                   customRestoreState={onCustomRestoreState}
+                   totalRecords={totalRecords}
+                   onPage={onPage}
+                   stateStorage="custom"
+                   customSaveState={onCustomSaveState}
+                   loading={loading}>
+
             {
                 columns
                     .filter((c: any) => c.hidden === false)
@@ -234,9 +254,9 @@ const GridComponent = (props: any) => {
                                 return columnDefinition.template(rowData);
                             } else if (columnDefinition.editLink) {
                                 return <span className={`cta ${columnDefinition.className ?? ''}`}
-                                             onClick={() => onEdit(rowData.id)}>{rowData[columnDefinition.field]}</span>
+                                             onClick={() => onEdit(rowData.id)}>{rowData?.[columnDefinition.field] || 'Unknown'}</span>
                             } else {
-                                return <div className={columnDefinition.className ?? ''}>{rowData[columnDefinition.field]}</div>;
+                                return <div className={`${columnDefinition.field === 'industry' && 'capitalise'} ${columnDefinition.className}` ?? ''}>{rowData[columnDefinition.field].split("_").join(" ").toLowerCase()}</div>;
                             }
                         };
                         return <Column key={columnDefinition.field}

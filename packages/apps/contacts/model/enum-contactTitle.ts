@@ -5,7 +5,7 @@ export const ContactTitleEnum = [
     },
     {
         value: 'MRS',
-        label: 'MRs'
+        label: 'Mrs'
     },
     {
         value: 'MISS',
