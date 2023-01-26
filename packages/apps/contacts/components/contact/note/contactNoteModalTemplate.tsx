@@ -25,7 +25,7 @@ function ContactNoteModalTemplate(props: any) {
 
     const onSubmit = handleSubmit(d => {
         const dataToSubmit = {...d}
-        dataToSubmit.html = dataToSubmit?.htmlEnhanced.replaceAll(/.src(\S*)/g, ""); //remove src attribute to not send the file bytes in here
+        dataToSubmit.html = dataToSubmit?.htmlEnhanced?.replaceAll(/.src(\S*)/g, ""); //remove src attribute to not send the file bytes in here
 
         if (!dataToSubmit.id) {
             CreateContactNote(client, props.contactId, dataToSubmit).then((savedNote: Note) => {

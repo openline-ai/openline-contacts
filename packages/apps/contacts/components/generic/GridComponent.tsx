@@ -254,9 +254,9 @@ const GridComponent = (props: any) => {
                                 return columnDefinition.template(rowData);
                             } else if (columnDefinition.editLink) {
                                 return <span className={`cta ${columnDefinition.className ?? ''}`}
-                                             onClick={() => onEdit(rowData.id)}>{rowData[columnDefinition.field]}</span>
+                                             onClick={() => onEdit(rowData.id)}>{rowData?.[columnDefinition.field] || 'Unknown'}</span>
                             } else {
-                                return <div className={`capitalise ${columnDefinition.className}` ?? ''}>{rowData[columnDefinition.field].split("_").join(" ").toLowerCase()}</div>;
+                                return <div className={`${columnDefinition.field === 'industry' && 'capitalise'} ${columnDefinition.className}` ?? ''}>{rowData[columnDefinition.field].split("_").join(" ").toLowerCase()}</div>;
                             }
                         };
                         return <Column key={columnDefinition.field}

@@ -73,16 +73,24 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
                                    template: (c: any) => {
                                        return <div key={c.id} className="cta" onClick={() => onEdit(c.id)}>
                                            {
-                                               c.firstName &&
+                                               (c.firstName || c.lastName) &&
                                                <span className="mr-1">{c.firstName} {c.lastName}</span>
                                            }
                                            {
                                                !c.firstName && c.emails && c.emails[0] &&
                                                <span>{c.emails[0].email}</span>
                                            }
+
                                            {
                                                (!c.firstName && (!c.emails  || !c.emails[0])) && c.phoneNumbers && c.phoneNumbers[0] &&
                                                <span>{c.phoneNumbers[0].e164}</span>
+                                           }
+
+                                           {
+                                               !c.firstName && !c.lastName && (!c.emails  || !c.emails[0]) && !c.phoneNumbers.length && (
+                                                   <span> Unknown user</span>
+                                               )
+
                                            }
                                        </div>
                                    }
@@ -91,7 +99,7 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
                                    field: 'contactType',
                                    label: 'Type',
                                    template: (c: any) => {
-                                       return <div key={c.id}>{c.contactType ? c.contactType.name : ''}</div>
+                                       return <div key={c.id} className='capitalise'>{c.contactType ? c.contactType.name.toLowerCase().split("_").join(" ") : ''}</div>
                                    }
                                },
                            ]}
