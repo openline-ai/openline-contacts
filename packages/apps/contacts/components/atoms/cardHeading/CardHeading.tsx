@@ -13,8 +13,8 @@ export const CardHeading: React.FC<Props> = ({ children, subheading}) => {
             </h1>
             {subheading && (
                 <span
-                    className="mr-3 overflow-hidden text-gray-500 text-sm text-overflow-ellipsis">
-                    {subheading}
+                    className="mr-3 overflow-hidden text-gray-500 text-sm text-overflow-ellipsis capitalise">
+                    {typeof subheading === "string" ? subheading.split("_").join(" ") : subheading}
                 </span>
             )}
         </div>

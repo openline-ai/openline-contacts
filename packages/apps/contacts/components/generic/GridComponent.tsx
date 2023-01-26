@@ -236,7 +236,7 @@ const GridComponent = (props: any) => {
                                 return <span className={`cta ${columnDefinition.className ?? ''}`}
                                              onClick={() => onEdit(rowData.id)}>{rowData[columnDefinition.field]}</span>
                             } else {
-                                return <div className={columnDefinition.className ?? ''}>{rowData[columnDefinition.field]}</div>;
+                                return <div className={`capitalise ${columnDefinition.className}` ?? ''}>{rowData[columnDefinition.field].split("_").join(" ").toLowerCase()}</div>;
                             }
                         };
                         return <Column key={columnDefinition.field}
