@@ -42,6 +42,34 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
                 industry
                 domain
                 website
+                contactRoles {
+                    id
+                    jobTitle
+                    contact {
+                        id
+                        title
+                        firstName
+                        lastName
+                        source
+                        title
+                        contactType {
+                            id
+                        }
+                        phoneNumbers {
+                            id
+                            e164
+                            label
+                            primary
+                            source
+                        }
+                        emails {
+                            id
+                            email
+                            primary
+                            source
+                        }
+                    }
+                }
             }
         }`
 

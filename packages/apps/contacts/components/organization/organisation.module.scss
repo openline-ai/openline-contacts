@@ -1,0 +1,21 @@
+.contactType {
+  text-transform: lowercase;
+
+  &:first-letter {
+    text-transform: capitalize;
+  }
+}
+
+.contactList {
+  grid-area: contactList;
+  list-style: none;
+  padding: 0;
+}
+
+.listItem {
+  cursor: pointer;
+}
+
+.listItem:not(:last-of-type) {
+  border-bottom: 1px solid var(--gray-300);
+}

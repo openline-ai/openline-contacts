@@ -3,13 +3,30 @@
     src: url('../fonts/Mona-Sans-Medium.woff');
 }
 
+@font-face {
+    font-family: Roboto;
+    src: url('../fonts/Roboto/Roboto-Regular.ttf');
+    font-weight: 400;
+}
+@font-face {
+    font-family: Roboto;
+    src: url('../fonts/Roboto/Roboto-Thin.ttf');
+    font-weight: 100;
+}
+@font-face {
+    font-family: Roboto;
+    src: url('../fonts/Roboto/Roboto-Light.ttf');
+    font-weight: 200;
+}
+
 html,
 body {
     padding: 0;
     margin: 0;
-    font-family: mona-sans-black, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    font-family:  mona-sans-black, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
     font-size: 14px;
+    background: var(--background-color);
 }
 
 html,

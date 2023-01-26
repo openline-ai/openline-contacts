@@ -7,7 +7,6 @@ import {toast} from "react-toastify";
 import {Controller, useForm} from "react-hook-form";
 import {Editor} from "primereact/editor";
 import {CreateContactNote, UpdateContactNote} from "../../../services/contactService";
-import {GraphQLClient} from "graphql-request";
 import {Note} from "../../../models/contact";
 import {Button} from "../../atoms";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
@@ -16,33 +15,41 @@ import {useGraphQLClient} from "../../../utils/graphQLClient";
 function ContactNoteModalTemplate(props: any) {
     const client =  useGraphQLClient();
 
-    const {register, handleSubmit, setValue, getValues, control} = useForm({
+    const {register, handleSubmit, setValue, getValues, control, reset} = useForm({
         defaultValues: {
-            id: props.note?.id,
-            html: props.note?.html,
-            htmlEnhanced: props.note.htmlEnhanced
+            id: props.note?.id || '',
+            html: props.note?.html || '',
+            htmlEnhanced: props.note.htmlEnhanced || ''
         }
     });
 
     const onSubmit = handleSubmit(d => {
         const dataToSubmit = {...d}
-        console.log(dataToSubmit.html)
-        console.log(dataToSubmit.htmlEnhanced)
-        dataToSubmit.html = dataToSubmit.htmlEnhanced.replaceAll(/.src(\S*)/g, ""); //remove src attribute to not send the file bytes in here
-        console.log(dataToSubmit.html)
+        dataToSubmit.html = dataToSubmit?.htmlEnhanced.replaceAll(/.src(\S*)/g, ""); //remove src attribute to not send the file bytes in here
 
         if (!dataToSubmit.id) {
             CreateContactNote(client, props.contactId, dataToSubmit).then((savedNote: Note) => {
-                props.notifyChanged(savedNote);
-                toast.success("Contact note added successfully!");
+                props.notifyChanged();
+                reset({
+                    id: '',
+                    html: '',
+                    htmlEnhanced: ''
+                })
+                toast.success("Note added successfully!");
             }).catch((reason: any) => {
+
                 //todo log an error in server side
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         } else {
             UpdateContactNote(client, props.contactId, dataToSubmit).then((savedNote: Note) => {
-                props.notifyChanged(savedNote);
-                toast.success("Contact note updated successfully!");
+                props.notifyChanged();
+                reset({
+                    id: '',
+                    html: '',
+                    htmlEnhanced: ''
+                })
+                toast.success("Note updated successfully!");
             }).catch((reason: any) => {
                 //todo log an error in server side
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
@@ -137,9 +144,12 @@ function ContactNoteModalTemplate(props: any) {
                
             )}/>
             <div className="flex justify-content-end mt-3">
-                <Button onClick={onSubmit} mode="primary" className='mt-3'>
-                    Save
+                <Button onClick={onSubmit} mode="primary" className='mr-3'>
+                    Add note
                 </Button>
+                {/*<Button onClick={onSubmit} mode="primary">*/}
+                {/*    Send message*/}
+                {/*</Button>*/}
             </div>
 
 

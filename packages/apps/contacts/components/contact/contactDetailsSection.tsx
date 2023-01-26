@@ -3,14 +3,13 @@ import {GraphQLClient} from "graphql-request";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faUserNinja} from "@fortawesome/free-solid-svg-icons";
+import {faUserNinja} from "@fortawesome/free-solid-svg-icons";
 import {useEffect, useState} from "react";
 import {Dropdown} from "primereact/dropdown";
 import {Controller, useForm} from "react-hook-form";
-import {getEnumLabel} from "../../model/enums";
 import {ContactTitleEnum} from "../../model/enum-contactTitle";
 import SearchComponent from "../generic/SearchComponent";
-import {CreateContact, GetContactDetails, UpdateContact} from "../../services/contactService";
+import {CreateContact, UpdateContact} from "../../services/contactService";
 import {Contact, ContactType} from "../../models/contact";
 import {GetContactTypes} from "../../services/contactTypeService";
 import {GetUsersPage} from "../../services/userService";
@@ -56,7 +55,6 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
 
     useEffect(() => {
         if(editDetails && router.query.id !== 'new') {
-            console.log('here', contact.firstName)
             reset({
                 title: contact.title || '',
                 firstName: contact.firstName || '',
@@ -83,7 +81,6 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         } else {
-            console.log('update')
             UpdateContact(client, {id: contactId, ...data}).then((savedContact: Contact) => {
                 setEditDetails(false)
                 setReloadDetails(true)
@@ -183,7 +180,6 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
         } as CustomFieldTemplateProps;
     }
 
-    console.log('contactTypeList',contactTypeList)
 
     return (
         <div style={{width: '100%'}}>

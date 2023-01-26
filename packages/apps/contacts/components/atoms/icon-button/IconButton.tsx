@@ -18,7 +18,7 @@ export const IconButton: FC<Props> = ({ icon, onClick, children, mode="default",
         <div
             {...rest}
             onClick={onClick}
-            role="button" tabIndex={0} className={`${styles.button} ${styles[mode]}`}>
+            role="button" tabIndex={0} className={`${styles.button} ${styles[mode]} ${rest.className}`}>
             <>
                 {icon && (
                     <FontAwesomeIcon icon={icon} />

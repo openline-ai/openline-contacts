@@ -3,8 +3,7 @@ import PropTypes from "prop-types";
 import {useState} from "react";
 import {gql, GraphQLClient} from "graphql-request";
 import {Button} from "primereact/button";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faPhone, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
 import {Dropdown} from "primereact/dropdown";
@@ -123,7 +122,7 @@ function ContactPhoneNumberTemplate(props: any) {
 
                         </div>
                         <div className='flex'>
-                            <div>
+                            <div className="mr-3">
                                 <IconButton
                                     className="p-button-text p-0"
                                     onClick={(e: any) => {
