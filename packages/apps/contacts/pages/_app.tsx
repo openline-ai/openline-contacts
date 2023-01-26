@@ -15,10 +15,13 @@ import {ToastContainer} from "react-toastify";
 import Layout from "../layout/layout";
 import Head from "next/head";
 
+import TimeAgo from "javascript-time-ago";
+import en from 'javascript-time-ago/locale/en.json'
 export default function App({
                                 Component,
                                 pageProps: {session, ...pageProps},
                             }: AppProps) {
+    TimeAgo.addDefaultLocale(en)
     return (
         <Layout>
             <Head>

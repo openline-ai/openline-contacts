@@ -15,16 +15,17 @@ import ContactNoteModalTemplate from "../note/contactNoteModalTemplate";
 import ContactDetailsSection from "../contactDetailsSection";
 import {Divider} from "../../atoms";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
+import {CardHeading} from "../../atoms/cardHeading";
 
 // TODO Move atom components to ui-kit
 // TODO refactor this so it is layout that can be reused
 
 export const DetailsPageLayout = () => {
     const client =  useGraphQLClient();
-    const [reload, setReload] = useState(false);
     const router = useRouter();
 
     const [reloadDetails, setReloadDetails] = useState(false);
+    const [reloadNotes, setReloadNotes] = useState(false);
     const [contact, setContact] = useState({
         definitionId: undefined,
         title: '',
@@ -111,9 +112,11 @@ export const DetailsPageLayout = () => {
                         note={{
                             id: undefined,
                             html: ''
+
                         }}
-                        notifyChanged={() => setReload(true)}
+                        notifyChanged={() => setReloadNotes(true)}
                         contactId={router.query?.id as string}
+
                     />
                 )}
 
@@ -121,16 +124,14 @@ export const DetailsPageLayout = () => {
 
             <section className={styles.contactHistorySection}>
                 {router.query.id && router.query.id !== 'new' && (
-                    <>
-                        <article>
-                            <h2 className="text-gray-900 text-xl">Contact history</h2>
-                            <ContactHistory contactId={router.query.id}/>
-                        </article>
-                        <article>
-                            <h2 className="text-gray-900 text-xl">Notes</h2>
-                            <ContactNotes contactId={router.query.id} reload={reload} setReload={setReload}/>
-                        </article>
-                    </>
+                    <article>
+                        <CardHeading>Timeline</CardHeading>
+                        <ContactHistory
+                            contactId={router.query.id}
+                            reload={reloadNotes}
+                            setReload={setReloadNotes}
+                        />
+                    </article>
                 )}
             </section>
         </div>

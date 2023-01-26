@@ -22,6 +22,17 @@
      margin-right: 8px;
    }
 
+  &.secondary {
+    background: #D3D3D3;
+
+    &:hover,
+    &:focus,
+    &:active {
+      background: linear-gradient(-45deg, var(--primary-color), #f696b6);
+    }
+
+  }
+
   &.default {
     background: transparent;
     color: #474747;
@@ -56,6 +67,18 @@
     &:active {
       background: transparent;
       color: var(--red-500);
+      text-decoration: underline;
+
+    }
+  }
+  &.link {
+    color: var(--blue-500);
+    background: white;
+
+    &:hover,
+    &:focus,
+    &:active {
+      color: var(--blue-600);
       text-decoration: underline;
 
     }

@@ -1,50 +1,28 @@
 import {useRouter} from "next/router";
 import {GraphQLClient} from "graphql-request";
-import {Button} from "primereact/button";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {Button} from "../atoms";
 import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {InputText} from "primereact/inputtext";
 import {useForm} from "react-hook-form";
 import {Dialog} from "primereact/dialog";
 import {toast} from "react-toastify";
 import {Organization} from "../../models/organization";
-import {CreateOrganization, DeleteOrganization, GetOrganization, UpdateOrganization} from "../../services/organizationService";
-import {FullScreenModeLayout} from "../organisms/fullscreen-mode-layout";
+import {CreateOrganization, DeleteOrganization, UpdateOrganization} from "../../services/organizationService";
 import {useGraphQLClient} from "../../utils/graphQLClient";
+import {IconButton} from "../atoms/icon-button";
+import {CardHeading} from "../atoms/cardHeading";
+import Link from "next/link";
+import * as domain from "domain";
 
-function OrganizationEdit() {
+// todo add reload
+function OrganizationEdit({organisation, onReload, createMode}: {organisation:any, createMode:boolean, onReload: () =>void}) {
     const client =  useGraphQLClient();
 
-    const [organization, setOrganization] = useState({
-        id: undefined,
-        name: '',
-        description: '',
-        industry: '',
-        domain: '',
-        website: ''
-    } as Organization);
-    const [editDetails, setEditDetails] = useState(false);
+    const [editDetails, setEditDetails] = useState(createMode);
 
     const router = useRouter();
     const {id} = router.query;
-
-    const [reloadDetails, setReloadDetails] = useState(false);
-    useEffect(() => {
-
-        if (id !== undefined && id === 'new') {
-            setEditDetails(true);
-        } else if (id !== undefined && id !== 'new') {
-            setEditDetails(false);
-            GetOrganization(client, id as string).then((org: Organization) => {
-                setOrganization(org);
-            }).catch(() => {
-                //todo log error on server side
-                toast.error("There was a problem on our side and we are doing our best to solve it!");
-            });
-        }
-
-    }, [id, reloadDetails]);
 
     const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
     const deleteOrganization = () => {
@@ -69,6 +47,7 @@ function OrganizationEdit() {
             CreateOrganization(client, data).then((result: Organization) => {
                 if (result) {
                     router.push(`/organization/${result.id}`);
+                    setEditDetails(false);
                     toast.success("Organization added successfully!");
                 } else {
                     //todo log an error in server side
@@ -80,7 +59,8 @@ function OrganizationEdit() {
         } else {
             UpdateOrganization(client, data).then((result: Organization) => {
                 if (result) {
-                    setReloadDetails(!reloadDetails);
+                    onReload()
+                    setEditDetails(false);
                     toast.success("Organization updated successfully!");
                 } else {
                     //todo log an error in server side
@@ -93,60 +73,49 @@ function OrganizationEdit() {
     });
 
     return (
-        <FullScreenModeLayout fullScreenMode>
-            <div className="flex-grow-0 mr-5">
-
-
-                <div className="card-fieldset" style={{width: '25rem'}}>
-                    <div className="card-header">
-                        <div className="flex flex-row w-full">
-                            <div className="flex-grow-1">Organization details</div>
-                            <div className="flex">
+            <div className="h-full">
+                <div className="flex flex-column">
+                    <div className="flex align-items-center justify-content-between">
+                            <CardHeading subheading={organisation?.industry}>{organisation?.name || 'Unknown'}</CardHeading>
+                            <div className="flex align-content-center ml-5 " style={{marginBottom: '24px'}}>
                                 {
-                                    !editDetails &&
-                                    <Button className="p-button-text p-0" onClick={() => {
-                                        setValue('id', organization.id);
-                                        setValue('name', organization.name);
-                                        setValue('description', organization.description);
-                                        setValue('industry', organization.industry);
-                                        setValue('domain', organization.domain);
-                                        setValue('website', organization.website);
-                                        setEditDetails(true);
-                                    }}>
-                                        <FontAwesomeIcon size="xs" icon={faEdit} style={{color: 'black'}}/>
-                                    </Button>
+                                    !editDetails &&(
+                                        <>
+                                            <div>
+                                            <IconButton icon={faEdit} ariaLabel="Edit" className="text-gray-800 mr-1" onClick={() => {
+                                                setValue('id', organisation?.id);
+                                                setValue('name', organisation?.name);
+                                                setValue('description', organisation?.description);
+                                                setValue('industry', organisation?.industry);
+                                                setValue('domain', organisation?.domain);
+                                                setValue('website', organisation?.website);
+                                                setEditDetails(true);
+                                            }}/>
+                                            </div>
+                                            <div>
+                                                <IconButton icon={faTrashCan}  ariaLabel="Delete" onClick={() => setDeleteConfirmationModalVisible(true)} className='text-gray-800'/>
+                                            </div>
+                                        </>
+                                    )
+
                                 }
                             </div>
-                        </div>
                     </div>
-                    <div className="card-body">
+
 
                         {
                             !editDetails &&
-                            <div className="display">
-                                <div className="grid grid-nogutter">
-                                    <div className="col-4">Name</div>
-                                    <div className="col-8 overflow-hidden text-overflow-ellipsis">{organization.name}</div>
+                            <div className="flex flex-column justify-content-evenly flex-grow-1">
+                                <div className="flex">
+                                    <span
+                                        className="mr-3 overflow-hidden text-overflow-ellipsis">{organisation?.description}</span>
                                 </div>
-                                <div className="grid grid-nogutter mt-3">
-                                    <div className="col-4">Description</div>
-                                    <div
-                                        className="col-8 overflow-hidden text-overflow-ellipsis">{organization.description}</div>
-                                </div>
-                                <div className="grid grid-nogutter mt-3">
-                                    <div className="col-4">Industry</div>
-                                    <div
-                                        className="col-8 overflow-hidden text-overflow-ellipsis">{organization.industry}</div>
-                                </div>
-                                <div className="grid grid-nogutter mt-3">
-                                    <div className="col-4">Domain</div>
-                                    <div
-                                        className="col-8 overflow-hidden text-overflow-ellipsis">{organization.domain}</div>
-                                </div>
-                                <div className="grid grid-nogutter mt-3">
-                                    <div className="col-4">Website</div>
-                                    <div
-                                        className="col-8 overflow-hidden text-overflow-ellipsis">{organization.website}</div>
+                                <div className="flex mr-3 mt-3">
+                                    <Link href={organisation?.website || `https://${organisation?.domain}` }
+                                          target="_blank"
+                                          className='cta'>
+                                        {organisation?.domain}
+                                    </Link>
                                 </div>
                             </div>
                         }
@@ -179,31 +148,38 @@ function OrganizationEdit() {
 
                                 <div className="flex justify-content-end">
                                     <Button onClick={(e: any) => setEditDetails(e.value)}
-                                            className='p-button-link text-gray-600'
-                                            label="Cancel"/>
-                                    <Button onClick={() => onSubmit()} label="Save"/>
+                                            className='p-button-link text-gray-600 mr-2'
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button mode="primary" onClick={() => onSubmit()}>
+                                        Save
+                                    </Button>
                                 </div>
                             </div>
                         }
 
-                    </div>
                 </div>
 
                 {
                     !editDetails &&
                     <>
-                        <div className="flex align-items-center mt-2 ml-1">
-                            <FontAwesomeIcon icon={faTrashCan} className="text-gray-600" style={{color: 'black'}}/>
-                            <Button onClick={() => setDeleteConfirmationModalVisible(true)} className='p-button-link text-gray-600'
-                                    label="Delete"/>
-                        </div>
                         <Dialog header="Organization delete confirmation"
                                 draggable={false}
                                 visible={deleteConfirmationModalVisible}
                                 footer={
                                     <div className="flex flex-grow-1 justify-content-between align-items-center">
-                                        <Button label="Delete the organization" icon="pi pi-check" onClick={() => deleteOrganization()}/>
-                                        <Button label="Cancel" icon="pi pi-times" onClick={() => setDeleteConfirmationModalVisible(false)} className="p-button-text"/>
+                                        <Button
+                                                mode="danger"
+                                                onClick={() => deleteOrganization()}
+                                        >
+                                            Delete the organization
+                                        </Button>
+                                        <Button
+                                            onClick={() => setDeleteConfirmationModalVisible(false)}
+                                            className="p-button-text"
+
+                                        >Cancel</Button>
                                     </div>
                                 }
                                 onHide={() => setDeleteConfirmationModalVisible(false)}>
@@ -214,7 +190,6 @@ function OrganizationEdit() {
                 }
             </div>
 
-        </FullScreenModeLayout>
     );
 }
 
