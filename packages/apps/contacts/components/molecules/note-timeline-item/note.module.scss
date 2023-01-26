@@ -6,7 +6,8 @@
 
 .noteContent {
   width: fit-content;
-  font: "Roboto Light";
+  font: Roboto;
+  font-weight: 200;
   line-height: 1.3rem;
   font-size: 14px;
   & * {
