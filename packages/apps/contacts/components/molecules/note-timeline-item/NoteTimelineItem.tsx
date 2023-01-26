@@ -13,8 +13,7 @@ interface Props  {
 }
 
 export const NoteTimelineItem: React.FC<Props> = ({ noteContent, createdBy, createdAt}) => {
-    console.log('🏷️[Fn:ConversationTimelineItem][L:14]: createdBy(): '
-        , createdBy);
+
     return (
         <div className={styles.noteContainer}>
                  <FontAwesomeIcon icon={faThumbtack}  className={styles.pin}/>

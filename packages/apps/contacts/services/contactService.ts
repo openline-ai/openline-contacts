@@ -239,7 +239,6 @@ export function GetConversationsForContact(client: GraphQLClient, contactId: str
             id: contactId,
             pagination: pagination
         }).then((response: any) => {
-            console.log(response.contact.conversations)
             if (response.contact.conversations) {
                 resolve({
                     content: response.contact?.conversations.content,
@@ -279,7 +278,6 @@ export function GetContactNotes(client: GraphQLClient, contactId: string, pagina
             contactId: contactId,
             pagination: pagination
         }).then((response: any) => {
-            console.log(response.contact.notes)
             if (response.contact.notes) {
                 resolve({
                     content: response.contact.notes.content,

@@ -1,14 +1,13 @@
 import React, {useEffect, useState} from 'react';
-import styles from './conversation-timeline-item.module.scss'
-import {Button, Message} from "../../atoms";
+import {Message} from "../../atoms";
 import axios from "axios";
 import {FeedItem} from "../../../models/feed-item";
-import {gql, GraphQLClient} from "graphql-request";
+import {gql} from "graphql-request";
 import {toast} from "react-toastify";
 import useWebSocket from "react-use-websocket";
 import {ConversationItem} from "../../../models/conversation-item";
-import {ProgressSpinner} from "primereact/progressspinner";
 import {Skeleton} from "primereact/skeleton";
+import {useGraphQLClient} from "../../../utils/graphQLClient";
 interface Props  {
     feedId: string
 
@@ -17,7 +16,8 @@ interface Props  {
 export const ConversationTimelineItem: React.FC<Props> = (
     { feedId}
 ) => {
-    const client = new GraphQLClient(`/customer-os-api/query`);
+    const client =  useGraphQLClient()
+
 
     const {lastMessage} = useWebSocket(`${process.env.NEXT_PUBLIC_WEBSOCKET_PATH}/${feedId}`, {
         onOpen: () => console.log('Websocket opened'),
@@ -38,19 +38,16 @@ export const ConversationTimelineItem: React.FC<Props> = (
     const [messages, setMessages] = useState([] as ConversationItem[]);
 
     const [loadingMessages, setLoadingMessages] = useState(false)
+    const [loadingError, setError] = useState(false)
 
     useEffect(() => {
-            setLoadingMessages(true);
-        console.log('🏷️ ----- feedId: '
-            , feedId);
+        setLoadingMessages(true);
         axios.get(`/oasis-api/feed/${feedId}`)
             .then(res => {
                 const feedItem = res.data as FeedItem;
-            console.log('🏷️ ----- res: '
-                , res);
+
             if (feedItem.initiatorType === 'CONTACT') {
-                console.log('🏷️ ----- "CONTACT": '
-                    , "CONTACT");
+
                 const query = gql`query GetContactDetails($email: String!) {
                         contact_ByEmail(email: $email) {
                             id
@@ -85,15 +82,7 @@ export const ConversationTimelineItem: React.FC<Props> = (
 
                     //TODO move initiator in index
                 } else if (feedItem.initiatorUsername === 'USER') {
-                console.log('🏷️ ----- "USER": '
-                    , "USER");
-                
-                
-                
-                
-                
-                
-                
+
                 const query = gql`query GetUserById {
                         user(id: "${feedItem.initiatorUsername}") {
                             id
@@ -124,8 +113,7 @@ export const ConversationTimelineItem: React.FC<Props> = (
 
             }).catch((reason: any) => {
                 //todo log on backend
-                console.log('🏷️'
-                    , reason);
+
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
 
@@ -133,7 +121,7 @@ export const ConversationTimelineItem: React.FC<Props> = (
                 .then(res => {
                     setMessages(res.data ?? []);
                 }).catch((reason: any) => {
-                //todo log on backend
+                setLoadingMessages(false)
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
     }, []);
@@ -141,6 +129,7 @@ export const ConversationTimelineItem: React.FC<Props> = (
     //when a new message appears, scroll to the end of container
     useEffect(() => {
         if (messages && feedInitiator.loaded) {
+            
             setLoadingMessages(false);
         }
     }, [messages, feedInitiator]);

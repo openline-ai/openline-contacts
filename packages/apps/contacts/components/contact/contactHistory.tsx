@@ -9,7 +9,12 @@ import {Note} from "../../models/contact";
 import {toast} from "react-toastify";
 import {Timeline} from "../organisms";
 
-function ContactHistory(props: any) {
+interface Props {
+    contactId:string | Array<string>,
+    reload: boolean
+    setReload: (state: boolean) => void
+}
+function ContactHistory(props: Props) {
     const client =  useGraphQLClient();
 
     const [conversationsLoading, setConversationLoading] = useState(true);
@@ -20,6 +25,7 @@ function ContactHistory(props: any) {
     const [noteItems, setNoteItems] = useState([] as any);
 
     useEffect(() => {
+        // todo split conversation and note to different use effects
         if (props.contactId) {
 
             GetContactNotes(client, (props.contactId as string), {page: 0, limit: 100}).then(async (result: PaginatedResponse<Note>) => {
@@ -27,6 +33,7 @@ function ContactHistory(props: any) {
                     setNoteItems(result.content.map((data) => ({...data, type: "NOTE"})));
                     setNoteTotalElements(result.totalElements);
                     setNoteLoading(false);
+                    props.setReload(false)
                 } else {
                     setNoteLoading(false)
                     //todo log an error in server side
@@ -34,6 +41,7 @@ function ContactHistory(props: any) {
                 }
             }).catch((reason: any) => {
                 setNoteLoading(false)
+                props.setReload(false)
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
 
@@ -65,7 +73,7 @@ function ContactHistory(props: any) {
             });
         }
 
-    }, [props.contactId]);
+    }, [props.contactId, props.reload]);
 
     const noHistoryItemsAvailable =  !conversationsLoading && conversationHistory.length == 0 && !notesLoading && noteItems.length == 0
 
@@ -78,44 +86,11 @@ function ContactHistory(props: any) {
 
 
     return (
-        <div>
-            <div>
-
-                {
-                    conversationsLoading || notesLoading &&
-                    <>
-                        <Skeleton className="w-full mt-3" height="1rem"/>
-                        <Skeleton className="w-full mt-3" height="1rem"/>
-                        <Skeleton className="w-full mt-3" height="1rem"/>
-                        <Skeleton className="w-full mt-3" height="1rem"/>
-                        <Skeleton className="w-full mt-3" height="1rem"/>
-                    </>
-                }
-
-                {
-                    noHistoryItemsAvailable &&
-                    <div className="flex">
-                        <div className="flex flex-grow-1 p-2 bg-white border-dark-1 mt-3">
-                            No activity logged yet
-                        </div>
-                    </div>
-                }
-
                 <Timeline loading={conversationsLoading || notesLoading}
                           noActivity={noHistoryItemsAvailable}
                           loggedActivities={getSortedItems(conversationHistory, noteItems)} />
 
-            </div>
-        </div>
     );
-}
-
-ContactHistory.propTypes = {
-    contactId: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.arrayOf(string)
-    ]) || undefined,
-    className: PropTypes.arrayOf(string)
 }
 
 export default ContactHistory

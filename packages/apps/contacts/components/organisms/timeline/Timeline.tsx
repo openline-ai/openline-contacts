@@ -38,8 +38,8 @@ export const Timeline = ({loading, noActivity, loggedActivities}: Props) => {
                 return <NoteTimelineItem noteContent={data.html} createdAt={data.createdAt} />
             case "CONVERSATION":
                 return <ConversationTimelineItem feedId={data.id} />
-            // case "EMAIL":
-            //    return <EmailTimelineItem emailContent={data.html} sender="jane.doe@acme.com" subject="Follow up" recipients={['adam.smith@org.com']}/>
+            case "EMAIL":
+               return <EmailTimelineItem emailContent={data.html} sender="jane.doe@acme.com" subject="Follow up" recipients={['adam.smith@org.com']}/>
             // case "CALL":
             //     return <PhoneCallTimelineItem phoneCallParties={data} duration={}/>
             default:
@@ -54,7 +54,7 @@ export const Timeline = ({loading, noActivity, loggedActivities}: Props) => {
             {
                 loggedActivities.map((e: any, index) => (
                     <React.Fragment key={e.id}>
-                        <TimelineItem last={loggedActivities.length -1 === index} createdAt={new Date(new Date().setDate(new Date().getDate() - (index + 1))).toISOString()} >
+                        <TimelineItem last={loggedActivities.length -1 === index} createdAt={e.createdAt} >
                             {getTimelineItemByTime(e.type, e)}
                         </TimelineItem>
                     </React.Fragment>

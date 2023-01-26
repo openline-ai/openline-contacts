@@ -22,10 +22,10 @@ import {CardHeading} from "../../atoms/cardHeading";
 
 export const DetailsPageLayout = () => {
     const client =  useGraphQLClient();
-    const [reload, setReload] = useState(false);
     const router = useRouter();
 
     const [reloadDetails, setReloadDetails] = useState(false);
+    const [reloadNotes, setReloadNotes] = useState(false);
     const [contact, setContact] = useState({
         definitionId: undefined,
         title: '',
@@ -112,9 +112,11 @@ export const DetailsPageLayout = () => {
                         note={{
                             id: undefined,
                             html: ''
+
                         }}
-                        notifyChanged={() => setReload(true)}
+                        notifyChanged={() => setReloadNotes(true)}
                         contactId={router.query?.id as string}
+
                     />
                 )}
 
@@ -124,7 +126,11 @@ export const DetailsPageLayout = () => {
                 {router.query.id && router.query.id !== 'new' && (
                     <article>
                         <CardHeading>Timeline</CardHeading>
-                        <ContactHistory contactId={router.query.id}/>
+                        <ContactHistory
+                            contactId={router.query.id}
+                            reload={reloadNotes}
+                            setReload={setReloadNotes}
+                        />
                     </article>
                 )}
             </section>

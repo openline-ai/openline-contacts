@@ -14,6 +14,7 @@ import {
 import {Skeleton} from "primereact/skeleton";
 import {ConversationTimelineItem, EmailTimelineItem, NoteTimelineItem} from "../molecules";
 import {TimelineItem} from "../atoms/timeline-item";
+import {Timeline} from "../organisms";
 
 
 export const OrganizationHistory = ({contacts}: {contacts: any}) => {
@@ -59,73 +60,14 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
         })
     }
 
-    if (loadingNotes || loadingConversations) {
-      return (
-          <div className="flex flex-column mt-4">
-            <Skeleton className="mb-3" />
-            <Skeleton  className="mb-3"/>
-            <Skeleton  className="mb-3"/>
-            <Skeleton  className="mb-3"/>
-            <Skeleton/>
-        </div>
-      )
-    }
-
-    if(!loadingNotes && !loadingConversations && historyItems.length === 0 && historyNotes.length === 0) {
-        return (
-            <p className="text-gray-600 font-italic mt-4">
-                No activity logged yet
-            </p>
-        )
-    }
-
 
     return (
         <div className="mt-5">
-            <div className="text-sm text-gray-500 flex justify-content-center mb-1"> Now </div>
-            {
-                getSortedItems(historyItems, historyNotes).map((e: any, index) => (
-                    <div key={e.id}>
-                        {e.type === "NOTE" && (
-                            // <TimelineItem createdAt={e.createdAt}>
-                            //     <NoteTimelineItem createdAt={e.createdAt} createdBy={e.createdBy} noteContent={e.html}  />
-                            //
-                            // </TimelineItem>
-                            <TimelineItem createdAt={new Date(new Date().setDate(new Date().getDate() - (index + 1))).toISOString()} >
-                                <EmailTimelineItem emailContent={e.html} sender="jane.doe@acme.com" subject="Follow up" recipients={['adam.smith@org.com']}/>
-                            </TimelineItem>
-                        )}
 
-                        {e.type === "CONVERSATION" && (
-                            <div  className={`flex align-items-center w-full mt-4 mb-3`}>
+            <Timeline loading={loadingNotes || loadingConversations}
+                      noActivity={!loadingNotes && !loadingConversations && historyItems.length === 0 && historyNotes.length === 0}
+                      loggedActivities={getSortedItems(historyItems, historyNotes)} />
 
-                                <div className="flex flex-grow-0">
-                                    <FontAwesomeIcon icon={faCommentDots} className="mr-2" style={{fontSize: '1.2rem', color: `var(--gray-color-5)`}}/>
-                                </div>
-
-                                <div className="flex flex-grow-1 p-2 bg-white">
-
-                                    <div className="flex flex-grow-1 align-items-center">
-
-                                        <div className="">
-                                            <Link href={`${process.env.OASIS_GUI_PATH}/feed?id=${e.id}`} target="_blank" className='cta'>Show more details...</Link>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex flex-grow-0 ">
-                                        {e.user?.firstName} {e.user?.lastName}
-                                    </div>
-                                    <div className={styles.noteTime}>
-                                        <Moment className="text-sm text-gray-600" date={e.startedAt} format={'d MMM yy'}>{e.createdAt}</Moment>
-                                    </div>
-                                </div>
-                            </div>
-
-                        )}
-                    </div>
-
-                ))
-            }
         </div>
     )
 }

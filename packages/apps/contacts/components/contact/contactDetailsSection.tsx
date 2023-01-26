@@ -55,7 +55,6 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
 
     useEffect(() => {
         if(editDetails && router.query.id !== 'new') {
-            console.log('here', contact.firstName)
             reset({
                 title: contact.title || '',
                 firstName: contact.firstName || '',
@@ -82,7 +81,6 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         } else {
-            console.log('update')
             UpdateContact(client, {id: contactId, ...data}).then((savedContact: Contact) => {
                 setEditDetails(false)
                 setReloadDetails(true)
@@ -182,7 +180,6 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
         } as CustomFieldTemplateProps;
     }
 
-    console.log('contactTypeList',contactTypeList)
 
     return (
         <div style={{width: '100%'}}>

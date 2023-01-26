@@ -74,8 +74,6 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
         }`
 
         client.request(query, {id: id}).then((response: any) => {
-            console.log('🏷️[Fn:r][L:75]: response.organization(): '
-                , response.organization);
             response.organization ? resolve(response.organization) : reject(response.errors);
         }).catch(reason => {
             reject(reason);

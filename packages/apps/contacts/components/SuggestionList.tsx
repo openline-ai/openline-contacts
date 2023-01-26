@@ -21,7 +21,6 @@ const SuggestionList: NextPage<SuggestionListProps> = (props: SuggestionListProp
     useEffect(() => {
         if (props.currentValue.length > 0) {
             props.getSuggestions(props.currentValue, (s: _Suggestion[]) => {
-                console.log("Setting susgestions: " + JSON.stringify(s));
                 setSuggestions(s);
                 setShowSuggestions(true);
             });
