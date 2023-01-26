@@ -99,7 +99,10 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
                                    field: 'contactType',
                                    label: 'Type',
                                    template: (c: any) => {
-                                       return <div key={c.id} className='capitalise'>{c.contactType ? c.contactType.name.toLowerCase().split("_").join(" ") : ''}</div>
+                                       return <div key={c.id}
+                                                   className='capitalise'>
+                                                        {c.contactType ? c.contactType.name.toLowerCase().split("_").join(" ") : ''}
+                                              </div>
                                    }
                                },
                            ]}

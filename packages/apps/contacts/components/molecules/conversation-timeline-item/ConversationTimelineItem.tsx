@@ -168,6 +168,8 @@ export const ConversationTimelineItem: React.FC<Props> = (
     const timeFromLastTimestamp = new Date(1970, 0, 1)
         .setSeconds(feedInitiator.lastTimestamp?.seconds);
 
+
+
     return (
         <div className='flex flex-column h-full w-full'>
             <div className="flex-grow-1 w-full">
@@ -193,24 +195,28 @@ export const ConversationTimelineItem: React.FC<Props> = (
                     {   // email
                         !loadingMessages &&
                         messages.filter(msg => msg.type === 1).map((msg: ConversationItem, index: number) => {
-                            const isLast = messages.filter(msg => msg.type === 1).length -1 === index
-
-
+                            const emailData = JSON.parse(msg.content)
                             return (
-                                <TimelineItem last={false} createdAt={timeFromLastTimestamp} key={msg.id}>
+                                <TimelineItem last={false}
+                                              createdAt={timeFromLastTimestamp}
+                                              style={{paddingBottom: '8px'}}
+                                              key={msg.id}
+
+
+                                >
                                     <EmailTimelineItem
-                                        key={msg.id}
-                                        emailContent={(msg?.content || '').replace(`{ "html": "`, "")}
-                                        sender={msg?.senderUserName || 'Unknown'}
-                                        recipients={""}
-                                        subject={""}
-                              />
-                            </TimelineItem>
+                                        emailContent={emailData.html}
+                                        sender={emailData.from || 'Unknown'}
+                                        recipients={emailData.to}
+                                        subject={emailData.subject}
+                                    />
+                                </TimelineItem>
                             )
+
                         })
                     }
-                    <span className="text-sm "> { `Source: ${source?.toLowerCase() || 'unknown'}`}</span>
                 </div>
+
                 <TimelineItem last={false} createdAt={createdAt || timeFromLastTimestamp}>
                     {   // rest
                         !loadingMessages &&

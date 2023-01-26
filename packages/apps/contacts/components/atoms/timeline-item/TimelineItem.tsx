@@ -6,9 +6,11 @@ interface Props  {
     children: React.ReactNode;
     createdAt?: string | number
     last?: boolean
+    style?: any
+
 }
 
-export const TimelineItem: React.FC<Props> = ({ children,  createdAt, last}) => {
+export const TimelineItem: React.FC<Props> = ({ children,  createdAt, last, ...rest}) => {
 
     return (
         <div className={`${styles.timelineItem} ${last ? styles.last : ''}`}>
@@ -21,7 +23,7 @@ export const TimelineItem: React.FC<Props> = ({ children,  createdAt, last}) => 
                 </>
             ) : 'Date not available'}
             <span className={styles.timelineLine}/>
-            <div className={styles.content}>
+            <div className={styles.content} {...rest}>
                 {children}
             </div>
 

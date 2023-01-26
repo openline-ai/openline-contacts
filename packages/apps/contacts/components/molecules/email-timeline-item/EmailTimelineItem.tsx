@@ -6,7 +6,6 @@ interface Props  {
     sender: string
     recipients: string | Array<string>
     subject: string
-
 }
 
 export const EmailTimelineItem: React.FC<Props> = (
