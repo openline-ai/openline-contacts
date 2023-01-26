@@ -196,6 +196,8 @@ export const ConversationTimelineItem: React.FC<Props> = (
                         !loadingMessages &&
                         messages.filter(msg => msg.type === 1).map((msg: ConversationItem, index: number) => {
                             const emailData = JSON.parse(msg.content)
+                            const date =  new Date(1970, 0, 1)
+                                .setSeconds(msg?.time?.seconds) || timeFromLastTimestamp;
                             return (
                                 <TimelineItem last={false}
                                               createdAt={timeFromLastTimestamp}
