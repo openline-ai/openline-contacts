@@ -2,6 +2,7 @@ import Moment from "react-moment";
 import * as React from "react";
 import styles from './message.module.css'
 import {EmailTimelineItem} from "../../molecules";
+import {ConversationItem} from "../../../models/conversation-item";
 interface Props {
     message: any
     feedInitiator: {
@@ -12,7 +13,7 @@ interface Props {
         phoneNumber: string
     }
     date: any
-    previousMessage: any
+    previousMessage: number | null
     index: number
 }
 export const Message = ({message, feedInitiator, date, previousMessage, index}:Props) => {
