@@ -4,8 +4,17 @@ import styles from './details-page-layout.module.scss'
 import {generateGradient} from "./utils";
 import React from "react";
 import {IconButton} from "../../atoms/icon-button";
-import {faEdit, faEnvelope, faMailBulk, faMessage, faPhoneAlt, faShare} from "@fortawesome/free-solid-svg-icons";
+import {
+    faEdit,
+    faEnvelope,
+    faMailBulk,
+    faMessage,
+    faPhoneAlt,
+    faShare,
+    faUser
+} from "@fortawesome/free-solid-svg-icons";
 import {Button, Divider} from "../../atoms";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 interface Props {
     onSetEditMode: (state: boolean) => void
@@ -14,14 +23,17 @@ interface Props {
 export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
 
     const router = useRouter();
+    const userInitials = `${contact?.firstName[0] || ''}${contact?.lastName?.[0] || ''}`
 
-    
+
     return (
             <section className={styles.profileSection}>
                 {router.query.id !== 'new' ? (
                     <>
                         <div className={styles.avatar} style={{background: generateGradient()}}>
-                            {contact.firstName[0]} {' '} {contact.lastName[0]}
+                            {userInitials.length ? userInitials : (
+                                <FontAwesomeIcon icon={faUser} />
+                            )}
                         </div>
 
 
@@ -32,7 +44,7 @@ export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
                             <div className='flex align-items-center justify-content-between'>
                                 <div className={styles.profileUserData}>
                                     <span>
-                                        {contact.firstName}
+                                        {contact.firstName || 'Unknown'}
                                     </span>
                                         {contact.lastName}
                                 </div>
