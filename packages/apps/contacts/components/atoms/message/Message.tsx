@@ -1,6 +1,7 @@
 import Moment from "react-moment";
 import * as React from "react";
 import styles from './message.module.css'
+import {EmailTimelineItem} from "../../molecules";
 interface Props {
     message: any
     feedInitiator: {
@@ -32,6 +33,8 @@ export const Message = ({message, feedInitiator, date, previousMessage, index}:P
         }
         return "";
     }
+
+
 
     return (
             <>

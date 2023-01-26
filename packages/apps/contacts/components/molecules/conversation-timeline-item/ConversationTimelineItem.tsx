@@ -8,13 +8,16 @@ import useWebSocket from "react-use-websocket";
 import {ConversationItem} from "../../../models/conversation-item";
 import {Skeleton} from "primereact/skeleton";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
+import {EmailTimelineItem} from "../email-timeline-item";
 interface Props  {
     feedId: string
-
+    source: string
 }
 
+
+
 export const ConversationTimelineItem: React.FC<Props> = (
-    { feedId}
+    { feedId, source}
 ) => {
     const client =  useGraphQLClient()
 
@@ -156,6 +159,29 @@ export const ConversationTimelineItem: React.FC<Props> = (
         setMessages((messageList: any) => [...messageList, newMsg]);
     }
 
+
+    const decodeChannel = (channel: number) => {
+        switch (channel) {
+            case 0:
+                return "Web chat";
+            case 1:
+                return "Email";
+            case 2:
+                return "WhatsApp";
+            case 3:
+                return "Facebook";
+            case 4:
+                return "Twitter";
+            case 5:
+                return "Phone call";
+        }
+        return "";
+    }
+
+
+    console.log('🏷️ ----- source: '
+        , source);
+
     return (
         <div className='flex flex-column h-full w-full'>
             <div className="flex-grow-1 w-full">
@@ -181,23 +207,44 @@ export const ConversationTimelineItem: React.FC<Props> = (
                     {
                         !loadingMessages &&
                         messages.map((msg: ConversationItem, index: number) => {
-                            const lines = msg.content.split('\n');
+                            const lines = msg?.content.split('\n');
 
                             const filtered: string[] = lines.filter((line: string) => {
-                                return line.indexOf('>') != 0;
+                                return line.indexOf('>') !== 0;
                             });
                             msg.content = filtered.join('\n').trim();
 
-                            const time = new Date(1970, 0, 1).setSeconds(msg.time.seconds);
+                            const time = new Date(1970, 0, 1).setSeconds(msg?.time?.seconds);
+                            switch (msg.type) {
+                                // 0 = web chat
+                                // 2 =whats app
+                                case 0:
+                                case 2:
+                                    return <Message key={msg.id}
+                                                    message={msg}
+                                                    feedInitiator={feedInitiator}
+                                                    date={time}
+                                                    previousMessage={messages?.[index - 1]?.direction || null}
+                                                    index={index} />
+                                case 1:
+                                    return <EmailTimelineItem
+                                        emailContent={msg?.content}
+                                        sender={msg?.senderUserName || 'Unknown'}
+                                        recipients={""}
+                                        subject={""}
+                                    />
+                                // case 3:
+                                //     return "Facebook";
+                                // case 4:
+                                //     return "Twitter";
+                                // case 5:
+                                //     return "Phone call";
+                            }
+                            return null;
 
-                            return <Message key={msg.id}
-                                            message={msg}
-                                            feedInitiator={feedInitiator}
-                                            date={time}
-                                            previousMessage={messages?.[index - 1]?.direction || null}
-                                            index={index} />
                         })
                     }
+                    <span className="text-sm "> { `Source: ${source?.toLowerCase() || 'unknown'}`}</span>
                 </div>
             </div>
         </div>
