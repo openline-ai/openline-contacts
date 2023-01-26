@@ -158,6 +158,13 @@ const GridComponent = (props: any) => {
             };
         });
     }
+    const onCustomSaveState = (state:any) => {
+        sessionStorage.setItem(props.gridTitle.toLowerCase(), JSON.stringify(state));
+    }
+    const onCustomRestoreState = () => {
+        // @ts-ignore
+        return JSON.parse(sessionStorage.getItem(props.gridTitle.toLowerCase()));
+    }
 
     return <>
         {
@@ -221,9 +228,22 @@ const GridComponent = (props: any) => {
             </div>
         }
 
-        <DataTable value={data} lazy responsiveLayout="scroll" dataKey="id" size={'normal'}
-                   paginator paginatorTemplate={paginatorTemplate} paginatorLeft={paginatorLeft}
-                   first={lazyParams.first} rows={lazyParams.limit} totalRecords={totalRecords} onPage={onPage} loading={loading}>
+        <DataTable value={data}
+                   lazy
+                   responsiveLayout="scroll"
+                   dataKey="id"
+                   size={'normal'}
+                   paginator
+                   paginatorTemplate={paginatorTemplate} paginatorLeft={paginatorLeft}
+                   first={lazyParams.first}
+                   rows={lazyParams.limit}
+                   customRestoreState={onCustomRestoreState}
+                   totalRecords={totalRecords}
+                   onPage={onPage}
+                   stateStorage="custom"
+                   customSaveState={onCustomSaveState}
+                   loading={loading}>
+
             {
                 columns
                     .filter((c: any) => c.hidden === false)
