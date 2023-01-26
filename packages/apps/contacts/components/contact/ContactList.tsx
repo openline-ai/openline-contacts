@@ -72,11 +72,6 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
                                    label: 'Contact',
                                    template: (c: any) => {
                                        return <div key={c.id} className="cta" onClick={() => onEdit(c.id)}>
-                                           <span>{getEnumLabel(ContactTitleEnum, c.title)}</span>
-                                           {
-                                               c.title &&
-                                               <span className="mr-1"></span>
-                                           }
                                            {
                                                c.firstName &&
                                                <span className="mr-1">{c.firstName} {c.lastName}</span>
