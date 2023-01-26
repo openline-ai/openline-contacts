@@ -36,18 +36,25 @@ export const ConversationTimelineItem: React.FC<Props> = (
         phoneNumber: ''
     });
 
-
-
     const [messages, setMessages] = useState([] as ConversationItem[]);
 
     const [loadingMessages, setLoadingMessages] = useState(false)
-    const [loadingError, setError] = useState(false)
 
     useEffect(() => {
         setLoadingMessages(true);
         axios.get(`/oasis-api/feed/${feedId}`)
             .then(res => {
                 const feedItem = res.data as FeedItem;
+
+            if(feedItem.initiatorType !== 'CONTACT') {
+                setFeedInitiator({
+                    loaded: true,
+                    email: feedItem.initiatorUsername,
+                    firstName: feedItem.initiatorFirstName,
+                    lastName: feedItem.initiatorLastName,
+                    phoneNumber: ''
+                })
+            }
 
             if (feedItem.initiatorType === 'CONTACT') {
 
@@ -84,34 +91,6 @@ export const ConversationTimelineItem: React.FC<Props> = (
                     });
 
                     //TODO move initiator in index
-                } else if (feedItem.initiatorUsername === 'USER') {
-
-                const query = gql`query GetUserById {
-                        user(id: "${feedItem.initiatorUsername}") {
-                            id
-                            firstName
-                            lastName
-                        }
-                    }`
-
-                    client.request(query).then((response: any) => {
-                        if (response.user) {
-                            setFeedInitiator({
-                                loaded: true,
-                                firstName: response.user.firstName,
-                                lastName: response.user.lastName,
-                                email: response.user.emails[0]?.email ?? undefined,
-                                phoneNumber: response.user.phoneNumbers[0]?.e164 ?? undefined //TODO user doesn't have phone in backend
-                            });
-                        } else {
-                            //TODO log on backend
-                            toast.error("There was a problem on our side and we are doing our best to solve it!");
-                        }
-                    }).catch(reason => {
-                        //TODO log on backend
-                        toast.error("There was a problem on our side and we are doing our best to solve it!");
-                    });
-
                 }
 
             }).catch((reason: any) => {
@@ -123,6 +102,7 @@ export const ConversationTimelineItem: React.FC<Props> = (
             axios.get(`/oasis-api/feed/${feedId}/item`)
                 .then(res => {
                     setMessages(res.data ?? []);
+                    setLoadingMessages(false)
                 }).catch((reason: any) => {
                 setLoadingMessages(false)
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
