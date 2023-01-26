@@ -111,7 +111,7 @@ function OrganizationEdit({organisation, onReload, createMode}: {organisation:an
                                         className="mr-3 overflow-hidden text-overflow-ellipsis">{organisation?.description}</span>
                                 </div>
                                 <div className="flex mr-3 mt-3">
-                                    <Link href={organisation?.website || `https://${organisation?.domain}` }
+                                    <Link href={`https://${organisation?.website}` || `https://${organisation?.domain}` }
                                           target="_blank"
                                           className='cta'>
                                         {organisation?.domain}

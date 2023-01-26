@@ -32,14 +32,14 @@ export const Timeline = ({loading, noActivity, loggedActivities}: Props) => {
         )
     }
 
-    const getTimelineItemByTime = (type: string, data:any) => {
+    const getTimelineItemByTime = (type: string, data:any, index:number) => {
         switch (type) {
             case "NOTE":
-                return <NoteTimelineItem noteContent={data.html} createdAt={data.createdAt} />
+                return <TimelineItem last={loggedActivities.length -1 === index} createdAt={data?.createdAt} >
+                            <NoteTimelineItem noteContent={data.html} createdAt={data.createdAt} />
+                        </TimelineItem>
             case "CONVERSATION":
-                return <ConversationTimelineItem feedId={data.id} />
-            case "EMAIL":
-               return <EmailTimelineItem emailContent={data.html} sender="jane.doe@acme.com" subject="Follow up" recipients={['adam.smith@org.com']}/>
+                return <ConversationTimelineItem feedId={data.id} source={data.source} createdAt={data?.createdAt}/>
             // case "CALL":
             //     return <PhoneCallTimelineItem phoneCallParties={data} duration={}/>
             default:
@@ -54,9 +54,7 @@ export const Timeline = ({loading, noActivity, loggedActivities}: Props) => {
             {
                 loggedActivities.map((e: any, index) => (
                     <React.Fragment key={e.id}>
-                        <TimelineItem last={loggedActivities.length -1 === index} createdAt={e.createdAt} >
-                            {getTimelineItemByTime(e.type, e)}
-                        </TimelineItem>
+                            {getTimelineItemByTime(e.type, e, index)}
                     </React.Fragment>
 
                 ))

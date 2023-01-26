@@ -39,7 +39,9 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
             const conversations = response
                 .map((e: { content: any; }) => {return e.content})
                 .flat()
-                .map((e: any) => ({...e, type: "CONVERSATION"}))
+                .map((e: any) => {
+                    return {...e, type: "CONVERSATION"}
+                })
             setHistoryItems(conversations);
             setLoadingConversations(false);
         });

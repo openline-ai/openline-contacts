@@ -8,13 +8,18 @@ import useWebSocket from "react-use-websocket";
 import {ConversationItem} from "../../../models/conversation-item";
 import {Skeleton} from "primereact/skeleton";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
+import {EmailTimelineItem} from "../email-timeline-item";
+import {TimelineItem} from "../../atoms/timeline-item";
 interface Props  {
     feedId: string
-
+    source: string
+    createdAt:any
 }
 
+
+
 export const ConversationTimelineItem: React.FC<Props> = (
-    { feedId}
+    { feedId, source, createdAt}
 ) => {
     const client =  useGraphQLClient()
 
@@ -25,26 +30,35 @@ export const ConversationTimelineItem: React.FC<Props> = (
         shouldReconnect: (closeEvent) => true,
     })
 
-    const [feedInitiator, setFeedInitiator] = useState({
+    const [feedInitiator, setFeedInitiator] = useState<any>({
         loaded: false,
         email: '',
         firstName: '',
         lastName: '',
-        phoneNumber: ''
+        phoneNumber: '',
+        lastTimestamp: null
     });
-
-
 
     const [messages, setMessages] = useState([] as ConversationItem[]);
 
     const [loadingMessages, setLoadingMessages] = useState(false)
-    const [loadingError, setError] = useState(false)
 
     useEffect(() => {
         setLoadingMessages(true);
         axios.get(`/oasis-api/feed/${feedId}`)
             .then(res => {
                 const feedItem = res.data as FeedItem;
+
+            if(feedItem.initiatorType !== 'CONTACT') {
+                setFeedInitiator({
+                    loaded: true,
+                    email: feedItem.initiatorUsername,
+                    firstName: feedItem.initiatorFirstName,
+                    lastName: feedItem.initiatorLastName,
+                    phoneNumber: '',
+                    lastTimestamp: feedItem.lastTimestamp
+                })
+            }
 
             if (feedItem.initiatorType === 'CONTACT') {
 
@@ -69,7 +83,8 @@ export const ConversationTimelineItem: React.FC<Props> = (
                                 firstName: response.contact_ByEmail.firstName,
                                 lastName: response.contact_ByEmail.lastName,
                                 email: response.contact_ByEmail.emails[0]?.email ?? undefined,
-                                phoneNumber: response.contact_ByEmail.phoneNumbers[0]?.e164 ?? undefined
+                                phoneNumber: response.contact_ByEmail.phoneNumbers[0]?.e164 ?? undefined,
+                                lastTimestamp: feedItem.lastTimestamp
                             });
                         } else {
                             //todo log on backend
@@ -81,34 +96,6 @@ export const ConversationTimelineItem: React.FC<Props> = (
                     });
 
                     //TODO move initiator in index
-                } else if (feedItem.initiatorUsername === 'USER') {
-
-                const query = gql`query GetUserById {
-                        user(id: "${feedItem.initiatorUsername}") {
-                            id
-                            firstName
-                            lastName
-                        }
-                    }`
-
-                    client.request(query).then((response: any) => {
-                        if (response.user) {
-                            setFeedInitiator({
-                                loaded: true,
-                                firstName: response.user.firstName,
-                                lastName: response.user.lastName,
-                                email: response.user.emails[0]?.email ?? undefined,
-                                phoneNumber: response.user.phoneNumbers[0]?.e164 ?? undefined //TODO user doesn't have phone in backend
-                            });
-                        } else {
-                            //TODO log on backend
-                            toast.error("There was a problem on our side and we are doing our best to solve it!");
-                        }
-                    }).catch(reason => {
-                        //TODO log on backend
-                        toast.error("There was a problem on our side and we are doing our best to solve it!");
-                    });
-
                 }
 
             }).catch((reason: any) => {
@@ -120,6 +107,7 @@ export const ConversationTimelineItem: React.FC<Props> = (
             axios.get(`/oasis-api/feed/${feedId}/item`)
                 .then(res => {
                     setMessages(res.data ?? []);
+                    setLoadingMessages(false)
                 }).catch((reason: any) => {
                 setLoadingMessages(false)
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
@@ -156,6 +144,32 @@ export const ConversationTimelineItem: React.FC<Props> = (
         setMessages((messageList: any) => [...messageList, newMsg]);
     }
 
+
+    const decodeChannel = (channel: number) => {
+        switch (channel) {
+            case 0:
+                return "Web chat";
+            case 1:
+                return "Email";
+            case 2:
+                return "WhatsApp";
+            case 3:
+                return "Facebook";
+            case 4:
+                return "Twitter";
+            case 5:
+                return "Phone call";
+        }
+        return "";
+    }
+
+
+
+    const timeFromLastTimestamp = new Date(1970, 0, 1)
+        .setSeconds(feedInitiator.lastTimestamp?.seconds);
+
+
+
     return (
         <div className='flex flex-column h-full w-full'>
             <div className="flex-grow-1 w-full">
@@ -178,17 +192,45 @@ export const ConversationTimelineItem: React.FC<Props> = (
                 }
 
                 <div className="flex flex-column">
-                    {
+                    {   // email
                         !loadingMessages &&
-                        messages.map((msg: ConversationItem, index: number) => {
-                            const lines = msg.content.split('\n');
+                        messages.filter(msg => msg.type === 1).map((msg: ConversationItem, index: number) => {
+                            const emailData = JSON.parse(msg.content)
+                            const date =  new Date(1970, 0, 1)
+                                .setSeconds(msg?.time?.seconds) || timeFromLastTimestamp;
+                            return (
+                                <TimelineItem last={false}
+                                              createdAt={timeFromLastTimestamp}
+                                              style={{paddingBottom: '8px'}}
+                                              key={msg.id}
+
+
+                                >
+                                    <EmailTimelineItem
+                                        emailContent={emailData.html}
+                                        sender={emailData.from || 'Unknown'}
+                                        recipients={emailData.to}
+                                        subject={emailData.subject}
+                                    />
+                                </TimelineItem>
+                            )
+
+                        })
+                    }
+                </div>
+
+                <TimelineItem last={false} createdAt={createdAt || timeFromLastTimestamp}>
+                    {   // rest
+                        !loadingMessages &&
+                        messages.filter(msg => msg.type !== 1).map((msg: ConversationItem, index: number) => {
+                            const lines = msg?.content.split('\n');
 
                             const filtered: string[] = lines.filter((line: string) => {
-                                return line.indexOf('>') != 0;
+                                return line.indexOf('>') !== 0;
                             });
                             msg.content = filtered.join('\n').trim();
 
-                            const time = new Date(1970, 0, 1).setSeconds(msg.time.seconds);
+                            const time = new Date(1970, 0, 1).setSeconds(msg?.time?.seconds);
 
                             return <Message key={msg.id}
                                             message={msg}
@@ -198,7 +240,9 @@ export const ConversationTimelineItem: React.FC<Props> = (
                                             index={index} />
                         })
                     }
-                </div>
+                    <span className="text-sm "> { `Source: ${source?.toLowerCase() || 'unknown'}`}</span>
+                </TimelineItem>
+
             </div>
         </div>
     );

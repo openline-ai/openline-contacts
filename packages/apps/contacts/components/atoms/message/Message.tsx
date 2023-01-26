@@ -1,6 +1,8 @@
 import Moment from "react-moment";
 import * as React from "react";
 import styles from './message.module.css'
+import {EmailTimelineItem} from "../../molecules";
+import {ConversationItem} from "../../../models/conversation-item";
 interface Props {
     message: any
     feedInitiator: {
@@ -11,7 +13,7 @@ interface Props {
         phoneNumber: string
     }
     date: any
-    previousMessage: any
+    previousMessage: number | null
     index: number
 }
 export const Message = ({message, feedInitiator, date, previousMessage, index}:Props) => {
@@ -32,6 +34,8 @@ export const Message = ({message, feedInitiator, date, previousMessage, index}:P
         }
         return "";
     }
+
+
 
     return (
             <>
@@ -64,8 +68,13 @@ export const Message = ({message, feedInitiator, date, previousMessage, index}:P
                                         <span className="flex-grow-1"></span>
                                         <span
                                                 className="text-gray-600 mr-2">{decodeChannel(message.type)}</span>
-                                        <Moment className="text-sm text-gray-600" date={date}
-                                                format={'HH:mm'}></Moment>
+                                        {
+                                            date && (
+                                                <Moment className="text-sm text-gray-600" date={date}
+                                                        format={'HH:mm'}></Moment>
+                                            )
+                                        }
+
                                     </div>
                                 </div>
                             </div>
@@ -76,7 +85,7 @@ export const Message = ({message, feedInitiator, date, previousMessage, index}:P
                         <>
 
                             {
-                                    (index === 0 || (index > 0 && previousMessage !== message.direction)) &&
+                                    (index === 0 || (index > 0 && previousMessage !== message?.direction)) &&
                                     <div className="w-full flex">
                                         <div className="flex-grow-1"></div>
                                         {/*<div className="flex-grow-0 mb-1 pr-3">To be added</div>*/}
@@ -97,8 +106,12 @@ export const Message = ({message, feedInitiator, date, previousMessage, index}:P
                                         <span className="flex-grow-1"></span>
                                         <span
                                                 className="text-gray-600 mr-2">{decodeChannel(message.type)}</span>
-                                        <Moment className="text-sm text-gray-600" date={date}
-                                                format={'HH:mm'}></Moment>
+                                        {
+                                            date && (
+                                                <Moment className="text-sm text-gray-600" date={date}
+                                                        format={'HH:mm'}></Moment>
+                                            )
+                                        }
                                     </div>
                                 </div>
                             </div>
