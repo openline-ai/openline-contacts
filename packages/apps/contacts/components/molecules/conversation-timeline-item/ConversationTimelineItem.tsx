@@ -9,15 +9,17 @@ import {ConversationItem} from "../../../models/conversation-item";
 import {Skeleton} from "primereact/skeleton";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
 import {EmailTimelineItem} from "../email-timeline-item";
+import {TimelineItem} from "../../atoms/timeline-item";
 interface Props  {
     feedId: string
     source: string
+    createdAt:any
 }
 
 
 
 export const ConversationTimelineItem: React.FC<Props> = (
-    { feedId, source}
+    { feedId, source, createdAt}
 ) => {
     const client =  useGraphQLClient()
 
@@ -28,12 +30,13 @@ export const ConversationTimelineItem: React.FC<Props> = (
         shouldReconnect: (closeEvent) => true,
     })
 
-    const [feedInitiator, setFeedInitiator] = useState({
+    const [feedInitiator, setFeedInitiator] = useState<any>({
         loaded: false,
         email: '',
         firstName: '',
         lastName: '',
-        phoneNumber: ''
+        phoneNumber: '',
+        lastTimestamp: null
     });
 
     const [messages, setMessages] = useState([] as ConversationItem[]);
@@ -52,7 +55,8 @@ export const ConversationTimelineItem: React.FC<Props> = (
                     email: feedItem.initiatorUsername,
                     firstName: feedItem.initiatorFirstName,
                     lastName: feedItem.initiatorLastName,
-                    phoneNumber: ''
+                    phoneNumber: '',
+                    lastTimestamp: feedItem.lastTimestamp
                 })
             }
 
@@ -79,7 +83,8 @@ export const ConversationTimelineItem: React.FC<Props> = (
                                 firstName: response.contact_ByEmail.firstName,
                                 lastName: response.contact_ByEmail.lastName,
                                 email: response.contact_ByEmail.emails[0]?.email ?? undefined,
-                                phoneNumber: response.contact_ByEmail.phoneNumbers[0]?.e164 ?? undefined
+                                phoneNumber: response.contact_ByEmail.phoneNumbers[0]?.e164 ?? undefined,
+                                lastTimestamp: feedItem.lastTimestamp
                             });
                         } else {
                             //todo log on backend
@@ -159,8 +164,9 @@ export const ConversationTimelineItem: React.FC<Props> = (
     }
 
 
-    console.log('🏷️ ----- source: '
-        , source);
+
+    const timeFromLastTimestamp = new Date(1970, 0, 1)
+        .setSeconds(feedInitiator.lastTimestamp?.seconds);
 
     return (
         <div className='flex flex-column h-full w-full'>
@@ -184,9 +190,31 @@ export const ConversationTimelineItem: React.FC<Props> = (
                 }
 
                 <div className="flex flex-column">
-                    {
+                    {   // email
                         !loadingMessages &&
-                        messages.map((msg: ConversationItem, index: number) => {
+                        messages.filter(msg => msg.type === 1).map((msg: ConversationItem, index: number) => {
+                            const isLast = messages.filter(msg => msg.type === 1).length -1 === index
+
+
+                            return (
+                                <TimelineItem last={false} createdAt={timeFromLastTimestamp} key={msg.id}>
+                                    <EmailTimelineItem
+                                        key={msg.id}
+                                        emailContent={(msg?.content || '').replace(`{ "html": "`, "")}
+                                        sender={msg?.senderUserName || 'Unknown'}
+                                        recipients={""}
+                                        subject={""}
+                              />
+                            </TimelineItem>
+                            )
+                        })
+                    }
+                    <span className="text-sm "> { `Source: ${source?.toLowerCase() || 'unknown'}`}</span>
+                </div>
+                <TimelineItem last={false} createdAt={createdAt || timeFromLastTimestamp}>
+                    {   // rest
+                        !loadingMessages &&
+                        messages.filter(msg => msg.type !== 1).map((msg: ConversationItem, index: number) => {
                             const lines = msg?.content.split('\n');
 
                             const filtered: string[] = lines.filter((line: string) => {
@@ -195,37 +223,18 @@ export const ConversationTimelineItem: React.FC<Props> = (
                             msg.content = filtered.join('\n').trim();
 
                             const time = new Date(1970, 0, 1).setSeconds(msg?.time?.seconds);
-                            switch (msg.type) {
-                                // 0 = web chat
-                                // 2 =whats app
-                                case 0:
-                                case 2:
-                                    return <Message key={msg.id}
-                                                    message={msg}
-                                                    feedInitiator={feedInitiator}
-                                                    date={time}
-                                                    previousMessage={messages?.[index - 1]?.direction || null}
-                                                    index={index} />
-                                case 1:
-                                    return <EmailTimelineItem
-                                        emailContent={msg?.content}
-                                        sender={msg?.senderUserName || 'Unknown'}
-                                        recipients={""}
-                                        subject={""}
-                                    />
-                                // case 3:
-                                //     return "Facebook";
-                                // case 4:
-                                //     return "Twitter";
-                                // case 5:
-                                //     return "Phone call";
-                            }
-                            return null;
 
+                            return <Message key={msg.id}
+                                            message={msg}
+                                            feedInitiator={feedInitiator}
+                                            date={time}
+                                            previousMessage={messages?.[index - 1]?.direction || null}
+                                            index={index} />
                         })
                     }
                     <span className="text-sm "> { `Source: ${source?.toLowerCase() || 'unknown'}`}</span>
-                </div>
+                </TimelineItem>
+
             </div>
         </div>
     );

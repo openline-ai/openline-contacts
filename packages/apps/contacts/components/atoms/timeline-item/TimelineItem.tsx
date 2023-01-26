@@ -4,7 +4,7 @@ import Moment from "react-moment";
 import ReactTimeAgo from "react-time-ago";
 interface Props  {
     children: React.ReactNode;
-    createdAt?: string
+    createdAt?: string | number
     last?: boolean
 }
 

@@ -33,7 +33,7 @@
   overflow: hidden;
   pointer-events: none;
 
-  &:after {
+  &.eclipse:after {
     content: '';
     position: absolute;
     left: 0px;
@@ -57,7 +57,7 @@
 
   justify-content: flex-end;
   position:absolute;
-  bottom: -10px;
+  bottom: 0px;
   right: 0;
 }
 .stamp {
