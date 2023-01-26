@@ -7,8 +7,6 @@ const nextConfig = {
   },
   env: {
     OASIS_GUI_PATH: process.env.OASIS_GUI_PATH,
-    OASIS_API_KEY: process.env.OASIS_API_KEY,
-    NEXT_PUBLIC_OASIS_API_PATH: process.env.NEXT_PUBLIC_OASIS_API_PATH,
 
     ORY_SDK_URL: process.env.ORY_SDK_URL,
 
