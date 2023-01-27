@@ -64,6 +64,7 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
 
             <GridComponent gridTitle="Contacts"
                            queryData={(params: any) => loadData(params)}
+                           globalFilterFields={["FIRST_NAME", "TITLE", "LAST_NAME"]}
                            columns={[
                                {
                                    editLink: true,

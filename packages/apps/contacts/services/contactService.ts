@@ -158,7 +158,7 @@ export function CreateContact(client: GraphQLClient, data: any): Promise<Contact
 export function UpdateContact(client: GraphQLClient, data: any): Promise<Contact> {
     return new Promise((resolve, reject) => {
 
-        const query = gql`mutation CreateContact($contact: ContactUpdateInput!) {
+        const query = gql`mutation UpdateContact($contact: ContactUpdateInput!) {
             contact_Update(input: $contact) {
                 id
             }

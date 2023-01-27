@@ -210,6 +210,8 @@ export const ConversationTimelineItem: React.FC<Props> = (
                                         emailContent={emailData.html}
                                         sender={emailData.from || 'Unknown'}
                                         recipients={emailData.to}
+                                        cc={emailData?.cc}
+                                        bcc={emailData?.bcc}
                                         subject={emailData.subject}
                                     />
                                 </TimelineItem>

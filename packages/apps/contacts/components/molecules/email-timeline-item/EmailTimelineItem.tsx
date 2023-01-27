@@ -5,36 +5,76 @@ interface Props  {
     emailContent: string
     sender: string
     recipients: string | Array<string>
+    cc?: string | Array<string>
+    bcc?: string | Array<string>
     subject: string
 }
 
 export const EmailTimelineItem: React.FC<Props> = (
-    { emailContent, sender,recipients, subject}
+    { emailContent, sender,recipients, subject, cc, bcc}
 ) => {
     const [expanded, toggleExpanded] = useState(false)
 
     return (
         <article className={`${styles.emailContainer}`}>
                 <div className={styles.emailData}>
-                    <div className="flex">
-                        <div className={styles.emailDataColumn}>
-                            <span className={styles.emailParty}>From:</span>
-                            <span className={styles.emailParty}>To:</span>
-                            <span className={styles.emailParty}>Subject:</span>
-                        </div>
-                        <div className={styles.emailDataColumn}>
-                            <span>{sender}</span>
-                            <div>
-                                {typeof recipients === "string" ? recipients : recipients.map((recipient) => (
-                                    <span className={styles.emailRecipient} key={recipient}>
-                                    {recipient}
-                                </span>
-                                ))}
-                            </div>
-                            <span>{subject}</span>
-                        </div>
-                    </div>
+                        <table className={styles.emailDataTable}>
+                            <tr>
+                                <th className={styles.emailParty}>From:</th>
+                                <td>{sender}</td>
+                            </tr>
+                            <tr>
+                                <th className={styles.emailParty}>To:</th>
+                                <td>
+                                    {
+                                        <div className={styles.emailRecipients}>
+                                            {typeof recipients === "string" ? recipients : recipients.map((recipient) => (
+                                                <span className={styles.emailRecipient} key={recipient}>
+                                                    {recipient}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
 
+                            {!!cc?.length && (
+                                <tr>
+                                    <th className={styles.emailParty}>CC:</th>
+                                    <td>
+                                        {
+                                            <div className={styles.emailRecipients}>
+                                                {typeof cc === "string" ? cc : cc.map((recipient) => (
+                                                    <span className={styles.emailRecipient} key={recipient}>
+                                                    {recipient}
+                                                </span>
+                                                ))}
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            )}
+                            {!!bcc?.length && (
+                                <tr>
+                                    <th className={styles.emailParty}>BCC:</th>
+                                    <td>
+                                        {
+                                            <div className={styles.emailRecipients}>
+                                                {typeof bcc === "string" ? bcc : bcc.map((recipient) => (
+                                                    <span className={styles.emailRecipient} key={recipient}>
+                                                    {recipient}
+                                                </span>
+                                                ))}
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            )}
+                            <tr>
+                                <th>Subject:</th>
+                                <td>{subject}</td>
+                            </tr>
+                        </table>
 
                     <div className={styles.stamp}>
                         <div/>

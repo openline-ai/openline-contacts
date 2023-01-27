@@ -6,6 +6,7 @@ export type Filter = {
     property: string;
     value: string;
     operation: string;
+    condition: "OR" | "AND"
 }
 export type Sort = {
     by: string;
