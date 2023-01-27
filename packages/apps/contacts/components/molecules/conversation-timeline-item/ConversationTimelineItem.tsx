@@ -168,7 +168,36 @@ export const ConversationTimelineItem: React.FC<Props> = (
     const timeFromLastTimestamp = new Date(1970, 0, 1)
         .setSeconds(feedInitiator.lastTimestamp?.seconds);
 
+    const renderMessages = (filteredMessages: Array<ConversationItem>) => {
+        if(filteredMessages.some(msg => msg.type === 1)) {
+            return null
+        }
+        return (
+            <TimelineItem last={false} createdAt={createdAt || timeFromLastTimestamp}>
+            {   // rest
+                !loadingMessages &&
+                messages.filter(msg => msg.type !== 1).map((msg: ConversationItem, index: number) => {
+                    const lines = msg?.content.split('\n');
 
+                    const filtered: string[] = lines.filter((line: string) => {
+                        return line.indexOf('>') !== 0;
+                    });
+                    msg.content = filtered.join('\n').trim();
+
+                    const time = new Date(1970, 0, 1).setSeconds(msg?.time?.seconds);
+
+                    return <Message key={msg.id}
+                                    message={msg}
+                                    feedInitiator={feedInitiator}
+                                    date={time}
+                                    previousMessage={messages?.[index - 1]?.direction || null}
+                                    index={index} />
+                })
+            }
+            <span className="text-sm "> { `Source: ${source?.toLowerCase() || 'unknown'}`}</span>
+        </TimelineItem>
+        )
+    }
 
     return (
         <div className='flex flex-column h-full w-full'>
@@ -221,29 +250,13 @@ export const ConversationTimelineItem: React.FC<Props> = (
                     }
                 </div>
 
-                <TimelineItem last={false} createdAt={createdAt || timeFromLastTimestamp}>
-                    {   // rest
-                        !loadingMessages &&
-                        messages.filter(msg => msg.type !== 1).map((msg: ConversationItem, index: number) => {
-                            const lines = msg?.content.split('\n');
 
-                            const filtered: string[] = lines.filter((line: string) => {
-                                return line.indexOf('>') !== 0;
-                            });
-                            msg.content = filtered.join('\n').trim();
+                {
+                    renderMessages(messages.filter(msg => msg.type !== 1))
+                }
 
-                            const time = new Date(1970, 0, 1).setSeconds(msg?.time?.seconds);
 
-                            return <Message key={msg.id}
-                                            message={msg}
-                                            feedInitiator={feedInitiator}
-                                            date={time}
-                                            previousMessage={messages?.[index - 1]?.direction || null}
-                                            index={index} />
-                        })
-                    }
-                    <span className="text-sm "> { `Source: ${source?.toLowerCase() || 'unknown'}`}</span>
-                </TimelineItem>
+
 
             </div>
         </div>
