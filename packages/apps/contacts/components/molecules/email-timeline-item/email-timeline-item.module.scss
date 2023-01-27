@@ -63,6 +63,7 @@
 }
 .stamp {
   width: 36px;
+  min-width: 36px;
   height: 43px;
   display: inline-block;
   padding: 4px;
@@ -95,4 +96,22 @@
     height: 100%;
     background: white;
   }
+}
+
+.emailRecipients {
+  display: flex;
+  flex-wrap: wrap;
+
+  & span:not(:last-of-type) {
+    margin-right: 4px;
+
+    &:after {
+      content: ',';
+
+    }
+  }
+}
+
+.emailDataTable {
+  border: none;
 }
