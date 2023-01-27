@@ -35,6 +35,7 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
                 return GetContactNotes(client, (id as string), {page: 0, limit: 99999})
         })
 
+
         Promise.all(requestsConversations).then((response: any) => {
             const conversations = response
                 .map((e: { content: any; }) => {return e.content})
@@ -42,6 +43,12 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
                 .map((e: any) => {
                     return {...e, type: "CONVERSATION"}
                 })
+                // filter out duplicates - needed because multiple contacts might be party of the same conversation
+                .filter(
+                    (conv1: any, i: number, a: any) => a
+                        .findIndex( (conv:any) => (conv.id === conv1.id)) === i
+                )
+
             setHistoryItems(conversations);
             setLoadingConversations(false);
         });
