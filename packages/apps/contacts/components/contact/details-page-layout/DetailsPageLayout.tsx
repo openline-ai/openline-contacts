@@ -1,7 +1,6 @@
 import {useRouter} from "next/router";
 import "@openline-ai/openline-web-chat/dist/esm/index.css"
 import styles from './details-page-layout.module.scss'
-import {GraphQLClient} from "graphql-request";
 import React, {useEffect, useState} from "react";
 import {GetContactTypes} from "../../../services/contactTypeService";
 import {Contact, ContactType} from "../../../models/contact";
@@ -10,7 +9,6 @@ import {GetContactDetails} from "../../../services/contactService";
 import {ProfileLayout} from "./ProfileLayout";
 import ContactCommunicationSection from "../contactChannels";
 import ContactHistory from "../contactHistory";
-import ContactNotes from "../note/contactNotes";
 import ContactNoteModalTemplate from "../note/contactNoteModalTemplate";
 import ContactDetailsSection from "../contactDetailsSection";
 import {Divider} from "../../atoms";
@@ -28,22 +26,24 @@ export const DetailsPageLayout = () => {
     const [reloadNotes, setReloadNotes] = useState(false);
     const [contact, setContact] = useState({
         definitionId: undefined,
-        title: '',
+        title: undefined,
         firstName: '',
         lastName: '',
         ownerId: undefined,
         ownerFullName: '',
         contactTypeId: undefined,
-        contactTypeName: ''
+        contactTypeName: '',
+        label: "",
     }) as any;
 
 
     const [contactTypeList, setContactTypeList] = useState([] as any);
     const [editDetails, setEditDetails] = useState(false);
     const getContactObjectFromResponse = (contact: Contact) => {
+
         return {
             id: contact.id,
-            title: contact.title,
+            title: contact.title || undefined,
             firstName: contact.firstName,
             lastName: contact.lastName,
             ownerId: contact.owner?.id ?? undefined,
@@ -82,8 +82,6 @@ export const DetailsPageLayout = () => {
 
     }, [router.query.id, reloadDetails]);
 
-
-    // EDITOR
     return (
         <div className={styles.pageWrapper}>
             <ProfileLayout
