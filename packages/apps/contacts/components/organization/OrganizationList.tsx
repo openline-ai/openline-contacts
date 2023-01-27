@@ -3,7 +3,6 @@ import {useRouter} from "next/router";
 import GridComponent from "../../components/generic/GridComponent";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPlus, faWindowRestore} from "@fortawesome/free-solid-svg-icons";
-import {GraphQLClient} from "graphql-request";
 import {PaginatedRequest, PaginatedResponse} from "../../utils/pagination";
 import {toast} from "react-toastify";
 import {GetOrganizations} from "../../services/organizationService";
@@ -36,6 +35,7 @@ export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScree
     return (
         <FullScreenModeLayout fullScreenMode={fullScreenMode}>
             <GridComponent gridTitle="Organizations"
+                           globalFilterFields={["NAME"]}
                            queryData={(params: any) => loadData(params)}
                            columns={[
                                {
