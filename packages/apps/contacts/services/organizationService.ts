@@ -5,7 +5,8 @@ import {Organization} from "../models/organization";
 
 export function GetOrganizations(client: GraphQLClient, params: PaginatedRequest): Promise<PaginatedResponse<Organization>> {
     return new Promise((resolve, reject) => {
-
+        console.log('🏷️ ----- params: '
+            , params);
         const query = gql`query GetOrganizations($pagination: Pagination, $where: Filter, $sort: [SortBy!]){
             organizations(pagination: $pagination, where: $where, sort: $sort){
                 content {
@@ -45,6 +46,7 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
                 contactRoles {
                     id
                     jobTitle
+                    primary
                     contact {
                         id
                         title

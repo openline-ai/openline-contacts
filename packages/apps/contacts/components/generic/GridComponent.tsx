@@ -14,10 +14,12 @@ import {Checkbox} from "primereact/checkbox";
 import {InputText} from "primereact/inputtext";
 import {toast} from "react-toastify";
 import {Filter, PaginatedRequest, Sort} from "../../utils/pagination";
+import {DebounceInput} from "react-debounce-input";
 
 
 const GridComponent = (props: any) => {
     const [data, setData] = useState([] as any);
+    const [globalFilterValue, setGlobalFilterValue] = useState('');
 
     const [filtersPanelVisible, setFiltersPanelVisible] = useState(false);
     const sortContainerRef = useRef<OverlayPanel>(null);
@@ -60,6 +62,29 @@ const GridComponent = (props: any) => {
         props.onEdit(id);
     };
 
+    const onGlobalFilterChange = (e:any) => {
+        const value = e.target.value;
+
+        setGlobalFilterValue(value);
+    }
+
+    const renderHeader = () => {
+        return (
+            <div className="flex justify-content-between">
+                {/*<Button type="button" icon="pi pi-filter-slash" label="Clear" className="p-button-outlined" onClick={clearFilter} />*/}
+                <span className="p-input-icon-left">
+                    <i className="pi pi-search" />
+                    <DebounceInput
+                        className="p-inputtext p-inputtext-sm p-component"
+                        minLength={3}
+                        debounceTimeout={300}
+                        onChange={onGlobalFilterChange}
+                        placeholder="Keyword Search"
+                    />
+                </span>
+            </div>
+        )
+    }
     const paginatorTemplate = {
         layout: 'CurrentPageReport PrevPageLink NextPageLink RowsPerPageDropdown',
         'RowsPerPageDropdown': (options: any) => {
@@ -106,15 +131,27 @@ const GridComponent = (props: any) => {
     const loadLazyData = () => {
         setLoading(true);
 
-        const filtersData: Filter[] = [];
 
-        filters.filter((f: any) => f.value).forEach((f: any) => {
+
+       let filtersData: Filter[] = filters.filter((f: any) => f.value).map((f: any) => {
             filtersData.push({
                 property: f.field,
                 value: f.value,
-                operation: f.operation
+                operation: f.operation,
+                condition: "AND"
             } as Filter);
         });
+
+        if(globalFilterValue) {
+            const globalSearch = props.globalFilterFields
+                .map((fieldName:string) => ({
+                    property: fieldName,
+                    value: globalFilterValue,
+                    operation: "CONTAINS",
+                    condition: "OR"
+                }))
+            filtersData = [...filtersData, ...globalSearch]
+        }
 
         const params = {
             where: filtersData,
@@ -146,7 +183,7 @@ const GridComponent = (props: any) => {
 
     useEffect(() => {
         loadLazyData();
-    }, [lazyParams, props.triggerReload, sort]);
+    }, [lazyParams, props.triggerReload, sort, globalFilterValue]);
 
     const onPage = (event: any) => {
         setLazyParams((prevLazyParams: any) => {
@@ -169,7 +206,7 @@ const GridComponent = (props: any) => {
     return <>
         {
             props.showHeader != undefined && props.showHeader &&
-            <div className="p-datatable header flex align-items-center">
+            <div className="p-datatable header flex align-items-center mb-5">
 
                 <div className="flex flex-grow-1 text-3xl">
                     {props.gridTitle}
@@ -183,14 +220,19 @@ const GridComponent = (props: any) => {
 
         {
             (filters.length > 0 || sort.length > 0) &&
-            <div className="p-datatable filters flex">
+            <div className="p-datatable filters flex" style={{
+                background: '#f8f9fa',
+                padding: '8px 13px',
+                borderTop:'1px solid #dee2e6'
+            }}>
 
                 <div className="flex flex-grow-1">
                     {
                         filters.length > 0 &&
                         <div className="flex align-items-center ml-1">
                             <FontAwesomeIcon icon={faFilter}/>
-                            <Button onClick={() => setFiltersPanelVisible(true)} className='p-button-link'
+                            <Button onClick={() => setFiltersPanelVisible(true)}
+                                    className='p-button-link p-button-text'
                                     label="Filters"/>
                         </div>
                     }
@@ -230,11 +272,14 @@ const GridComponent = (props: any) => {
 
         <DataTable value={data}
                    lazy
-                   responsiveLayout="scroll"
+                   // responsiveLayout="scroll"
+                   header={renderHeader()}
+                   // globalFilterFields={props.globalFilterFields}
                    dataKey="id"
                    size={'normal'}
                    paginator
-                   paginatorTemplate={paginatorTemplate} paginatorLeft={paginatorLeft}
+                   paginatorTemplate={paginatorTemplate}
+                   paginatorLeft={paginatorLeft}
                    first={lazyParams.first}
                    rows={lazyParams.limit}
                    customRestoreState={onCustomRestoreState}
@@ -449,7 +494,9 @@ GridComponent.propTypes = {
 
     queryData: PropTypes.func,
 
-    onEdit: PropTypes.func
+    onEdit: PropTypes.func,
+    globalFilterFields: PropTypes.arrayOf(PropTypes.string)
+
 }
 
 GridComponent.defaultProps = {
@@ -459,7 +506,9 @@ GridComponent.defaultProps = {
     showHeader: true,
     gridTitle: 'Title',
     columnSelectorEnabled: true,
-    defaultLimit: 5
+    defaultLimit: 5,
+    globalFilterFields: []
+
 }
 
 export default GridComponent

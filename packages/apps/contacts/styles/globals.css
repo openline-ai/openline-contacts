@@ -81,3 +81,17 @@ ul li {
 .capitalise {
     text-transform: capitalize;
 }
+
+.p-button.p-button-link,
+.p-button.p-button-text {
+    color: var(--gray-800)
+}
+
+.p-button.p-button-link:hover,
+.p-button.p-button-link:active,
+.p-button.p-button-link:focus,
+.p-button.p-button-text:hover,
+.p-button.p-button-text:focus,
+.p-button.p-button-text:active {
+    color: var(--gray-700)
+}
