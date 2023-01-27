@@ -1,5 +1,4 @@
 import {useRouter} from "next/router";
-import {GraphQLClient} from "graphql-request";
 import {InputText} from "primereact/inputtext";
 import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -55,12 +54,20 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
 
     useEffect(() => {
         if(editDetails && router.query.id !== 'new') {
+
             reset({
-                title: contact.title || '',
+                title: contact?.title,
                 firstName: contact.firstName || '',
                 lastName: contact.lastName || '',
                 ownerFullName: contact.ownerFullName || '',
-                contactTypeName: contact.contactTypeName || ''
+                contactTypeName: contact.contactTypeName,
+                label: contact?.label,
+                contactTypeId: contact.contactTypeId,
+                ownerId: contact?.ownerId,
+                notes: contact?.notes,
+                definitionId: contact?.definitionId,
+                customFields: contact?.customFields || [],
+                fieldSets: contact.fieldSets || [],
             })
         }
 
@@ -72,6 +79,7 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
 
         data.customFields = entityExtension.customFields;
         data.fieldSets = entityExtension.fieldSets;
+
         if (contactId === 'new') {
             CreateContact(client, data).then((savedContact: Contact) => {
                 router.push('/contact/' + savedContact.id);
@@ -189,7 +197,9 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
                             <div className="field w-full">
                                 <label htmlFor="lastName" className="block">Title</label>
                                 <Controller name="title" control={control} render={({field}) => (
-                                    <Dropdown id={field.name} value={field.value} onChange={(e) => field.onChange(e.value)} options={ContactTitleEnum}
+                                    <Dropdown id={field.name} value={field.value}
+                                              onChange={(e) => field.onChange(e.value)}
+                                              options={ContactTitleEnum}
                                               optionValue="value" optionLabel="label" className="w-full"/>
                                 )}/>
                             </div>
@@ -229,7 +239,7 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
 
                                 {
                                     contact.id &&
-                                    <InputText id="contactTypeName" {...register("contactTypeName")} className="w-full" readOnly={true}/>
+                                    <InputText disabled id="contactTypeName" {...register("contactTypeName")} className="w-full" readOnly={true}/>
                                 }
                                 {
                                     !contact.id &&
