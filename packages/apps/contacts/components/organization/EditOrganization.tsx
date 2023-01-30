@@ -1,12 +1,10 @@
 import {useRouter} from "next/router";
-import {GraphQLClient} from "graphql-request";
-import {Button, DeleteConfirmationDialog} from "../atoms";
+import {DeleteConfirmationDialog} from "../atoms";
 import {Address, Button} from "../atoms";
 import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import React, {useState} from "react";
 import {InputText} from "primereact/inputtext";
 import {useForm} from "react-hook-form";
-import {Dialog} from "primereact/dialog";
 import {toast} from "react-toastify";
 import {Organization} from "../../models/organization";
 import {CreateOrganization, DeleteOrganization, UpdateOrganization} from "../../services/organizationService";
