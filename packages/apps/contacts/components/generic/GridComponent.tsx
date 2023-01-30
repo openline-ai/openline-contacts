@@ -71,7 +71,7 @@ const GridComponent = (props: any) => {
     const renderHeader = () => {
         return (
             <div className="flex justify-content-between">
-                {/*<Button type="button" icon="pi pi-filter-slash" label="Clear" className="p-button-outlined" onClick={clearFilter} />*/}
+                {/*<DeleteConfirmationDialog type="button" icon="pi pi-filter-slash" label="Clear" className="p-button-outlined" onClick={clearFilter} />*/}
                 <span className="p-input-icon-left">
                     <i className="pi pi-search" />
                     <DebounceInput

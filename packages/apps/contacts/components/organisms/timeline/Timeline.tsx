@@ -7,9 +7,19 @@ import {TimelineItem} from "../../atoms/timeline-item";
 interface Props {
     loading: boolean
     noActivity: boolean
+    contactId?: string
     loggedActivities: Array<any>
+    notifyChange?: (id: any) => void
+    readonly?:boolean
 }
-export const Timeline = ({loading, noActivity, loggedActivities}: Props) => {
+export const Timeline = ({
+                             loading,
+                             noActivity,
+                             loggedActivities,
+                             contactId,
+                             notifyChange= () => null,
+                             readonly=false
+}: Props) => {
 
 
     if (loading) {
@@ -36,7 +46,15 @@ export const Timeline = ({loading, noActivity, loggedActivities}: Props) => {
         switch (type) {
             case "NOTE":
                 return <TimelineItem last={loggedActivities.length -1 === index} createdAt={data?.createdAt} >
-                            <NoteTimelineItem noteContent={data.html} createdAt={data.createdAt} />
+                            <NoteTimelineItem noteContent={data.html}
+                                              createdAt={data.createdAt}
+                                              createdBy={data?.createdBy}
+                                              id={data.id}
+                                              refreshNoteData={notifyChange}
+                                              contactId={contactId}
+                                              readonly={readonly}
+                            />
+
                         </TimelineItem>
             case "CONVERSATION":
                 return <ConversationTimelineItem feedId={data.id} source={data.source} createdAt={data?.createdAt}/>

@@ -69,16 +69,13 @@ function ContactNoteModalTemplate(props: any) {
 
         const formData = new FormData();
         formData.append('file', e.target.files[0]);
-
         axios.post(`/fs/file`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         }).then((r: any) => {
-
             fetch(`/fs/file/${r.data.id}/download`)
                 .then(async (response: any) => {
-
                     let blob = await response.blob();
 
                     var reader = new FileReader();
@@ -93,7 +90,8 @@ function ContactNoteModalTemplate(props: any) {
                     };
                     reader.readAsDataURL(blob);
 
-                }).catch((reason: any) => {
+                })
+                .catch((reason: any) => {
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
 
@@ -133,23 +131,37 @@ function ContactNoteModalTemplate(props: any) {
     }
 
     return (
-        <div style={{display: 'flex', flexDirection: 'column'}}>
+        <div style={{display: 'flex', flexDirection: 'column',  margin: props.isEdit ? '-17px -24px' : 0}}>
             <Controller  name="htmlEnhanced" control={control} render={({field}) => (
                 <Editor
-                    style={{height: '120px'}}
+                    style={{height: props.isEdit ? 'auto' : '120px', borderColor: props.isEdit && "transparent" }}
                     className="w-full h-full"
                     headerTemplate={richTextHeader()}
-                    value={field.value} onTextChange={(e) => setValue('htmlEnhanced', e.htmlValue)}
+                    value={field.value} 
+                    onTextChange={(e) => setValue('htmlEnhanced', e.htmlValue)}
                 />
-               
             )}/>
-            <div className="flex justify-content-end mt-3">
-                <Button onClick={onSubmit} mode="primary" className='mr-3'>
-                    Add note
-                </Button>
-                {/*<Button onClick={onSubmit} mode="primary">*/}
+            <div className={` flex justify-content-end  ${props.isEdit ? 'mb-3 mr-3' : 'mt-3'}`}>
+                {props.isEdit ? (
+                    <>
+                        <Button onClick={props.notifyCancel} className={`${props.isEdit ? 'mb-3 mr-3' : ''}`}>
+                            Cancel
+                        </Button>
+                        <Button onClick={onSubmit} mode="primary" className={`${props.isEdit ? 'mb-3 mr-3' : ''}`}>
+                            Save
+                        </Button>
+                    </>
+                ) : (
+                    <>
+                        <Button onClick={onSubmit} mode="primary" className={`${props.isEdit ? 'mb-3 mr-3' : ''}`}>
+                            Add note
+                        </Button>
+                    </>
+                ) }
+
+                {/*<DeleteConfirmationDialog onClick={onSubmit} mode="primary">*/}
                 {/*    Send message*/}
-                {/*</Button>*/}
+                {/*</DeleteConfirmationDialog>*/}
             </div>
 
 
@@ -162,6 +174,7 @@ ContactNoteModalTemplate.propTypes = {
     contactId: PropTypes.string,
     note: PropTypes.object,
     add: PropTypes.number,
+    isEdit: PropTypes.bool,
     notifyCancel: PropTypes.func,
     notifyChanged: PropTypes.func,
     notifyDeleted: PropTypes.func,

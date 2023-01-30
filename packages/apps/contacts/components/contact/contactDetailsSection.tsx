@@ -1,6 +1,6 @@
 import {useRouter} from "next/router";
 import {InputText} from "primereact/inputtext";
-import {Button} from "primereact/button";
+import {Button} from "../atoms";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUserNinja} from "@fortawesome/free-solid-svg-icons";
 import {useEffect, useState} from "react";
@@ -275,8 +275,8 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
                         </form>
 
                         <div className="flex justify-content-end">
-                            <Button onClick={() => setEditDetails(false)} className='p-button-link text-gray-600' label="Cancel"/>
-                            <Button onClick={() => onSubmit()} label="Save"/>
+                            <Button onClick={(e: any) => setEditDetails(false)} className='p-button-link text-gray-600'> Cancel</Button>
+                            <Button onClick={() => onSubmit()} mode="primary">Save</Button>
                         </div>
                     </div>
 

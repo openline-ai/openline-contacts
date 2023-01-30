@@ -1,8 +1,7 @@
 import {Controller, useForm} from "react-hook-form";
 import PropTypes from "prop-types";
-import {useState} from "react";
+import React, {useState} from "react";
 import {gql, GraphQLClient} from "graphql-request";
-import {Button} from "primereact/button";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEdit, faEnvelope, faPhone, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {Dialog} from "primereact/dialog";
@@ -12,8 +11,10 @@ import {EmailLabelEnum} from "../../../model/enum-emailLabel";
 import {Checkbox} from "primereact/checkbox";
 import {toast} from "react-toastify";
 import {IconButton} from "../../atoms/icon-button";
+import {Button} from "../../atoms/button";
 import styles from './contact-detail-preview.module.scss'
 import {useGraphQLClient} from "../../../utils/graphQLClient";
+import {DeleteConfirmationDialog} from "../../atoms";
 function ContactEmailTemplate(props: any) {
     const client =  useGraphQLClient();
 
@@ -122,6 +123,7 @@ function ContactEmailTemplate(props: any) {
                             <div className='flex'>
                                 <div className="mr-3">
                                     <IconButton
+                                        mode="secondary"
                                         className="p-button-text p-0"
                                         onClick={(e: any) => {
                                             setValue('id', props.email.id);
@@ -136,25 +138,19 @@ function ContactEmailTemplate(props: any) {
                                 <div>
                                     <IconButton
                                         className="p-button-text p-0"
+                                        mode="secondary"
                                         onClick={() => setDeleteEmailConfirmationModalVisible(true)}
                                         icon={faTrashCan}
                                     />
                                 </div>
                             </div>
-                        
-                            <Dialog header="Email delete confirmation"
-                                    draggable={false}
-                                    visible={deleteEmailConfirmationModalVisible}
-                                    footer={
-                                        <div className="flex flex-grow-1 justify-content-between align-items-center">
-                                            <Button label="Delete the email address" icon="pi pi-check" onClick={() => deleteEmail()} autoFocus/>
-                                            <Button label="Cancel" icon="pi pi-times" onClick={() => setDeleteEmailConfirmationModalVisible(false)} className="p-button-text"/>
-                                        </div>
-                                    }
-                                    onHide={() => setDeleteEmailConfirmationModalVisible(false)}>
-                                <p>Please confirm that you want to delete this email address.</p>
-                            </Dialog>
 
+                            <DeleteConfirmationDialog
+                                deleteConfirmationModalVisible={deleteEmailConfirmationModalVisible}
+                                setDeleteConfirmationModalVisible={setDeleteEmailConfirmationModalVisible}
+                                deleteAction={deleteEmail}
+                                confirmationButtonLabel="Delete email address"
+                            />
                 </div>
             }
 
@@ -182,8 +178,12 @@ function ContactEmailTemplate(props: any) {
                     </form>
 
                     <div className="flex justify-content-end">
-                        <Button onClick={(e: any) => notifyCancelEdit(props.email.uiKey)} className='p-button-link  text-gray-600' label="Cancel"/>
-                        <Button onClick={() => onSubmit()} label="Save"/>
+                        <Button
+                                onClick={(e: any) => notifyCancelEdit(props.email.uiKey)}
+                                className='p-button-link  text-gray-600'>
+                            Cancel
+                        </Button>
+                        <Button onClick={() => onSubmit()} mode="primary"> Save </Button>
                     </div>
                 </div>
             }

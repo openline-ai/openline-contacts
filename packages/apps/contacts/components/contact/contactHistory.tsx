@@ -44,7 +44,14 @@ function ContactHistory(props: Props) {
                 props.setReload(false)
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
+        }
 
+    }, [props.contactId, props.reload]);
+
+
+    useEffect(() => {
+        // todo split conversation and note to different use effects
+        if (props.contactId) {
             const query = gql`query GetConversationsForContact($id: ID!, $pagination: Pagination!) {
                 contact(id: $id) {
                     conversations(pagination: $pagination) {
@@ -73,7 +80,7 @@ function ContactHistory(props: Props) {
             });
         }
 
-    }, [props.contactId, props.reload]);
+    }, [props.contactId]);
 
     const noHistoryItemsAvailable =  !conversationsLoading && conversationHistory.length == 0 && !notesLoading && noteItems.length == 0
 
@@ -88,6 +95,8 @@ function ContactHistory(props: Props) {
     return (
                 <Timeline loading={conversationsLoading || notesLoading}
                           noActivity={noHistoryItemsAvailable}
+                          contactId={props.contactId as string}
+                          notifyChange={props.setReload}
                           loggedActivities={getSortedItems(conversationHistory, noteItems)} />
 
     );
