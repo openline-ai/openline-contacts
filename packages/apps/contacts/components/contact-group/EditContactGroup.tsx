@@ -1,6 +1,6 @@
 import {useRouter} from "next/router";
-import {gql, GraphQLClient} from "graphql-request";
-import {Button} from "primereact/button";
+import {gql} from "graphql-request";
+import {Button} from "../atoms";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCirclePlus, faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {useEffect, useState} from "react";
@@ -238,8 +238,10 @@ function ContactGroupEdit() {
                                 <div className="flex justify-content-end">
                                     <Button onClick={(e: any) => setEditDetails(e.value)}
                                             className='p-button-link text-gray-600'
-                                            label="Cancel"/>
-                                    <Button onClick={() => onSubmit()} label="Save"/>
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button onClick={() => onSubmit()} mode="primary"> Save </Button>
                                 </div>
                             </div>
                         }
@@ -253,15 +255,21 @@ function ContactGroupEdit() {
                         <div className="flex align-items-center mt-2 ml-1">
                             <FontAwesomeIcon icon={faTrashCan} className="text-gray-600" style={{color: 'black'}}/>
                             <Button onClick={(e: any) => setDeleteConfirmationModalVisible(true)} className='p-button-link text-gray-600'
-                                    label="Delete"/>
+                            >
+                                Delete
+                            </Button>
                         </div>
                         <Dialog header="Contact group delete confirmation"
                                 draggable={false}
                                 visible={deleteConfirmationModalVisible}
                                 footer={
                                     <div className="flex flex-grow-1 justify-content-between align-items-center">
-                                        <Button label="Delete the contact group" icon="pi pi-check" onClick={() => deleteContactGroup()}/>
-                                        <Button label="Cancel" icon="pi pi-times" onClick={() => setDeleteConfirmationModalVisible(false)} className="p-button-text"/>
+                                        <Button onClick={() => setDeleteConfirmationModalVisible(false)} className="p-button-text">
+                                            Cancel
+                                        </Button>
+                                        <Button onClick={() => deleteContactGroup()} mode="danger">
+                                            Delete the contact group
+                                        </Button>
                                     </div>
                                 }
                                 onHide={() => setDeleteConfirmationModalVisible(false)}>

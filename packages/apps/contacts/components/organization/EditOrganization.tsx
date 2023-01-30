@@ -1,8 +1,8 @@
 import {useRouter} from "next/router";
 import {GraphQLClient} from "graphql-request";
-import {Button} from "../atoms";
+import {Button, DeleteConfirmationDialog} from "../atoms";
 import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
-import {useState} from "react";
+import React, {useState} from "react";
 import {InputText} from "primereact/inputtext";
 import {useForm} from "react-hook-form";
 import {Dialog} from "primereact/dialog";
@@ -164,28 +164,17 @@ function OrganizationEdit({organisation, onReload, createMode}: {organisation:an
                 {
                     !editDetails &&
                     <>
-                        <Dialog header="Organization delete confirmation"
-                                draggable={false}
-                                visible={deleteConfirmationModalVisible}
-                                footer={
-                                    <div className="flex flex-grow-1 justify-content-between align-items-center">
-                                        <Button
-                                                mode="danger"
-                                                onClick={() => deleteOrganization()}
-                                        >
-                                            Delete the organization
-                                        </Button>
-                                        <Button
-                                            onClick={() => setDeleteConfirmationModalVisible(false)}
-                                            className="p-button-text"
-
-                                        >Cancel</Button>
-                                    </div>
-                                }
-                                onHide={() => setDeleteConfirmationModalVisible(false)}>
-                            <p>Please confirm that you want to delete this organization.</p>
-                            <p>The contacts will not be changed, but the associations to this organization will be removed.</p>
-                        </Dialog>
+                        <DeleteConfirmationDialog
+                            deleteConfirmationModalVisible={deleteConfirmationModalVisible}
+                            setDeleteConfirmationModalVisible={setDeleteConfirmationModalVisible}
+                            deleteAction={deleteOrganization}
+                            explanationText={(
+                                <>
+                                    <p>Please confirm that you want to delete this organization.</p>
+                                    <p>The contacts will not be changed, but the associations to this organization will be removed.</p>
+                                </>
+                            )}
+                        />
                     </>
                 }
             </div>

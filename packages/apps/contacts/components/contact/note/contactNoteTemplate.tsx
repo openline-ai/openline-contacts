@@ -132,6 +132,7 @@ function ContactNoteTemplate(props: any) {
                 <p>Please confirm that you want to delete this contact note.</p>
             </Dialog>
 
+
             <div className="flex align-items-center w-full mt-3 p-3 bg-white" style={{borderRadius: '4px'}}>
 
                 {
