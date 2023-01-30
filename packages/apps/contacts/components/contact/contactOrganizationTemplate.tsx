@@ -1,8 +1,8 @@
 import {Controller, useForm} from "react-hook-form";
 import PropTypes from "prop-types";
-import {useState} from "react";
+import React, {useState} from "react";
 import {gql, GraphQLClient} from "graphql-request";
-import {Button} from "primereact/button";
+import {Button} from "../atoms";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBriefcase, faEdit, faTrashCan, faUserNinja} from "@fortawesome/free-solid-svg-icons";
 import {Dialog} from "primereact/dialog";
@@ -15,6 +15,7 @@ import {GetContactTypes} from "../../services/contactTypeService";
 import {ContactType} from "../../models/contact";
 import {Organization} from "../../models/organization";
 import {useGraphQLClient} from "../../utils/graphQLClient";
+import {DeleteConfirmationDialog} from "../atoms";
 
 function ContactOrganizationTemplate(props: any) {
     const client =  useGraphQLClient();
@@ -170,19 +171,13 @@ function ContactOrganizationTemplate(props: any) {
                             <Button className="p-button-text p-0" onClick={(e: any) => setDeleteConfirmationModalVisible(true)}>
                                 <FontAwesomeIcon size="xs" icon={faTrashCan} style={{color: 'black'}}/>
                             </Button>
-                            <Dialog header="Organization role delete confirmation"
-                                    draggable={false}
-                                    visible={deleteConfirmationModalVisible}
-                                    footer={
-                                        <div className="flex flex-grow-1 justify-content-between align-items-center">
-                                            <Button label="Delete the organization role" icon="pi pi-check" onClick={() => deleteRole()} autoFocus/>
-                                            <Button label="Cancel" icon="pi pi-times" onClick={() => setDeleteConfirmationModalVisible(false)} className="p-button-text"/>
-                                        </div>
-                                    }
-                                    onHide={() => setDeleteConfirmationModalVisible(false)}>
-                                <p>Please confirm that you want to delete this organization role.</p>
-                            </Dialog>
 
+                            <DeleteConfirmationDialog
+                                deleteConfirmationModalVisible={deleteConfirmationModalVisible}
+                                setDeleteConfirmationModalVisible={setDeleteConfirmationModalVisible}
+                                deleteAction={deleteRole}
+                                confirmationButtonLabel="Delete role"
+                            />
                         </div>
                     </div>
                 </div>
@@ -225,8 +220,8 @@ function ContactOrganizationTemplate(props: any) {
                     </form>
 
                     <div className="flex justify-content-end">
-                        <Button onClick={(e: any) => notifyCancelEdit(props.organizationRole.uiKey)} className='p-button-link text-gray-600' label="Cancel"/>
-                        <Button onClick={() => onSubmit()} label="Save"/>
+                        <Button onClick={(e: any) => notifyCancelEdit(props.organizationRole.uiKey)} className='p-button-link text-gray-600'> Cancel</Button>
+                        <Button onClick={() => onSubmit()} mode="primary">Save</Button>
                     </div>
                 </div>
             }

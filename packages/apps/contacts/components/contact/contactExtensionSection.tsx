@@ -1,7 +1,7 @@
 import PropTypes, {string} from "prop-types";
 import {useEffect, useState} from "react";
 import {gql, GraphQLClient} from "graphql-request";
-import {Button} from "primereact/button";
+import {Button} from "../atoms";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEdit} from "@fortawesome/free-solid-svg-icons";
 import {useForm} from "react-hook-form";
@@ -211,8 +211,8 @@ function ContactExtensionSection(props: any) {
                             <EntityDefinitionEditTemplate fields={fieldsEdit} register={register}/>
 
                             <div className="flex justify-content-end">
-                                <Button onClick={(e: any) => setEditDetails(e.value)} className='p-button-link text-gray-600' label="Cancel"/>
-                                <Button onClick={() => onSubmit()} label="Save"/>
+                                <Button onClick={(e: any) => setEditDetails(e.value)} className='p-button-link text-gray-600'> Cancel</Button>
+                                <Button onClick={() => onSubmit()} mode="primary">Save</Button>
                             </div>
                         </div>
                     }

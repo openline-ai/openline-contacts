@@ -7,7 +7,6 @@ import {IconButton} from "../../atoms/icon-button";
 import {
     faEdit,
     faEnvelope,
-    faMailBulk,
     faMessage,
     faPhoneAlt,
     faShare,

@@ -40,8 +40,21 @@
     }
   }
 
+  &.secondary {
+    background: transparent;
+    cursor: pointer;
+    // fixme improve visual
+    &:hover,
+    &:focus,
+    &:active {
+      background: none;
+      color: var(--gray-800)
+    }
+  }
 
   &:disabled {
     pointer-events: none;
   }
+
+
 }

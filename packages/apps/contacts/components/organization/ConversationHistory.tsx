@@ -1,25 +1,15 @@
-import {gql, GraphQLClient} from "graphql-request";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCommentDots, faStickyNote} from "@fortawesome/free-solid-svg-icons";
 import React, {useEffect, useState} from "react";
-import styles from './organisation.module.scss'
-import {useRouter} from "next/router";
 import {Contact, } from "../../models/contact";
-import Moment from "react-moment";
-import Link from "next/link";
 import {
     GetContactNotes,
     GetConversationsForContact,
 } from "../../services/contactService";
-import {Skeleton} from "primereact/skeleton";
-import {ConversationTimelineItem, EmailTimelineItem, NoteTimelineItem} from "../molecules";
-import {TimelineItem} from "../atoms/timeline-item";
 import {Timeline} from "../organisms";
+import {useGraphQLClient} from "../../utils/graphQLClient";
 
 
 export const OrganizationHistory = ({contacts}: {contacts: any}) => {
-    const client = new GraphQLClient(`/customer-os-api/query`);
-    const router = useRouter();
+    const client =  useGraphQLClient();
     const [loadingNotes, setLoadingNotes] = useState(true);
     const [loadingConversations, setLoadingConversations] = useState(true);
     const [historyItems, setHistoryItems] = useState([] as any);
@@ -73,7 +63,9 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
     return (
         <div className="mt-5">
 
-            <Timeline loading={loadingNotes || loadingConversations}
+            <Timeline
+                      readonly
+                      loading={loadingNotes || loadingConversations}
                       noActivity={!loadingNotes && !loadingConversations && historyItems.length === 0 && historyNotes.length === 0}
                       loggedActivities={getSortedItems(historyItems, historyNotes)} />
 
