@@ -1,6 +1,6 @@
 import {useRouter} from "next/router";
 import {GraphQLClient} from "graphql-request";
-import {Button, DeleteConfirmationDialog} from "../atoms";
+import {Button, DeleteConfirmationDialog, Address} from "../atoms";
 import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import React, {useState} from "react";
 import {InputText} from "primereact/inputtext";
@@ -15,15 +15,12 @@ import {CardHeading} from "../atoms/cardHeading";
 import Link from "next/link";
 import * as domain from "domain";
 
-// todo add reload
-function OrganizationEdit({organisation, onReload, createMode}: {organisation:any, createMode:boolean, onReload: () =>void}) {
+function OrganizationEdit({organisation, onReload, createMode}: {organisation:Organization, createMode:boolean, onReload: () =>void}) {
     const client =  useGraphQLClient();
 
     const [editDetails, setEditDetails] = useState(createMode);
-
     const router = useRouter();
     const {id} = router.query;
-
     const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
     const deleteOrganization = () => {
         DeleteOrganization(client, id).then((result: boolean) => {
@@ -116,6 +113,23 @@ function OrganizationEdit({organisation, onReload, createMode}: {organisation:an
                                           className='cta'>
                                         {organisation?.domain}
                                     </Link>
+                                </div>
+
+                                <div>
+                                    {organisation?.addresses?.map((data) => (
+                                        <Address
+                                            key={data.id}
+                                            createdAt={data.createdAt}
+                                            country={data.country}
+                                            state={data.state}
+                                            city={data.city}
+                                            address={data.address}
+                                            address2={data?.address2}
+                                            zip={data.zip}
+                                            phone={data.phone}
+                                            fax={data?.fax}
+                                        />
+                                    ))}
                                 </div>
                             </div>
                         }

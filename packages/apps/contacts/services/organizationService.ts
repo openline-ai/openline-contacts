@@ -54,6 +54,20 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
                         lastName
                         source
                         title
+                        addresses {
+                            id
+                            createdAt
+                            country
+                            state
+                            city
+                            address
+                            address2
+                            zip
+                            phone
+                            fax
+                            source
+                            
+                        }
                         contactType {
                             id
                         }
