@@ -1,3 +1,5 @@
+import {Address} from "./Address";
+
 export type Organization = {
     id: string | undefined;
     name: string;
@@ -6,4 +8,5 @@ export type Organization = {
     domain: string;
     website: string;
     contactRoles: any
+    addresses: Array<Address>
 }
