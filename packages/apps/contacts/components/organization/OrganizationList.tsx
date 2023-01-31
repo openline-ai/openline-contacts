@@ -7,8 +7,10 @@ import {PaginatedRequest, PaginatedResponse} from "../../utils/pagination";
 import {toast} from "react-toastify";
 import {GetOrganizations} from "../../services/organizationService";
 import {Organization} from "../../models/organization";
+import {Address as AddressInterface} from "../../models/Address";
+
 import {FullScreenModeLayout} from "../organisms/fullscreen-mode-layout";
-import {Button} from "../atoms";
+import {Address, Button} from "../atoms";
 import {useGraphQLClient} from "../../utils/graphQLClient";
 
 export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScreenMode}) => {
@@ -35,7 +37,7 @@ export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScree
     return (
         <FullScreenModeLayout fullScreenMode={fullScreenMode}>
             <GridComponent gridTitle="Organizations"
-                           globalFilterFields={["NAME"]}
+                           globalFilterFields={["NAME", "SOURCE"]}
                            queryData={(params: any) => loadData(params)}
                            columns={[
                                {
@@ -53,6 +55,61 @@ export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScree
                                    className: 'w10',
                                    field: 'website',
                                    label: 'Website'
+                               },
+                               {
+
+                                   display: "HIDE",
+                                   className: 'w10 capitalise',
+                                   field: 'source',
+                                   label: 'Source'
+                               },
+                               {
+
+                                   display: "HIDE",
+                                   className: 'w10 capitalise',
+                                   field: 'addresses',
+                                   label: 'Addresses',
+                                   template: (c: any) => {
+                                       return <div key={c.id}
+                                                   className='capitalise'>
+                                           {!!c.addresses.length ? c.addresses.map((a:AddressInterface) => (
+                                               <Address
+                                                        key={a.id}
+                                                        createdAt={a.createdAt}
+                                                        address={a.address}
+                                                        address2={a.address2}
+                                                        city={a.city}
+                                                        country={a.country}
+                                                        zip={a.zip}
+                                                        mode="light"
+                                                       />
+                                           )) : '-'}
+                                       </div>
+                                   }
+                               }
+                           ]}
+                           sorting={[
+                               {
+                                   field: "NAME",
+                                   label: "Name",
+                               },
+                               {
+                                   field: "SOURCE",
+                                   label: "Source"
+                               },
+                           ]}
+                           filters={[
+                               {
+                                   field: "NAME",
+                                   label: "Name",
+                               },
+                               {
+                                   field: "SOURCE",
+                                   label: "Source"
+                               },
+                               {
+                                   field: "organisation.country",
+                                   label: "Last name"
                                }
                            ]}
                            gridActions={

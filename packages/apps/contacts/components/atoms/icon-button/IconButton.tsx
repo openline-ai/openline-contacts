@@ -12,6 +12,7 @@ interface Props {
     disabled?: boolean;
     className?: string;
     style?: any;
+    type?: string
 }
 
 export const IconButton: FC<Props> = ({ icon, onClick, children, mode="default", ...rest}) => {

@@ -1,10 +1,17 @@
 import {DataTable} from 'primereact/datatable';
 import {useEffect, useRef, useState} from "react";
 import {Column} from "primereact/column";
-import {Button} from "primereact/button";
+import {Button} from "../atoms";
 import {Fragment} from "preact";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowDownWideShort, faArrowUpShortWide, faColumns, faFilter, faSearch} from "@fortawesome/free-solid-svg-icons";
+import {
+    faArrowDownWideShort,
+    faArrowUpShortWide,
+    faColumns,
+    faFilter,
+    faRefresh,
+    faSearch
+} from "@fortawesome/free-solid-svg-icons";
 import {Dropdown} from "primereact/dropdown";
 import PropTypes from "prop-types";
 import {Sidebar} from "primereact/sidebar";
@@ -15,6 +22,7 @@ import {InputText} from "primereact/inputtext";
 import {toast} from "react-toastify";
 import {Filter, PaginatedRequest, Sort} from "../../utils/pagination";
 import {DebounceInput} from "react-debounce-input";
+import {IconButton} from "../atoms/icon-button";
 
 
 const GridComponent = (props: any) => {
@@ -31,7 +39,7 @@ const GridComponent = (props: any) => {
             label: c.label,
             template: c.template,
             hidden: c.hidden ?? false,
-            display: c.visible ?? 'SHOW',
+            display: c.display ?? 'SHOW',
             className: c.className,
             editLink: c.editLink,
             sortable: c.sortable
@@ -68,10 +76,9 @@ const GridComponent = (props: any) => {
         setGlobalFilterValue(value);
     }
 
-    const renderHeader = () => {
+    const renderSearch = () => {
         return (
             <div className="flex justify-content-between">
-                {/*<DeleteConfirmationDialog type="button" icon="pi pi-filter-slash" label="Clear" className="p-button-outlined" onClick={clearFilter} />*/}
                 <span className="p-input-icon-left">
                     <i className="pi pi-search" />
                     <DebounceInput
@@ -85,6 +92,71 @@ const GridComponent = (props: any) => {
             </div>
         )
     }
+
+    const renderHeader = () => {
+        return (
+            <>
+                {
+                    (filters.length > 0 || sort.length > 0) &&
+                    <div className="p-datatable filters flex" style={{
+                        background: '#f8f9fa',
+                    }}>
+
+                        <div className="flex flex-grow-1">
+                            {renderSearch()}
+                        </div>
+                        <div className="flex flex-grow-1 justify-content-end">
+                            {
+                                (sort.length > 0 || props.columnSelectorEnabled) &&
+                                <Divider layout="vertical" className="p-0"/>
+                            }
+
+                            {
+                                sort.length > 0 &&
+                                <Button onClick={(e: any) => sortContainerRef?.current?.toggle(e)} mode="text">
+                                    <FontAwesomeIcon icon={faArrowUpShortWide} className="mr-2"/>
+                                    <span>Sorting</span>
+                                </Button>
+                            }
+
+                            {
+                                sort.length > 0 && props.columnSelectorEnabled &&
+                                <Divider layout="vertical" className="p-0"/>
+                            }
+
+                            {
+                                props.columnSelectorEnabled &&
+                                <Button onClick={(e: any) => configurationContainerRef?.current?.toggle(e)} mode="text">
+                                    <FontAwesomeIcon icon={faColumns} className="mr-2"/>
+                                    <span>Columns</span>
+                                </Button>
+                            }
+                            {
+                                filters.length > 0  &&
+                                <Divider layout="vertical" className="p-0"/>
+                            }
+                            {
+                                filters.length > 0 &&
+                                <div className="flex align-items-center ml-1">
+                                    <Button onClick={() => setFiltersPanelVisible(true)}
+                                            className='p-button-link p-button-text'
+                                            icon={faFilter}
+                                            mode="text"
+                                    >
+                                <span className="ml-2">
+                                    Filters
+                                </span>
+                                    </Button>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                }
+            </>
+        )
+    }
+
     const paginatorTemplate = {
         layout: 'CurrentPageReport PrevPageLink NextPageLink RowsPerPageDropdown',
         'RowsPerPageDropdown': (options: any) => {
@@ -118,7 +190,7 @@ const GridComponent = (props: any) => {
         }
     } as any;
 
-    const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text" onClick={() => loadLazyData()}/>
+    const paginatorLeft = <IconButton type="button" ariaLabel="Refresh"  icon={faRefresh} className="p-button-text" onClick={() => loadLazyData()}/>
 
     const [loading, setLoading] = useState(false);
     const [totalRecords, setTotalRecords] = useState(0);
@@ -218,58 +290,6 @@ const GridComponent = (props: any) => {
             </div>
         }
 
-        {
-            (filters.length > 0 || sort.length > 0) &&
-            <div className="p-datatable filters flex" style={{
-                background: '#f8f9fa',
-                padding: '8px 13px',
-                borderTop:'1px solid #dee2e6'
-            }}>
-
-                <div className="flex flex-grow-1">
-                    {
-                        filters.length > 0 &&
-                        <div className="flex align-items-center ml-1">
-                            <FontAwesomeIcon icon={faFilter}/>
-                            <Button onClick={() => setFiltersPanelVisible(true)}
-                                    className='p-button-link p-button-text'
-                                    label="Filters"/>
-                        </div>
-                    }
-                </div>
-                <div className="flex flex-grow-1 justify-content-end">
-
-                    {
-                        (sort.length > 0 || props.columnSelectorEnabled) &&
-                        <Divider layout="vertical" className="p-0"/>
-                    }
-
-                    {
-                        sort.length > 0 &&
-                        <Button onClick={(e: any) => sortContainerRef?.current?.toggle(e)} className='p-button-text'>
-                            <FontAwesomeIcon icon={faArrowUpShortWide} className="mr-2"/>
-                            <span>Sorting</span>
-                        </Button>
-                    }
-
-                    {
-                        sort.length > 0 && props.columnSelectorEnabled &&
-                        <Divider layout="vertical" className="p-0"/>
-                    }
-
-                    {
-                        props.columnSelectorEnabled &&
-                        <Button onClick={(e: any) => configurationContainerRef?.current?.toggle(e)} className='p-button-text mr-1'>
-                            <FontAwesomeIcon icon={faColumns} className="mr-2"/>
-                            <span>Columns</span>
-                        </Button>
-                    }
-
-                </div>
-
-            </div>
-        }
-
         <DataTable value={data}
                    lazy
                    // responsiveLayout="scroll"
@@ -314,17 +334,16 @@ const GridComponent = (props: any) => {
         </DataTable>
 
         <Sidebar visible={filtersPanelVisible} style={{width: '500px'}} onHide={() => setFiltersPanelVisible(false)} position="right">
-            Filter by
+            <h3 className="text-2xl text-gray-800 mb-6">
+                Filter by
+            </h3>
 
-            <Button className="p-button-text" onClick={() => loadLazyData()}>
-                <FontAwesomeIcon size="sm" icon={faSearch}/>
-            </Button>
 
             {
                 filters?.map((f: any) => {
-                    return <div className="flex flex-row mb-3" key={f.field}>
+                    return <div className="flex flex-row mb-3 align-items-center" key={f.field}>
 
-                                <span className="flex flex-grow-0 mr-3">
+                                <span className="mr-3">
                                     {f.label}
                                 </span>
                         <span className="flex flex-grow-1 mr-3 align-items-center">
@@ -332,7 +351,7 @@ const GridComponent = (props: any) => {
                                     {
                                         f.type === "TEXT" &&
                                         <>
-                                            <InputText className="w-full mr-3" onChange={(e: any) => {
+                                            <InputText className="w-full mr-3 p-inputtext p-inputtext-sm p-component" onChange={(e: any) => {
                                                 setFilters(filters.map((fv: any) => {
                                                     if (fv.field === f.field) {
                                                         fv.value = e.target.value;
@@ -355,7 +374,9 @@ const GridComponent = (props: any) => {
                             {
                                 f.type === "DROPDOWN" &&
                                 <Dropdown options={f.options}
-                                          optionValue="value" optionLabel="label"
+                                          optionValue="value"
+                                          optionLabel="label"
+                                          className="p-dropdown p-component p-inputtext-sm"
                                           value={f.value} onChange={(e: any) => {
                                     setFilters(filters.map((fv: any) => {
                                         if (fv.field === f.field) {
@@ -372,6 +393,19 @@ const GridComponent = (props: any) => {
                     </div>
                 })
             }
+            <div className="flex justify-content-end mt-5">
+                <Button className="p-button-text"
+                        onClick={() => loadLazyData()}
+                        icon={faSearch}
+                        mode="primary"
+                >
+                    <span className="ml-1">
+                        Apply filters
+                    </span>
+                </Button>
+            </div>
+
+
 
         </Sidebar>
 
