@@ -9,7 +9,7 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
     ariaLabel?: string;
     children?: React.ReactNode;
     style?: any;
-    mode?: 'default' | 'primary' | 'secondary' | 'danger' | 'link' | 'dangerLink';
+    mode?: 'default' | 'primary' | 'secondary' | 'danger' | 'link' | 'dangerLink' | 'text';
 }
 
 export const Button: FC<Props> = ({ icon, onClick, children, mode="default", ...rest}) => {

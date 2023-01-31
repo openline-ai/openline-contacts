@@ -9,4 +9,5 @@ export type Organization = {
     website: string;
     contactRoles: any
     addresses: Array<Address>
+    source: string
 }

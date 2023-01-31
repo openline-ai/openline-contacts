@@ -9,7 +9,11 @@
 
   &:not(:last-of-type) {
     padding-bottom: 12px;
-    border-bottom: 1px solid var(--gray-600);
+    border-bottom: 1px solid var(--gray-400);
+
+    &.default {
+      border-bottom-color: var(--gray-600);
+    }
   }
 
   &:first-of-type {
@@ -18,13 +22,19 @@
 }
 
 .address {
-  font-weight: bold;
   margin-bottom: 4px;
+
+  &.default {
+    font-weight: bold;
+  }
 }
 
 .country {
-  font-weight: lighter;
   margin-bottom: 4px;
+
+  &.default {
+    font-weight: lighter;
+  }
 }
 
 .phone,
@@ -40,3 +50,4 @@
 .phoneAndFaxContainer {
   margin-top: 4px
 }
+

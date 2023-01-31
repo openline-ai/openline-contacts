@@ -4,9 +4,8 @@ import GridComponent from "../../components/generic/GridComponent";
 import {Button} from "../atoms";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPlus, faWindowRestore} from "@fortawesome/free-solid-svg-icons";
-import {getEnumLabel} from "../../model/enums";
 import {ContactTitleEnum} from "../../model/enum-contactTitle";
-import {gql, GraphQLClient} from "graphql-request";
+import {gql} from "graphql-request";
 import {MapGridFilters} from "../../utils/converters";
 import {PaginatedRequest} from "../../utils/pagination";
 import {FullScreenModeLayout} from "../organisms/fullscreen-mode-layout";
@@ -24,10 +23,21 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
                 contacts(pagination: $pagination, where: $where, sort: $sort){
                     content {
                         id
+                        source
                         title
                         firstName
                         lastName
-                        contactType{
+                        label
+                        source
+                        roles {
+                            id
+                            jobTitle
+                            organization {
+                                name
+                            }
+                            primary
+                        }
+                        contactType {
                             name
                         }
                         emails {
@@ -60,8 +70,6 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
 
     return (
         <FullScreenModeLayout fullScreenMode={fullScreenMode} >
-
-
             <GridComponent gridTitle="Contacts"
                            queryData={(params: any) => loadData(params)}
                            globalFilterFields={["FIRST_NAME", "TITLE", "LAST_NAME"]}
@@ -102,9 +110,60 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
                                    template: (c: any) => {
                                        return <div key={c.id}
                                                    className='capitalise'>
-                                                        {c.contactType ? c.contactType.name.toLowerCase().split("_").join(" ") : ''}
+                                                        {c.contactType ? c.contactType.name.toLowerCase().split("_").join(" ") : '-'}
                                               </div>
                                    }
+                               },
+                               {
+
+                                   display: "HIDE",
+                                   className: 'w10 capitalise',
+                                   field: 'source',
+                                   label: 'Source'
+                               },
+                               {
+
+                                   display: "HIDE",
+                                   className: 'w10 capitalise',
+                                   field: 'label',
+                                   label: 'Label'
+                               },  
+                               {
+
+                                   display: "HIDE",
+                                   className: 'w10 capitalise',
+                                   field: 'roles',
+                                   label: 'Organizations',
+                                   template: ({roles}: any) => {
+                                       if(!roles.length) {
+                                           return "-"
+                                       }
+
+                                       return (
+                                           <div className="flex flex-column">
+                                               {roles.map((role:any) => (
+                                                   <div className='capitalise' key={role.id}>
+                                                       {role?.organization?.name}
+                                                       {role.primary && (
+                                                           <span className="text-sm text-gray-600 ml-2">Primary</span>
+                                                       )}
+                                                       {role?.jobTitle && (
+                                                           <span className="text-sm text-gray-600 ml-2">({role?.jobTitle})</span>
+                                                       )}
+
+                                                   </div>
+                                               ))}
+
+                                           </div>
+                                       )
+                                   }
+                               },
+                               {
+
+                                   display: "HIDE",
+                                   className: 'w10 capitalise',
+                                   field: 'label',
+                                   label: 'Label'
                                },
                            ]}
                            filters={[
@@ -135,7 +194,7 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
                                {
                                    field: "LAST_NAME",
                                    label: "Last name"
-                               }
+                               },
                            ]}
                            gridActions={
                                <div className="flex align-items-center">
