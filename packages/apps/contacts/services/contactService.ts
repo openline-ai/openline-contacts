@@ -167,13 +167,15 @@ export function UpdateContact(client: GraphQLClient, data: any): Promise<Contact
 
         client.request(query, {
                 contact: {
-                    id: data.id,
-                    title: data.title,
-                    firstName: data.firstName,
-                    lastName: data.lastName,
-                    ownerId: data.ownerId,
-                    label: data.label,
-                    notes: data.notes
+                        id: data.id,
+                        title: data.title,
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                        contactTypeId: data.contactTypeId,
+                        ownerId: data.ownerId,
+                        label: data.label,
+                        notes: data.notes,
+                        definitionId: data.definitionId,
                 }
             }
         ).then((response: any) => {

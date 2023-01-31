@@ -1,6 +1,6 @@
 import PropTypes, {string} from "prop-types";
 import React, {useEffect, useRef, useState} from "react";
-import {gql, GraphQLClient} from "graphql-request";
+import {gql} from "graphql-request";
 import {OverlayPanel, OverlayPanelEventType} from "primereact/overlaypanel";
 import {Menu} from "primereact/menu";
 import ContactEmailTemplate from "./contact-detail-preview-template/contactEmailTemplate";
@@ -125,9 +125,9 @@ function ContactCommunication(props: any) {
                 <div className="flex flex-row w-full align-items-center">
                     <h1 className="text-gray-900 text-xl">Communication</h1>
                     <div className="flex ml-3">
-                        {/* fixme */}
                         <div className='flex flex-1 justify-content-end'>
-                            <Button onClick={(e: OverlayPanelEventType) => addCommunicationChannelContainerRef?.current?.toggle(e)}>
+                            <Button 
+                                onClick={(e: OverlayPanelEventType) => addCommunicationChannelContainerRef?.current?.toggle(e)}>
                                 <FontAwesomeIcon icon={faPlus} />
                                 Add
                             </Button>
@@ -178,24 +178,26 @@ function ContactCommunication(props: any) {
 
                 {
                     emails.map((e: any, i:number) => {
-                        return <>
-                            <ContactEmailTemplate key={e.uiKey}
-                                                  contactId={props.contactId}
-                                                  email={e}
-                                                  initialEditState={e.newItem}
-                                                  notifySave={(e: any) => emailSaved(e)}
-                                                  notifyDelete={(uiKey: string) => emailDeleted(uiKey)}
-                                                  notifyCancelEdit={(uiKey: string) => emailCancelEdit(uiKey)}
-                            />
+                        return (
+                            <React.Fragment key={e.uiKey}>
+                                <ContactEmailTemplate
+                                    contactId={props.contactId}
+                                    email={e}
+                                    initialEditState={e.newItem}
+                                    notifySave={(e: any) => emailSaved(e)}
+                                    notifyDelete={(uiKey: string) => emailDeleted(uiKey)}
+                                    notifyCancelEdit={(uiKey: string) => emailCancelEdit(uiKey)}
+                                />
                                 <Divider/>
-                        </>
-                   
+                            </React.Fragment>
+                        )
                     })
                 }
 
                 {
                     phoneNumbers.map((e: any) => {
-                        return <ContactPhoneNumberTemplate key={e.uiKey}
+                        return <ContactPhoneNumberTemplate 
+                                                     key={e.uiKey}
                                                      contactId={props.contactId}
                                                      phoneNumber={e}
                                                      initialEditState={e.newItem}

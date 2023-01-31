@@ -18,6 +18,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {DeleteContact} from "../../../services/contactService";
 import {toast} from "react-toastify";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
+import {capitalizeFirstLetter} from "../../../utils/capitalizeFirstLetter";
 
 interface Props {
     onSetEditMode: (state: boolean) => void
@@ -41,7 +42,8 @@ export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
             toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
     }
-
+    console.log('🏷️ ----- contact: '
+        , contact);
 
     return (
             <section className={styles.profileSection}>
@@ -71,16 +73,19 @@ export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
                                         onClick={()=> setDeleteConfirmationModalVisible(true)}
                                         icon={faTrashCan}/>
                                 </div>
-
                             </div>
+                            {contact?.contactTypeName && <div className={`${styles.contactType} mb-1`}>
+                                {capitalizeFirstLetter(contact?.contactTypeName.split('_').join(' '))}
+                            </div>}
                             <div className="flex mb-2">
-                                <span className={styles.dataSourceLabel}>
-                                  Source:
-                                </span>
+                                    <span className={styles.dataSourceLabel}>
+                                        Source:
+                                    </span>
 
-                                <div className={styles.dataSource}>
-                                    {contact.source}
-                                </div>
+                                    <div className={styles.dataSource}>
+                                        {contact.source}
+                                    </div>
+
                             </div>
 
                             <div className={styles.quickActionRow}>
