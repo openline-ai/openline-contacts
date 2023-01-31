@@ -5,8 +5,6 @@ import {Organization} from "../models/organization";
 
 export function GetOrganizations(client: GraphQLClient, params: PaginatedRequest): Promise<PaginatedResponse<Organization>> {
     return new Promise((resolve, reject) => {
-        console.log('🏷️ ----- params: '
-            , params);
         const query = gql`query GetOrganizations($pagination: Pagination, $where: Filter, $sort: [SortBy!]){
             organizations(pagination: $pagination, where: $where, sort: $sort){
                 content {
