@@ -10,6 +10,7 @@ import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
 import {Button, Divider} from "../atoms";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {useGraphQLClient} from "../../utils/graphQLClient";
+import {EmailLabelEnum} from "../../model/enum-emailLabel";
 
 function ContactCommunication(props: any) {
     const client =  useGraphQLClient();
@@ -139,7 +140,7 @@ function ContactCommunication(props: any) {
                                         setEmails([...emails, {
                                             id: undefined,
                                             email: '',
-                                            label: '',
+                                            label: EmailLabelEnum[1].value,
                                             primary: emails.length === 0,
                                             uiKey: uuidv4(), //TODO make sure the ID is unique in the array
                                             newItem: true // this is used to remove the item from the emails array in case of cancel new item
