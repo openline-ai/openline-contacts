@@ -10,7 +10,7 @@ import {
     faMessage,
     faPhoneAlt,
     faShare,
-    faTrash,
+    faTrashCan,
     faUser
 } from "@fortawesome/free-solid-svg-icons";
 import {DeleteConfirmationDialog} from "../../atoms";
@@ -69,7 +69,7 @@ export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
                                     <IconButton
                                         ariaLabel="Delete"
                                         onClick={()=> setDeleteConfirmationModalVisible(true)}
-                                        icon={faTrash}/>
+                                        icon={faTrashCan}/>
                                 </div>
 
                             </div>
