@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import styles from './note.module.scss'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faEdit, faThumbtack, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faEdit, faThumbtack, faTrashCan} from "@fortawesome/free-solid-svg-icons";
 import {toast} from "react-toastify";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
 import parse from "html-react-parser";
@@ -145,7 +145,7 @@ export const NoteTimelineItem: React.FC<Props> = ({ noteContent, id, createdBy, 
                     {!readonly && (
                         <div className={styles.actions}>
                             <IconButton onClick={() => setDeleteConfirmationModalVisible(true)}
-                                        icon={faTrash}
+                                        icon={faTrashCan}
                                         mode="secondary"
                                         ariaLabel="Delete"
                                         style={{marginRight: 0, marginBottom: '8px', height: '1rem'}}/>

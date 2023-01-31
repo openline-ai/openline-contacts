@@ -10,10 +10,10 @@ import {
     faMessage,
     faPhoneAlt,
     faShare,
-    faTrash,
+    faTrashCan,
     faUser
 } from "@fortawesome/free-solid-svg-icons";
-import {Button, DeleteConfirmationDialog, Divider} from "../../atoms";
+import {DeleteConfirmationDialog} from "../../atoms";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {DeleteContact} from "../../../services/contactService";
 import {toast} from "react-toastify";
@@ -58,7 +58,7 @@ export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
                                     <span>
                                         {contact.firstName || 'Unknown'}
                                     </span>
-                                        {contact.lastName}
+                                    {contact.lastName}
                                 </div>
                                 <div className="flex">
                                     <IconButton
@@ -69,9 +69,18 @@ export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
                                     <IconButton
                                         ariaLabel="Delete"
                                         onClick={()=> setDeleteConfirmationModalVisible(true)}
-                                        icon={faTrash}/>
+                                        icon={faTrashCan}/>
                                 </div>
 
+                            </div>
+                            <div className="flex mb-2">
+                                <span className={styles.dataSourceLabel}>
+                                  Source:
+                                </span>
+
+                                <div className={styles.dataSource}>
+                                    {contact.source}
+                                </div>
                             </div>
 
                             <div className={styles.quickActionRow}>
