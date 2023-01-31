@@ -24,8 +24,8 @@ function OrganizationEdit({organisation, onReload, createMode}: {organisation:Or
     const deleteOrganization = () => {
         DeleteOrganization(client, id).then((result: boolean) => {
             if (result) {
-                router.push('/organization');
-                toast.success("Organization removed successfully!");
+                router.push('/');
+                toast.success("Organization was removed successfully!");
             } else {
                 //todo log an error in server side
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
@@ -89,7 +89,11 @@ function OrganizationEdit({organisation, onReload, createMode}: {organisation:Or
                                             }}/>
                                             </div>
                                             <div>
-                                                <IconButton icon={faTrashCan}  ariaLabel="Delete" onClick={() => setDeleteConfirmationModalVisible(true)} className='text-gray-800'/>
+                                                <IconButton
+                                                    icon={faTrashCan}
+                                                    ariaLabel="Delete"
+                                                    onClick={() => setDeleteConfirmationModalVisible(true)}
+                                                    className='text-gray-800'/>
                                             </div>
                                         </>
                                     )

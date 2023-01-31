@@ -19,7 +19,8 @@ export const IconButton: FC<Props> = ({ icon, onClick, children, mode="default",
         <div
             {...rest}
             onClick={onClick}
-            role="button" 
+            role="button"
+            title={rest.ariaLabel}
             tabIndex={0}
             style={rest?.style}
             className={`${styles.button} ${styles[mode]} ${rest.className}`}>
