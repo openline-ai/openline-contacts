@@ -1,5 +1,7 @@
 import {EntityDefinition, EntityExtension} from "./customFields";
 
+type ContactDataSource = "NA" | "OPENLINE" | "HUBSPOT" | "ZENDESK";
+
 export type Contact = {
     id: string;
     title: string;
@@ -10,6 +12,7 @@ export type Contact = {
     notes: string;
     label: string;
     definition: EntityDefinition;
+    source: ContactDataSource;
 } & EntityExtension
 
 export type Owner = {

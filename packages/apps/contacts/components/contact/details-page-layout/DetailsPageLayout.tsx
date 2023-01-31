@@ -51,7 +51,8 @@ export const DetailsPageLayout = () => {
             contactTypeId: contact.contactType?.id ?? undefined,
             contactTypeName: contact.contactType?.name ?? '',
             label: contact.label,
-            definitionId: contact.definition?.id
+            definitionId: contact.definition?.id,
+            source: contact.source
         };
     }
 

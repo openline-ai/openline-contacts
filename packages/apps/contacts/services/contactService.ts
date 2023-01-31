@@ -24,6 +24,7 @@ export function GetContactDetails(client: GraphQLClient, id: string): Promise<Co
                     id
                 }
                 label
+                source
             }
         }`
 

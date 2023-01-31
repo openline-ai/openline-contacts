@@ -71,7 +71,23 @@
 }
 .quickActionRow {
   display:flex;
+}
 
+.dataSourceLabel {
+  color: var(--gray-600);
+  font-weight: bold;
+  font-size: 0.9rem
+}
+
+.dataSource {
+  font-size: 0.9rem;
+  margin-left: 4px;
+  text-transform: lowercase;
+  color: var(--gray-600);
+
+  &:first-letter {
+    text-transform: capitalize;
+  }
 }
 
 .contactFieldSection {
