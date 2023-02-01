@@ -13,7 +13,7 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
     const client =  useGraphQLClient();
     const [loadingNotes, setLoadingNotes] = useState(true);
     const [loadingConversations, setLoadingConversations] = useState(true);
-    const [loadingWebActions, setLoadingWebActions] = useState(true);
+    const [loadingWebActions, setLoadingWebActions] = useState(false);
     const [historyItems, setHistoryItems] = useState([] as any);
     const [historyNotes, setHistoryNotes] = useState([] as any);
     const [historyWebActions, setHistoryWebActions] = useState([] as any);
@@ -49,13 +49,13 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
             setHistoryItems(conversations);
             setLoadingConversations(false);
         });
-        Promise.all(requestsActions).then((response: any) => {
-            const actions = response
-                .map((e:any) => ({...e, createdAt: e?.startedAt, type: "ACTION"}))
-
-            setHistoryWebActions(actions);
-            setLoadingWebActions(false);
-        });
+        // Promise.all(requestsActions).then((response: any) => {
+        //     const actions = response
+        //         .map((e:any) => ({...e, createdAt: e?.startedAt, type: "ACTION"}))
+        //
+        //     setHistoryWebActions(actions);
+        //     setLoadingWebActions(false);
+        // });
 
         Promise.all(requestsNotes).then((response: any) => {
             const newNotes = response
