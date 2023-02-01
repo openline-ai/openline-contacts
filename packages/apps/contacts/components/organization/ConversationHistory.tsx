@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Contact, } from "../../models/contact";
 import {
+    GetActionsForContact,
     GetContactNotes,
     GetConversationsForContact,
 } from "../../services/contactService";
@@ -12,8 +13,10 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
     const client =  useGraphQLClient();
     const [loadingNotes, setLoadingNotes] = useState(true);
     const [loadingConversations, setLoadingConversations] = useState(true);
+    const [loadingWebActions, setLoadingWebActions] = useState(true);
     const [historyItems, setHistoryItems] = useState([] as any);
     const [historyNotes, setHistoryNotes] = useState([] as any);
+    const [historyWebActions, setHistoryWebActions] = useState([] as any);
 
     useEffect(() => {
 
@@ -24,9 +27,13 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
         const requestsNotes = contacts.map(({id}: Contact) => {
                 return GetContactNotes(client, (id as string), {page: 0, limit: 99999})
         })
+        const requestsActions = contacts.map(({id}: Contact) => {
+                return GetActionsForContact(client, (id as string))
+        })
 
 
         Promise.all(requestsConversations).then((response: any) => {
+
             const conversations = response
                 .map((e: { content: any; }) => {return e.content})
                 .flat()
@@ -42,6 +49,17 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
             setHistoryItems(conversations);
             setLoadingConversations(false);
         });
+        Promise.all(requestsActions).then((response: any) => {
+            const actions = response
+                .map((e: { content: any; }) => {return e.content})
+                .flat()
+                .map((e: any) => {
+                    return {...e, type: "ACTION", createdAt: e.startedAt}
+                })
+            setHistoryWebActions(actions);
+            setLoadingWebActions(false);
+        });
+
         Promise.all(requestsNotes).then((response: any) => {
             const newNotes = response
                 .map((e: { content: any; }) => e.content)
@@ -52,22 +70,25 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
         });
     }, []);
 
-    const getSortedItems = (data1: Array<any>, data2:Array<any>) => {
-        return [...data1, ...data2].sort((a, b) => {
+    const getSortedItems = (data1: Array<any>, data2:Array<any>, data3: Array<any>) => {
+        return [...data1, ...data2, ...data3].sort((a, b) => {
             // @ts-ignore
             return  Date.parse(b?.createdAt) - Date.parse(a?.createdAt);
         })
     }
 
-
     return (
         <div className="mt-5">
-
             <Timeline
                       readonly
-                      loading={loadingNotes || loadingConversations}
-                      noActivity={!loadingNotes && !loadingConversations && historyItems.length === 0 && historyNotes.length === 0}
-                      loggedActivities={getSortedItems(historyItems, historyNotes)} />
+                      loading={loadingNotes || loadingConversations || loadingWebActions}
+                      noActivity={!loadingNotes &&
+                          (!loadingConversations
+                              && historyItems.length === 0
+                              && historyNotes.length === 0
+                              && historyWebActions.length === 0
+                          )}
+                      loggedActivities={getSortedItems(historyItems, historyNotes, historyWebActions)} />
 
         </div>
     )

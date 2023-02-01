@@ -1,0 +1,13 @@
+.actionContainer {
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: center;
+  justify-content: space-between;
+
+}
+
+.actionDevice {
+  margin-top: 4px;
+  color: var(--gray-600);
+}

@@ -7,7 +7,7 @@ import {faUser} from "@fortawesome/free-solid-svg-icons";
 
 interface Props extends Partial<HTMLButtonElement> {
     image?: StaticImageData;
-    onClick: () => void;
+    onClick?: () => void;
     ariaLabel: string;
 }
 

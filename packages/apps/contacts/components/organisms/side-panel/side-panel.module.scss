@@ -1,5 +1,11 @@
 .panelWrapper {
    width: auto;
+   background: transparent;
+
+   &.open {
+      background: #fafbff;
+      box-shadow: -7px 2px 20px #bbbbbb;
+   }
 }
 .panel {
    width: 0;
@@ -12,8 +18,9 @@
    transform: translate(-110px);
 }
 .panelIsOpen {
-   width:200px;
+   max-width: 200px;
    transform: translate(0);
+   width: 200px;
 }
 
 
@@ -34,8 +41,7 @@
 }
 
 .openPanelButton {
-   margin: 12px 0 0 12px;
-   //position:absolute;
+   margin: 24px 0 0 12px;
    z-index: 10;
 }
 
@@ -47,22 +53,26 @@
 
 
 .userDataSection {
-   border: 1px solid #ccc;
-   padding:24px;
+   padding: 16px 12px;
    border-radius: 15px;
-   margin: 100px 12px 48px;
+   border: 1px solid #ccc;
+   margin: 24px 12px 36px;
 }
+
 .userDataEntry {
    color: #525252;
-   display:flex;
    font-size: 12px;
    overflow: hidden;
    white-space: nowrap;
    text-overflow: ellipsis;
    display: block;
-
+   //margin-bottom: 40px;
+   //
    & span {
       margin-right: 4px;
+      display: block;
+      margin-bottom: 4px;
+      font-weight: bold;
      }
 }
 
@@ -70,8 +80,9 @@
    border: none;
    width: 100%;
    margin-top: 12px;
-   padding: 12px 48px;
+   padding: 12px 24px;
    background: transparent;
+   text-align: center;
 
    &:hover,
    &:focus,

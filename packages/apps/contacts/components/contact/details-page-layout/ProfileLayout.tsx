@@ -83,7 +83,7 @@ export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
                                     </span>
 
                                     <div className={styles.dataSource}>
-                                        {contact.source}
+                                        {contact?.source || 'unknown'}
                                     </div>
 
                             </div>
