@@ -238,7 +238,7 @@ export const ConversationTimelineItem: React.FC<Props> = (
                                          date={time}
                                          previousMessage={messages?.[index - 1]?.direction || null}
                                          index={index} />
-                                <span className="text-sm "> { `Source: ${source?.toLowerCase() || 'unknown'}`}</span>
+                                <span className="text-sm "> Source: {source?.toLowerCase() || 'unknown'}</span>
                             </TimelineItem>
                         )
                     })
