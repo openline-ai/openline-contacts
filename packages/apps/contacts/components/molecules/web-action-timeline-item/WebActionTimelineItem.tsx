@@ -43,17 +43,11 @@ export const WebActionTimelineItem = (
                             Duration:
                         </span>
 
-                        <span>{engagedTime} {" "} minutes</span>
+                        <span>{engagedTime ? engagedTime : "-"} {" "} minutes</span>
                     </div>
                 </div>
 
             </div>
-
-
-
-
-
-
                 <div>
                     <div className="flex flex-column">
                         <div>
@@ -66,7 +60,7 @@ export const WebActionTimelineItem = (
                     <div className="mt-1">
                         <span className="mr-1 text-gray-700 font-bolder">Accessed from: </span>
                         <span className={styles.actionDevice}>
-                            {capitalizeFirstLetter(application)}
+                            {application ? capitalizeFirstLetter(application) : '-'}
                         </span>
                     </div>
                 </div>
