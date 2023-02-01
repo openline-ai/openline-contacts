@@ -51,7 +51,8 @@ export const DetailsPageLayout = () => {
             contactTypeId: contact.contactType?.id ?? undefined,
             contactTypeName: contact.contactType?.name ?? '',
             label: contact.label,
-            definitionId: contact.definition?.id
+            definitionId: contact.definition?.id,
+            source: contact.source
         };
     }
 
@@ -70,7 +71,10 @@ export const DetailsPageLayout = () => {
         if (router.query.id && router.query.id === 'new') {
             setEditDetails(true);
         } else if (router.query.id && router.query.id !== 'new') {
-            GetContactDetails(client, router.query.id as string).then((contact: Contact) => {
+            GetContactDetails(
+                client,
+                router.query.id as string
+            ).then((contact: Contact) => {
                 setContact(getContactObjectFromResponse(contact));
                 setReloadDetails(false)
             }).catch((reason: any) => {

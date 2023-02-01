@@ -52,9 +52,6 @@ function OrganizationEdit() {
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         }
-
-
-
     }, [router.query.id, reloadDetails]);
 
 
@@ -92,7 +89,7 @@ function OrganizationEdit() {
                     ) : (
                         <EditOrganization
                             createMode={createMode}
-                            organisation={organization}
+                            organisation={organization as any}
                             onReload={() => setReloadDetails(true)}
                         />
                     )}

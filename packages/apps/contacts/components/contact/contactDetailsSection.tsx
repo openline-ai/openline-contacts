@@ -1,6 +1,6 @@
 import {useRouter} from "next/router";
 import {InputText} from "primereact/inputtext";
-import {Button} from "primereact/button";
+import {Button} from "../atoms";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUserNinja} from "@fortawesome/free-solid-svg-icons";
 import {useEffect, useState} from "react";
@@ -19,8 +19,8 @@ import {GetEntityDefinitions} from "../../services/entityDefinitionService";
 import {CustomField, CustomFieldDefinition, EntityDefinition, FieldSetDefinition} from "../../models/customFields";
 import {CustomFieldTemplateProps, EntityDefinitionEditTemplate, EntityDefinitionTemplateProps, FieldSetTemplateProps, mapEntityExtensionDataFromFormData} from "../generic/entityExtensionTemplates";
 import {toast} from "react-toastify";
-import {log} from "util";
 import {useGraphQLClient} from "../../utils/graphQLClient";
+import {capitalizeFirstLetter} from "../../utils/capitalizeFirstLetter";
 
 interface Props {
     editDetails:boolean
@@ -114,79 +114,74 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
 
     const [entityDefinitionTemplateData, setEntityDefinitionTemplateData] = useState({} as EntityDefinitionTemplateProps);
 
-    const contactTypeChanged = (selectedContactTypeId: string) => {
-        if (contactId !== 'new') {
-            return;
-        }
-
-        let selectedContactType = contactTypeList.filter((f: ContactType) => f.id === selectedContactTypeId)[0].name;
-        let definitionName = '';
-        switch (selectedContactType) {
-            case 'Customer':
-                definitionName = "CONTACT_CUSTOMER";
-                break;
-            case 'Clinic':
-                definitionName = "CONTACT_CLINIC";
-                break;
-        }
-
-        if (selectedContactType !== '') {
-            GetEntityDefinitions(client, "CONTACT").then((ed: EntityDefinition[]) => {
-                let entityDefinitionsFiltered = ed.filter((e: EntityDefinition) => e.name === definitionName);
-                let entityDefinitionsSelected = undefined;
-                if (entityDefinitionsFiltered.length === 1) {
-                    entityDefinitionsSelected = entityDefinitionsFiltered[0];
-
-                    setValue('definitionId', entityDefinitionsSelected.id);
-                } else {
-                    return;
-                }
-
-                if (contactId === 'new') {
-                    const obj = {} as EntityDefinitionTemplateProps;
-                    obj.register = register;
-                    obj.fields = entityDefinitionsSelected.fields.map((f: (CustomFieldDefinition | FieldSetDefinition)) => {
-                        if ((f as CustomFieldDefinition).type) {
-                            return customFieldDefinitionToTemplateProps(f as CustomFieldDefinition);
-                        } else {
-                            const fieldSet = f as FieldSetDefinition;
-                            return {
-                                id: `fieldSet_${fieldSet.id}`,
-                                definitionId: fieldSet.id,
-                                name: fieldSet.name,
-                                customFields: fieldSet.customFields.map((f: CustomFieldDefinition) => customFieldDefinitionToTemplateProps(f as CustomFieldDefinition, fieldSet.id)),
-                                register: register
-                            } as FieldSetTemplateProps;
-                        }
-                    });
-
-                    setEntityDefinitionTemplateData(obj);
-                }
-            }).catch((reason: any) => {
-                //todo log an error in server side
-                toast.error("There was a problem on our side and we are doing our best to solve it!");
-            });
-        }
-    }
-
-    const customFieldDefinitionToTemplateProps = (
-        f: CustomFieldDefinition,
-        fieldSetId: string | undefined = undefined,
-        data: CustomField | undefined = undefined
-    ): CustomFieldTemplateProps => {
-        return {
-            id: fieldSetId ? `fieldSet_${fieldSetId}_customField_${data ? data.id : f.id}` : `customField_${data ? data.id : f.id}`,
-            definition: f,
-            data: data ?? {
-                id: undefined,
-                name: f.name,
-                datatype: f.type,
-                definitionId: f.id,
-                value: undefined
-            },
-            register: register
-        } as CustomFieldTemplateProps;
-    }
+    // #240 custom fields should remain hidden
+        // const contactTypeChanged = (selectedContactTypeId: string) => {
+        // const selectedContactType = contactTypeList.filter((f: ContactType) => f.id === selectedContactTypeId)[0].name;
+        // let definitionName = '';
+        // switch (selectedContactType) {
+        //     case 'Customer':
+        //         definitionName = "CONTACT_CUSTOMER";
+        //         break;
+        //     case 'Clinic':
+        //         definitionName = "CONTACT_CLINIC";
+        //         break;
+        // }
+        // if (selectedContactType !== '') {
+        //     GetEntityDefinitions(client, "CONTACT").then((ed: EntityDefinition[]) => {
+        //         let entityDefinitionsFiltered = ed.filter((e: EntityDefinition) => e.name === definitionName);
+        //         let entityDefinitionsSelected = undefined;
+        //         if (entityDefinitionsFiltered.length === 1) {
+        //             entityDefinitionsSelected = entityDefinitionsFiltered[0];
+        //
+        //             setValue('definitionId', entityDefinitionsSelected.id);
+        //         } else {
+        //             return;
+        //         }
+        //
+                // // if (contactId === 'new') {
+                //     const obj = {} as EntityDefinitionTemplateProps;
+                //     obj.register = register;
+                //     obj.fields = entityDefinitionsSelected.fields.map((f: (CustomFieldDefinition | FieldSetDefinition)) => {
+                //         if ((f as CustomFieldDefinition).type) {
+                //             return customFieldDefinitionToTemplateProps(f as CustomFieldDefinition);
+                //         } else {
+                //             const fieldSet = f as FieldSetDefinition;
+                //             return {
+                //                 id: `fieldSet_${fieldSet.id}`,
+                //                 definitionId: fieldSet.id,
+                //                 name: fieldSet.name,
+                //                 customFields: fieldSet.customFields.map((f: CustomFieldDefinition) => customFieldDefinitionToTemplateProps(f as CustomFieldDefinition, fieldSet.id)),
+                //                 register: register
+                //             } as FieldSetTemplateProps;
+                //         }
+                //     });
+                //
+                //     setEntityDefinitionTemplateData(obj);
+                // // }
+            // }).catch((reason: any) => {
+            //     //todo log an error in server side
+            //     toast.error("There was a problem on our side and we are doing our best to solve it!");
+            // });
+        // }
+    // }
+    // const customFieldDefinitionToTemplateProps = (
+    //     f: CustomFieldDefinition,
+    //     fieldSetId: string | undefined = undefined,
+    //     data: CustomField | undefined = undefined
+    // ): CustomFieldTemplateProps => {
+    //     return {
+    //         id: fieldSetId ? `fieldSet_${fieldSetId}_customField_${data ? data.id : f.id}` : `customField_${data ? data.id : f.id}`,
+    //         definition: f,
+    //         data: data ?? {
+    //             id: undefined,
+    //             name: f.name,
+    //             datatype: f.type,
+    //             definitionId: f.id,
+    //             value: undefined
+    //         },
+    //         register: register
+    //     } as CustomFieldTemplateProps;
+    // }
 
 
     return (
@@ -236,31 +231,21 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
                             </div>
                             <div className="field w-full">
                                 <label htmlFor="contactTypeId" className="block">Type</label>
-
-                                {
-                                    contact.id &&
-                                    <InputText disabled id="contactTypeName" {...register("contactTypeName")} className="w-full" readOnly={true}/>
-                                }
-                                {
-                                    !contact.id &&
                                     <Controller name="contactTypeId" control={control} render={({field}) => (
                                         <>
                                             <Dropdown id={field.name}
                                                       value={field.value}
                                                       onChange={(e) => {
                                                           field.onChange(e.value);
-                                                          contactTypeChanged(e.value);
+                                                          // contactTypeChanged(e.value);
                                                       }}
-                                                      options={contactTypeList.map((e:any) => ({...e, name: e.name.split('_').join(' ').toLowerCase()}))}
+                                                      options={contactTypeList.map((e:any) => ({...e, name: capitalizeFirstLetter(e.name.split('_').join(' '))}))}
                                                       optionValue="id"
                                                       optionLabel="name"
                                                       className="w-full"/>
                                         </>
-                                    )}
-                                                />
-                                   
-                                }
-
+                                        )}
+                                    />
                             </div>
                             <div className="field w-full">
                                 <label htmlFor="label" className="block">Label</label>
@@ -275,8 +260,8 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
                         </form>
 
                         <div className="flex justify-content-end">
-                            <Button onClick={() => setEditDetails(false)} className='p-button-link text-gray-600' label="Cancel"/>
-                            <Button onClick={() => onSubmit()} label="Save"/>
+                            <Button onClick={(e: any) => setEditDetails(false)} className='p-button-link text-gray-600'> Cancel</Button>
+                            <Button onClick={() => onSubmit()} mode="primary">Save</Button>
                         </div>
                     </div>
 

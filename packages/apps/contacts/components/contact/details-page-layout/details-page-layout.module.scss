@@ -49,15 +49,12 @@
 }
 
 .profileSection {
-  //background: #d2e5ff;
   display: flex;
-  //padding: 12px;
   grid-area: profile;
-  //padding: 32px;
 }
 
 .userDataSection {
-  padding: 8px;
+  padding: 0 8px 8px;
 }
 .profileUserData {
   display: flex;
@@ -71,7 +68,24 @@
 }
 .quickActionRow {
   display:flex;
+}
 
+.dataSourceLabel,
+.contactType {
+  color: var(--gray-600);
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.dataSource {
+  font-size: 0.9rem;
+  margin-left: 4px;
+  text-transform: lowercase;
+  color: var(--gray-600);
+
+  &:first-letter {
+    text-transform: capitalize;
+  }
 }
 
 .contactFieldSection {

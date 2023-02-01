@@ -5,7 +5,7 @@ export function GetEntityDefinitions(client: GraphQLClient, type: String): Promi
     return new Promise((resolve, reject) => {
 
         const entityDefinitionsQuery = gql`query GetEntityExtensions {
-            entityDefinitions(extends: ${type}) {
+            entityTemplates(extends: ${type}) {
                 id
                 name
                 fieldSets {
@@ -39,10 +39,10 @@ export function GetEntityDefinitions(client: GraphQLClient, type: String): Promi
         //getting and building the entity definitions
         //the custom fields and sets are ordered by the order property
         client.request(entityDefinitionsQuery).then((response: any) => {
-            if (response.entityDefinitions) {
+            if (response.entityTemplates) {
                 const definitions: EntityDefinition[] = [];
 
-                response.entityDefinitions.forEach((ed: any) => {
+                response.entityTemplates.forEach((ed: any) => {
 
                     var sortedData = [] as any;
                     ed.customFields.forEach((f: any) => sortedData.push(f));

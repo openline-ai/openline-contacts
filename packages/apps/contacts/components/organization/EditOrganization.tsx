@@ -1,11 +1,9 @@
 import {useRouter} from "next/router";
-import {GraphQLClient} from "graphql-request";
-import {Button} from "../atoms";
+import {Button, DeleteConfirmationDialog, Address} from "../atoms";
 import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
-import {useState} from "react";
+import React, {useState} from "react";
 import {InputText} from "primereact/inputtext";
 import {useForm} from "react-hook-form";
-import {Dialog} from "primereact/dialog";
 import {toast} from "react-toastify";
 import {Organization} from "../../models/organization";
 import {CreateOrganization, DeleteOrganization, UpdateOrganization} from "../../services/organizationService";
@@ -15,21 +13,18 @@ import {CardHeading} from "../atoms/cardHeading";
 import Link from "next/link";
 import * as domain from "domain";
 
-// todo add reload
-function OrganizationEdit({organisation, onReload, createMode}: {organisation:any, createMode:boolean, onReload: () =>void}) {
+function OrganizationEdit({organisation, onReload, createMode}: {organisation:Organization, createMode:boolean, onReload: () =>void}) {
     const client =  useGraphQLClient();
 
     const [editDetails, setEditDetails] = useState(createMode);
-
     const router = useRouter();
     const {id} = router.query;
-
     const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
     const deleteOrganization = () => {
         DeleteOrganization(client, id).then((result: boolean) => {
             if (result) {
-                router.push('/organization');
-                toast.success("Organization removed successfully!");
+                router.push('/');
+                toast.success("Organization was removed successfully!");
             } else {
                 //todo log an error in server side
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
@@ -93,7 +88,11 @@ function OrganizationEdit({organisation, onReload, createMode}: {organisation:an
                                             }}/>
                                             </div>
                                             <div>
-                                                <IconButton icon={faTrashCan}  ariaLabel="Delete" onClick={() => setDeleteConfirmationModalVisible(true)} className='text-gray-800'/>
+                                                <IconButton
+                                                    icon={faTrashCan}
+                                                    ariaLabel="Delete"
+                                                    onClick={() => setDeleteConfirmationModalVisible(true)}
+                                                    className='text-gray-800'/>
                                             </div>
                                         </>
                                     )
@@ -116,6 +115,23 @@ function OrganizationEdit({organisation, onReload, createMode}: {organisation:an
                                           className='cta'>
                                         {organisation?.domain}
                                     </Link>
+                                </div>
+
+                                <div>
+                                    {organisation?.addresses?.map((data) => (
+                                        <Address
+                                            key={data.id}
+                                            createdAt={data.createdAt}
+                                            country={data.country}
+                                            state={data.state}
+                                            city={data.city}
+                                            address={data.address}
+                                            address2={data?.address2}
+                                            zip={data.zip}
+                                            phone={data.phone}
+                                            fax={data?.fax}
+                                        />
+                                    ))}
                                 </div>
                             </div>
                         }
@@ -164,28 +180,17 @@ function OrganizationEdit({organisation, onReload, createMode}: {organisation:an
                 {
                     !editDetails &&
                     <>
-                        <Dialog header="Organization delete confirmation"
-                                draggable={false}
-                                visible={deleteConfirmationModalVisible}
-                                footer={
-                                    <div className="flex flex-grow-1 justify-content-between align-items-center">
-                                        <Button
-                                                mode="danger"
-                                                onClick={() => deleteOrganization()}
-                                        >
-                                            Delete the organization
-                                        </Button>
-                                        <Button
-                                            onClick={() => setDeleteConfirmationModalVisible(false)}
-                                            className="p-button-text"
-
-                                        >Cancel</Button>
-                                    </div>
-                                }
-                                onHide={() => setDeleteConfirmationModalVisible(false)}>
-                            <p>Please confirm that you want to delete this organization.</p>
-                            <p>The contacts will not be changed, but the associations to this organization will be removed.</p>
-                        </Dialog>
+                        <DeleteConfirmationDialog
+                            deleteConfirmationModalVisible={deleteConfirmationModalVisible}
+                            setDeleteConfirmationModalVisible={setDeleteConfirmationModalVisible}
+                            deleteAction={deleteOrganization}
+                            explanationText={(
+                                <>
+                                    <p>Please confirm that you want to delete this organization.</p>
+                                    <p>The contacts will not be changed, but the associations to this organization will be removed.</p>
+                                </>
+                            )}
+                        />
                     </>
                 }
             </div>

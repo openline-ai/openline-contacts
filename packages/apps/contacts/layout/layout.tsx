@@ -7,11 +7,13 @@ import { edgeConfig } from "@ory/integrations/next"
 import { useEffect, useState } from "react";
 import { getUserName } from "../utils/logged-in";
 import {initGraphQLClient} from "../utils/graphQLClient";
+import styles from './layout.module.scss'
 
 const ory = new FrontendApi(new Configuration(edgeConfig))
 
 export default function Layout({ children }: any) {
     const router = useRouter();
+    const [isSidePanelVisible, setSidePanelVisible] = useState(false);
 
     const [session, setSession] = useState<Session | undefined>()
     const [userEmail, setUserEmail] = useState<string | undefined>()
@@ -58,13 +60,19 @@ export default function Layout({ children }: any) {
     }
 
     return (
-        <div className="flex h-full w-full">
+        <div className={`flex h-full w-full ${styles.pageContentWrapper}`}>
 
             {router.pathname === '/' && (
-                <SidePanel userEmail={userEmail} logoutUrl={logoutUrl} />
+                <SidePanel
+                    userEmail={userEmail}
+                    logoutUrl={logoutUrl}
+                    isOpen={isSidePanelVisible}
+                    onOpen={() => setSidePanelVisible(true)}
+                    onClose={() => setSidePanelVisible(false)}
+                />
             )}
 
-            <div className="flex-grow-1 flex h-full overflow-auto">
+            <div className={`flex-grow-1 flex h-full`}>
                 <div className="w-full h-full">
                     {children}
                 </div>

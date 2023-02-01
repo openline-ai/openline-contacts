@@ -4,8 +4,8 @@ import {gql} from "graphql-request";
 import {PaginatedResponse, Pagination} from "../../utils/pagination";
 import {Skeleton} from "primereact/skeleton";
 import {useGraphQLClient} from "../../utils/graphQLClient";
-import {GetContactNotes} from "../../services/contactService";
-import {Note} from "../../models/contact";
+import {GetActionsForContact, GetContactNotes} from "../../services/contactService";
+import {Contact, ContactWithActions, Note} from "../../models/contact";
 import {toast} from "react-toastify";
 import {Timeline} from "../organisms";
 
@@ -19,19 +19,29 @@ function ContactHistory(props: Props) {
 
     const [conversationsLoading, setConversationLoading] = useState(true);
     const [notesLoading, setNoteLoading] = useState(true);
-    const [noteTotalElements, setNoteTotalElements] = useState(0);
+    const [actionsLoading, setActionsLoading] = useState(true);
 
     const [conversationHistory, setConversationHistory] = useState([] as any);
     const [noteItems, setNoteItems] = useState([] as any);
+    const [actions, setActions] = useState([] as any);
 
     useEffect(() => {
-        // todo split conversation and note to different use effects
         if (props.contactId) {
+            GetActionsForContact(
+                client,
+                props.contactId as string,
+            ).then((contact: ContactWithActions) => {
+                setActions(contact.actions)
+                setActionsLoading(false)
+            }).catch((reason: any) => {
+                //todo log an error in server side
+                setActionsLoading(false)
+                toast.error("HERE ");
+            });
 
             GetContactNotes(client, (props.contactId as string), {page: 0, limit: 100}).then(async (result: PaginatedResponse<Note>) => {
                 if (result) {
                     setNoteItems(result.content.map((data) => ({...data, type: "NOTE"})));
-                    setNoteTotalElements(result.totalElements);
                     setNoteLoading(false);
                     props.setReload(false)
                 } else {
@@ -44,7 +54,26 @@ function ContactHistory(props: Props) {
                 props.setReload(false)
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
+        }
 
+    }, [props.contactId, props.reload]);
+
+    useEffect(() => {
+        if (props.contactId) {
+            GetActionsForContact(
+                client,
+                props.contactId as string,
+            ).then((contact: ContactWithActions) => {
+                setActions(contact.actions.map(e => ({...e, createdAt: e.startedAt, type: "ACTION"})))
+            }).catch((reason: any) => {
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
+            });
+        }
+    }, [props.contactId]);
+
+
+    useEffect(() => {
+        if (props.contactId) {
             const query = gql`query GetConversationsForContact($id: ID!, $pagination: Pagination!) {
                 contact(id: $id) {
                     conversations(pagination: $pagination) {
@@ -73,12 +102,12 @@ function ContactHistory(props: Props) {
             });
         }
 
-    }, [props.contactId, props.reload]);
+    }, [props.contactId]);
 
     const noHistoryItemsAvailable =  !conversationsLoading && conversationHistory.length == 0 && !notesLoading && noteItems.length == 0
 
-    const getSortedItems = (data1: Array<any>, data2:Array<any>) => {
-        return [...data1, ...data2].sort((a, b) => {
+    const getSortedItems = (data1: Array<any>, data2:Array<any>, data3: Array<any>) => {
+        return [...data1, ...data2, ...data3].sort((a, b) => {
             // @ts-ignore
             return  Date.parse(b?.createdAt) - Date.parse(a?.createdAt);
         })
@@ -86,9 +115,12 @@ function ContactHistory(props: Props) {
 
 
     return (
-                <Timeline loading={conversationsLoading || notesLoading}
-                          noActivity={noHistoryItemsAvailable}
-                          loggedActivities={getSortedItems(conversationHistory, noteItems)} />
+            <Timeline
+                loading={conversationsLoading || notesLoading || actionsLoading}
+                noActivity={noHistoryItemsAvailable}
+                contactId={props.contactId as string}
+                notifyChange={props.setReload}
+                loggedActivities={getSortedItems(conversationHistory, noteItems, actions)} />
 
     );
 }

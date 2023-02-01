@@ -1,17 +1,28 @@
 import React from "react";
-
 import {Skeleton} from "primereact/skeleton";
-import {ConversationTimelineItem, EmailTimelineItem, NoteTimelineItem, PhoneCallTimelineItem} from "../../molecules";
+import {
+    ConversationTimelineItem,
+    NoteTimelineItem,
+    WebActionTimelineItem
+} from "../../molecules";
 import {TimelineItem} from "../../atoms/timeline-item";
 
 interface Props {
     loading: boolean
     noActivity: boolean
+    contactId?: string
     loggedActivities: Array<any>
+    notifyChange?: (id: any) => void
+    readonly?:boolean
 }
-export const Timeline = ({loading, noActivity, loggedActivities}: Props) => {
-
-
+export const Timeline = ({
+                             loading,
+                             noActivity,
+                             loggedActivities,
+                             contactId,
+                             notifyChange= () => null,
+                             readonly=false
+}: Props) => {
     if (loading) {
         return (
             <div className="flex flex-column mt-4">
@@ -36,15 +47,29 @@ export const Timeline = ({loading, noActivity, loggedActivities}: Props) => {
         switch (type) {
             case "NOTE":
                 return <TimelineItem last={loggedActivities.length -1 === index} createdAt={data?.createdAt} >
-                            <NoteTimelineItem noteContent={data.html} createdAt={data.createdAt} />
+                            <NoteTimelineItem
+                                noteContent={data.html}
+                                createdAt={data.createdAt}
+                                createdBy={data?.createdBy}
+                                id={data.id}
+                                refreshNoteData={notifyChange}
+                                contactId={contactId}
+                                readonly={readonly}
+                            />
                         </TimelineItem>
             case "CONVERSATION":
                 return <ConversationTimelineItem feedId={data.id} source={data.source} createdAt={data?.createdAt}/>
+            case "ACTION":
+                return (
+                    <TimelineItem last={loggedActivities.length -1 === index} createdAt={data?.createdAt} >
+                        <WebActionTimelineItem {...data} />
+                    </TimelineItem>
+                )
             // case "CALL":
             //     return <PhoneCallTimelineItem phoneCallParties={data} duration={}/>
             default:
                 // eslint-disable-next-line react/no-unescaped-entities
-                return <div>Sorry, looks like " {type} " activity type is not supported yet </div>
+                return type ? (<div>Sorry, looks like " {type} " activity type is not supported yet </div>) : ''
         }
     }
 

@@ -1,10 +1,9 @@
 import {Controller, useForm} from "react-hook-form";
 import PropTypes from "prop-types";
-import {useState} from "react";
-import {gql, GraphQLClient} from "graphql-request";
-import {Button} from "primereact/button";
+import React, {useState} from "react";
+import {gql} from "graphql-request";
+import {Button} from "../../atoms";
 import {faEdit, faTrashCan} from "@fortawesome/free-solid-svg-icons";
-import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
 import {Dropdown} from "primereact/dropdown";
 import {Checkbox} from "primereact/checkbox";
@@ -13,6 +12,7 @@ import {toast} from "react-toastify";
 import styles from "./contact-detail-preview.module.scss";
 import {IconButton} from "../../atoms/icon-button";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
+import {DeleteConfirmationDialog} from "../../atoms";
 function ContactPhoneNumberTemplate(props: any) {
     const client =  useGraphQLClient();
 
@@ -124,6 +124,7 @@ function ContactPhoneNumberTemplate(props: any) {
                         <div className='flex'>
                             <div className="mr-3">
                                 <IconButton
+                                    mode="secondary"
                                     className="p-button-text p-0"
                                     onClick={(e: any) => {
                                         setValue('id', props.phoneNumber.id);
@@ -138,28 +139,19 @@ function ContactPhoneNumberTemplate(props: any) {
                             <div>
                                 <IconButton
                                     className="p-button-text p-0"
+                                    mode="secondary"
                                     onClick={() => setDeletePhoneNumberConfirmationModalVisible(true)}
                                     icon={faTrashCan}
                                 />
                             </div>
                         </div>
-                   
-
-                        
-                            <Dialog header="Phone number delete confirmation"
-                                    draggable={false}
-                                    visible={deletePhoneNumberConfirmationModalVisible}
-                                    footer={
-                                        <div className="flex flex-grow-1 justify-content-between align-items-center">
-                                            <Button label="Delete the phone number" icon="pi pi-check" onClick={() => deletePhoneNumber()} autoFocus/>
-                                            <Button label="Cancel" icon="pi pi-times" onClick={() => setDeletePhoneNumberConfirmationModalVisible(false)} className="p-button-text"/>
-                                        </div>
-                                    }
-                                    onHide={() => setDeletePhoneNumberConfirmationModalVisible(false)}>
-                                <p>Please confirm that you want to delete this phone number.</p>
-                            </Dialog>
-
-                        </div>
+                        <DeleteConfirmationDialog
+                            deleteConfirmationModalVisible={deletePhoneNumberConfirmationModalVisible}
+                            setDeleteConfirmationModalVisible={setDeletePhoneNumberConfirmationModalVisible}
+                            deleteAction={deletePhoneNumber}
+                            confirmationButtonLabel="Delete phone number"
+                        />
+                    </div>
             }
 
             {
@@ -186,8 +178,12 @@ function ContactPhoneNumberTemplate(props: any) {
                     </form>
 
                     <div className="flex justify-content-end">
-                        <Button onClick={(e: any) => notifyCancelEdit(props.phoneNumber.uiKey)} className='p-button-link text-gray-600' label="Cancel"/>
-                        <Button onClick={() => onSubmit()} label="Save"/>
+                        <Button
+                            onClick={(e: any) => notifyCancelEdit(props.phoneNumber.uiKey)}
+                            className='p-button-link  text-gray-600'>
+                            Cancel
+                        </Button>
+                        <Button onClick={() => onSubmit()} mode="primary"> Save </Button>
                     </div>
                 </div>
             }

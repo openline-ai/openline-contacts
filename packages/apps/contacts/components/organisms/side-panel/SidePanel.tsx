@@ -9,25 +9,26 @@ import {useRouter} from "next/router";
 interface Props {
     userEmail: any;
     logoutUrl: string | undefined;
+    isOpen: boolean
+    onOpen: () => void
+    onClose: () => void
 }
 
-export const SidePanel: React.FC<Props> = ({userEmail, logoutUrl}) => {
-    const [isSidePanelVisible, setSidePanelVisible] = useState(false);
+export const SidePanel: React.FC<Props> = ({userEmail, logoutUrl, isOpen, onOpen, onClose}) => {
     const router = useRouter();
 
     return (
-        <div className={styles.panelWrapper} style={{background: isSidePanelVisible ? "white" : "transparent"}}>
-            <div className={styles.openPanelButton}>
-                <AvatarButton ariaLabel='Profile' onClick={() => setSidePanelVisible(!isSidePanelVisible)}/>
+        <div className={`${styles.panelWrapper} ${isOpen ? styles.open : ''} ' `} style={{background: isOpen ? "white" : "transparent"}}>
+            <div className={styles.openPanelButton} >
+                <AvatarButton ariaLabel='Profile' onClick={isOpen ? onClose : onOpen} />
             </div>
-
-            <div className={`${isSidePanelVisible ? styles.panelIsOpen : styles.panelClosed} ${styles.panel}`}>
-                <div className={`${styles.content} ${isSidePanelVisible ? styles.contentVisible : styles.contentHidden}`}>
+            <div className={`${isOpen ? styles.panelIsOpen : styles.panelClosed} ${styles.panel}`}>
+                <div className={`${isOpen ? styles.contentVisible : styles.contentHidden}`}>
                     <div className={styles.userDataSection}>
                         <div className={styles.userDataEntry}>
-                            <div>
+                            <span>
                                 Email:
-                            </div>
+                            </span>
                             {userEmail}
                         </div>
                     </div>

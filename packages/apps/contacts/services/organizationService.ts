@@ -5,8 +5,6 @@ import {Organization} from "../models/organization";
 
 export function GetOrganizations(client: GraphQLClient, params: PaginatedRequest): Promise<PaginatedResponse<Organization>> {
     return new Promise((resolve, reject) => {
-        console.log('🏷️ ----- params: '
-            , params);
         const query = gql`query GetOrganizations($pagination: Pagination, $where: Filter, $sort: [SortBy!]){
             organizations(pagination: $pagination, where: $where, sort: $sort){
                 content {
@@ -14,6 +12,25 @@ export function GetOrganizations(client: GraphQLClient, params: PaginatedRequest
                     name
                     industry
                     website
+                    organizationType {
+                        id
+                        name
+                    }
+                    source
+                    addresses {
+                        id
+                        createdAt
+                        country
+                        state
+                        city
+                        address
+                        address2
+                        zip
+                        phone
+                        fax
+                        source
+                    }
+                    
                 }
                 totalElements
             }
@@ -54,6 +71,20 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
                         lastName
                         source
                         title
+                        addresses {
+                            id
+                            createdAt
+                            country
+                            state
+                            city
+                            address
+                            address2
+                            zip
+                            phone
+                            fax
+                            source
+                            
+                        }
                         contactType {
                             id
                         }

@@ -1,7 +1,6 @@
 .noteContainer {
   display: flex;
-  flex-direction: column;
-
+  justify-content: space-between;
 }
 
 .noteContent {
@@ -16,22 +15,31 @@
     text-decoration: underline;
     text-decoration-color: var(--gray-400);
   }
-
-
 }
 
 .pin {
   position: absolute;
-  right: 10px;
+  left: 10px;
   top: 8px;
-  transform: rotate3d(0, 1, 1, 45deg);
-  color: var(--gray-700)
+  transform: rotate3d(1, 2, 2, -25deg);
+  color: var(--gray-700);
+  height: 0.8rem;
 }
 
 .note {
   padding: 12px;
   margin-bottom: 8px;
-  //border-radius: 4px;
   border: 1px solid var(--gray-200);
+}
 
+.noteData {
+  display:flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  margin-right: 16px
+}
+
+.actions {
+  margin-right: -16px;
+  color: var(--gray-700)
 }

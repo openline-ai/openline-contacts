@@ -11,6 +11,8 @@ interface Props {
     mode?: 'default' | 'primary' | 'secondary';
     disabled?: boolean;
     className?: string;
+    style?: any;
+    type?: string
 }
 
 export const IconButton: FC<Props> = ({ icon, onClick, children, mode="default", ...rest}) => {
@@ -18,7 +20,11 @@ export const IconButton: FC<Props> = ({ icon, onClick, children, mode="default",
         <div
             {...rest}
             onClick={onClick}
-            role="button" tabIndex={0} className={`${styles.button} ${styles[mode]} ${rest.className}`}>
+            role="button"
+            title={rest.ariaLabel}
+            tabIndex={0}
+            style={rest?.style}
+            className={`${styles.button} ${styles[mode]} ${rest.className}`}>
             <>
                 {icon && (
                     <FontAwesomeIcon icon={icon} />

@@ -25,6 +25,13 @@
 
   &.secondary {
     background: #D3D3D3;
+
+    &:hover,
+    &:focus,
+    &:active {
+      background: linear-gradient(-45deg, var(--primary-color), #f696b6);
+    }
+
   }
 
   &.default {
@@ -87,17 +94,6 @@
       color: var(--blue-600);
       text-decoration: underline;
 
-    }
-  }
-
-  &.text {
-    color: var(--gray-800);
-    background: transparent;
-
-    &:hover,
-    &:focus,
-    &:active {
-      color: var(--gray-700);
     }
   }
 

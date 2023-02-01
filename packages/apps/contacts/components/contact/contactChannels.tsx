@@ -1,6 +1,6 @@
 import PropTypes, {string} from "prop-types";
 import React, {useEffect, useRef, useState} from "react";
-import {gql, GraphQLClient} from "graphql-request";
+import {gql} from "graphql-request";
 import {OverlayPanel, OverlayPanelEventType} from "primereact/overlaypanel";
 import {Menu} from "primereact/menu";
 import ContactEmailTemplate from "./contact-detail-preview-template/contactEmailTemplate";
@@ -10,6 +10,7 @@ import {faPlus} from "@fortawesome/free-solid-svg-icons/faPlus";
 import {Button, Divider} from "../atoms";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {useGraphQLClient} from "../../utils/graphQLClient";
+import {EmailLabelEnum} from "../../model/enum-emailLabel";
 
 function ContactCommunication(props: any) {
     const client =  useGraphQLClient();
@@ -124,9 +125,9 @@ function ContactCommunication(props: any) {
                 <div className="flex flex-row w-full align-items-center">
                     <h1 className="text-gray-900 text-xl">Communication</h1>
                     <div className="flex ml-3">
-                        {/* fixme */}
                         <div className='flex flex-1 justify-content-end'>
-                            <Button onClick={(e: OverlayPanelEventType) => addCommunicationChannelContainerRef?.current?.toggle(e)}>
+                            <Button 
+                                onClick={(e: OverlayPanelEventType) => addCommunicationChannelContainerRef?.current?.toggle(e)}>
                                 <FontAwesomeIcon icon={faPlus} />
                                 Add
                             </Button>
@@ -139,7 +140,7 @@ function ContactCommunication(props: any) {
                                         setEmails([...emails, {
                                             id: undefined,
                                             email: '',
-                                            label: '',
+                                            label: EmailLabelEnum[1].value,
                                             primary: emails.length === 0,
                                             uiKey: uuidv4(), //TODO make sure the ID is unique in the array
                                             newItem: true // this is used to remove the item from the emails array in case of cancel new item
@@ -177,24 +178,26 @@ function ContactCommunication(props: any) {
 
                 {
                     emails.map((e: any, i:number) => {
-                        return <>
-                            <ContactEmailTemplate key={e.uiKey}
-                                                  contactId={props.contactId}
-                                                  email={e}
-                                                  initialEditState={e.newItem}
-                                                  notifySave={(e: any) => emailSaved(e)}
-                                                  notifyDelete={(uiKey: string) => emailDeleted(uiKey)}
-                                                  notifyCancelEdit={(uiKey: string) => emailCancelEdit(uiKey)}
-                            />
+                        return (
+                            <React.Fragment key={e.uiKey}>
+                                <ContactEmailTemplate
+                                    contactId={props.contactId}
+                                    email={e}
+                                    initialEditState={e.newItem}
+                                    notifySave={(e: any) => emailSaved(e)}
+                                    notifyDelete={(uiKey: string) => emailDeleted(uiKey)}
+                                    notifyCancelEdit={(uiKey: string) => emailCancelEdit(uiKey)}
+                                />
                                 <Divider/>
-                        </>
-                   
+                            </React.Fragment>
+                        )
                     })
                 }
 
                 {
                     phoneNumbers.map((e: any) => {
-                        return <ContactPhoneNumberTemplate key={e.uiKey}
+                        return <ContactPhoneNumberTemplate 
+                                                     key={e.uiKey}
                                                      contactId={props.contactId}
                                                      phoneNumber={e}
                                                      initialEditState={e.newItem}

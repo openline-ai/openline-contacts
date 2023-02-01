@@ -1,5 +1,5 @@
 import {gql, GraphQLClient} from "graphql-request";
-import {Contact, Note} from "../models/contact";
+import {Contact, ContactWebAction, ContactWithActions, Note} from "../models/contact";
 import {PaginatedResponse, Pagination} from "../utils/pagination";
 
 export function GetContactDetails(client: GraphQLClient, id: string): Promise<Contact> {
@@ -24,12 +24,50 @@ export function GetContactDetails(client: GraphQLClient, id: string): Promise<Co
                     id
                 }
                 label
+                source
             }
         }`
 
-        client.request(query, {id: id}).then((response: any) => {
+        client.request(query, {id}).then((response: any) => {
             if (response.contact) {
                 resolve(response.contact);
+            } else {
+                reject(response.error);
+            }
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
+}
+
+export function GetActionsForContact(client: GraphQLClient, id: string): Promise<ContactWithActions> {
+    return new Promise((resolve, reject) => {
+       const from =  new Date(1970, 0, 1).toISOString();
+       const to = new Date().toISOString()
+        const query = gql`query GetActionsForContact($id: ID!, $from: Time!, $to: Time! ) {
+            contact(id: $id) {
+                id
+                firstName
+                lastName
+                actions(from:$from, to:$to) {
+                    ... on PageViewAction {
+                        id
+                        application
+                        startedAt
+                        endedAt
+                        engagedTime
+                        pageUrl
+                        pageTitle
+                        orderInSession
+                        sessionId
+                    }
+                }
+            }
+        }`
+
+        client.request(query, {id, from, to}).then((response: any) => {
+            if (response.contact) {
+                resolve({...response.contact});
             } else {
                 reject(response.error);
             }
@@ -166,13 +204,15 @@ export function UpdateContact(client: GraphQLClient, data: any): Promise<Contact
 
         client.request(query, {
                 contact: {
-                    id: data.id,
-                    title: data.title,
-                    firstName: data.firstName,
-                    lastName: data.lastName,
-                    ownerId: data.ownerId,
-                    label: data.label,
-                    notes: data.notes
+                        id: data.id,
+                        title: data.title,
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                        contactTypeId: data.contactTypeId,
+                        ownerId: data.ownerId,
+                        label: data.label,
+                        notes: data.notes,
+                        definitionId: data.definitionId,
                 }
             }
         ).then((response: any) => {
