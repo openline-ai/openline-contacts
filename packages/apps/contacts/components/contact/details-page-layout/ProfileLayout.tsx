@@ -42,8 +42,6 @@ export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
             toast.error("There was a problem on our side and we are doing our best to solve it!");
         });
     }
-    console.log('🏷️ ----- contact: '
-        , contact);
 
     return (
             <section className={styles.profileSection}>
