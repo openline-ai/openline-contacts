@@ -51,11 +51,8 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
         });
         Promise.all(requestsActions).then((response: any) => {
             const actions = response
-                .map((e: { content: any; }) => {return e.content})
-                .flat()
-                .map((e: any) => {
-                    return {...e, type: "ACTION", createdAt: e.startedAt}
-                })
+                .map((e:any) => ({...e, createdAt: e?.startedAt, type: "ACTION"}))
+
             setHistoryWebActions(actions);
             setLoadingWebActions(false);
         });
