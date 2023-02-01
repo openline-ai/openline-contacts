@@ -67,42 +67,7 @@ export function GetActionsForContact(client: GraphQLClient, id: string): Promise
 
         client.request(query, {id, from, to}).then((response: any) => {
             if (response.contact) {
-                const actions = [
-                    {
-                        id: '1',
-                        startedAt: '2022-01-01T10:00:00.000Z',
-                        endedAt: '2022-01-01T10:30:00.000Z',
-                        pageTitle: 'Homepage',
-                        pageUrl: 'https://www.example.com/',
-                        application: 'web',
-                        sessionId: 's1',
-                        orderInSession: 1,
-                        engagedTime: 30
-                    },
-                    {
-                        id: '2',
-                        startedAt: '2022-01-01T11:00:00.000Z',
-                        endedAt: '2022-01-01T11:15:00.000Z',
-                        pageTitle: 'About Us',
-                        pageUrl: 'https://www.example.com/about',
-                        application: 'web',
-                        sessionId: 's1',
-                        orderInSession: 2,
-                        engagedTime: 15
-                    },
-                    {
-                        id: '3',
-                        startedAt: '2022-01-02T12:00:00.000Z',
-                        endedAt: '2022-01-02T12:45:00.000Z',
-                        pageTitle: 'Contact Us',
-                        pageUrl: 'https://www.example.com/contact',
-                        application: 'mobile',
-                        sessionId: 's2',
-                        orderInSession: 1,
-                        engagedTime: 45
-                    }
-                ];
-                resolve({...response.contact, actions});
+                resolve({...response.contact});
             } else {
                 reject(response.error);
             }
