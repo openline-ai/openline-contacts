@@ -1,5 +1,5 @@
 import {gql, GraphQLClient} from "graphql-request";
-import {Contact, Note} from "../models/contact";
+import {Contact, ContactWebAction, ContactWithActions, Note} from "../models/contact";
 import {PaginatedResponse, Pagination} from "../utils/pagination";
 
 export function GetContactDetails(client: GraphQLClient, id: string): Promise<Contact> {
@@ -28,9 +28,81 @@ export function GetContactDetails(client: GraphQLClient, id: string): Promise<Co
             }
         }`
 
-        client.request(query, {id: id}).then((response: any) => {
+        client.request(query, {id}).then((response: any) => {
             if (response.contact) {
                 resolve(response.contact);
+            } else {
+                reject(response.error);
+            }
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
+}
+
+export function GetActionsForContact(client: GraphQLClient, id: string): Promise<ContactWithActions> {
+    return new Promise((resolve, reject) => {
+       const from =  new Date(1970, 0, 1).toISOString();
+       const to = new Date().toISOString()
+        const query = gql`query GetActionsForContact($id: ID!, $from: Time!, $to: Time! ) {
+            contact(id: $id) {
+                id
+                firstName
+                lastName
+                actions(from:$from, to:$to) {
+                    ... on PageViewAction {
+                        id
+                        application
+                        startedAt
+                        endedAt
+                        engagedTime
+                        pageUrl
+                        pageTitle
+                        orderInSession
+                        sessionId
+                    }
+                }
+            }
+        }`
+
+        client.request(query, {id, from, to}).then((response: any) => {
+            if (response.contact) {
+                const actions = [
+                    {
+                        id: '1',
+                        startedAt: '2022-01-01T10:00:00.000Z',
+                        endedAt: '2022-01-01T10:30:00.000Z',
+                        pageTitle: 'Homepage',
+                        pageUrl: 'https://www.example.com/',
+                        application: 'web',
+                        sessionId: 's1',
+                        orderInSession: 1,
+                        engagedTime: 30
+                    },
+                    {
+                        id: '2',
+                        startedAt: '2022-01-01T11:00:00.000Z',
+                        endedAt: '2022-01-01T11:15:00.000Z',
+                        pageTitle: 'About Us',
+                        pageUrl: 'https://www.example.com/about',
+                        application: 'web',
+                        sessionId: 's1',
+                        orderInSession: 2,
+                        engagedTime: 15
+                    },
+                    {
+                        id: '3',
+                        startedAt: '2022-01-02T12:00:00.000Z',
+                        endedAt: '2022-01-02T12:45:00.000Z',
+                        pageTitle: 'Contact Us',
+                        pageUrl: 'https://www.example.com/contact',
+                        application: 'mobile',
+                        sessionId: 's2',
+                        orderInSession: 1,
+                        engagedTime: 45
+                    }
+                ];
+                resolve({...response.contact, actions});
             } else {
                 reject(response.error);
             }
