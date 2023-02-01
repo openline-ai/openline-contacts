@@ -44,8 +44,6 @@ export const Timeline = ({
     }
 
     const getTimelineItemByTime = (type: string, data:any, index:number) => {
-        console.log(data)
-
         switch (type) {
             case "NOTE":
                 return <TimelineItem last={loggedActivities.length -1 === index} createdAt={data?.createdAt} >

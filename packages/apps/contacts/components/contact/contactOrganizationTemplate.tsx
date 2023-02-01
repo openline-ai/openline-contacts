@@ -137,7 +137,6 @@ function ContactOrganizationTemplate(props: any) {
                     totalElements: response.totalElements
                 });
             }).catch((reason: any) => {
-                console.log(reason)
                 //todo log an error in server side
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
                 reject(reason);
