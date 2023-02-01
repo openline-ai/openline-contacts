@@ -239,7 +239,7 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
                                                           field.onChange(e.value);
                                                           // contactTypeChanged(e.value);
                                                       }}
-                                                      options={contactTypeList.map((e:any) => ({...e, name: capitalizeFirstLetter(e.name.split('_').join(' '))}))}
+                                                      options={contactTypeList.map((e:any) => ({...e, name: e.name ? capitalizeFirstLetter(e.name.split('_').join(' ')): ''}))}
                                                       optionValue="id"
                                                       optionLabel="name"
                                                       className="w-full"/>
