@@ -8,7 +8,7 @@ import {toast} from "react-toastify";
 import ReactDOMServer from 'react-dom/server'
 import {Button} from "primereact/button";
 import {Dialog} from "primereact/dialog";
-import {DeleteNote} from "../../../services/contactService";
+import {DeleteNote} from "../../../services/sharedService";
 import ContactNoteModalTemplate from "./contactNoteModalTemplate";
 import axios from "axios";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
@@ -89,7 +89,7 @@ function ContactNoteTemplate(props: any) {
 
     const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
     const deleteNote = () => {
-        DeleteNote(client, props.contactId, props.note.id).then((result: boolean) => {
+        DeleteNote(client, props.note.id).then((result: boolean) => {
             if (result) {
                 props.notifyDeleted(props.note.id);
                 setDeleteConfirmationModalVisible(false);

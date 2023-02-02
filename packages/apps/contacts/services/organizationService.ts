@@ -132,7 +132,8 @@ export function GetOrganizationNotes(client: GraphQLClient, id: string): Promise
                         updatedAt
                         createdBy {
                             id
-                            
+                            firstName
+                            lastName
                         }
                         source
                         sourceOfTruth
@@ -260,33 +261,6 @@ export function CreateOrganizationNote(client: GraphQLClient, organizationId: st
         ).then((response: any) => {
             if (response.note_CreateForOrganization) {
                 resolve(response.note_CreateForOrganization);
-            } else {
-                reject(response.errors);
-            }
-        }).catch(reason => {
-            reject(reason);
-        });
-    });
-
-}
-
-export function UpdateOrganizationNote(client: GraphQLClient, data: any): Promise<Note> {
-    return new Promise((resolve, reject) => {
-
-        const query = gql`mutation UpdateNote($note: NoteUpdateInput!) {
-            note_Update(input: $note) {
-                id
-                html
-            }
-        }`
-
-        client.request(query, {
-                id: data.id,
-                html: data.html
-            }
-        ).then((response: any) => {
-            if (response.note_Update) {
-                resolve(response.note_Update);
             } else {
                 reject(response.errors);
             }

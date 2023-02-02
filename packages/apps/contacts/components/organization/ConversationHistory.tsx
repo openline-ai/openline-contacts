@@ -34,7 +34,7 @@ export const OrganizationHistory = ({contacts, organizationId, refreshNotes, set
         })
 
         const requestsNotes = contacts.map(({id}: Contact) => {
-                return GetContactNotes(client, (id as string), {page: 0, limit: 99999})
+                return GetContactNotes(client, (id as string))
         })
         const requestsActions = contacts.map(({id}: Contact) => {
                 return GetActionsForContact(client, (id as string))
@@ -76,7 +76,7 @@ export const OrganizationHistory = ({contacts, organizationId, refreshNotes, set
             const newNotes = response
                 .map((e: { content: any; }) => e.content)
                 .flat()
-                .map((e: any) => ({...e, type: "NOTE"}))
+                .map((e: any) => ({...e, type: "NOTE", readOnly: true}))
             setContactNotes(newNotes);
             setLoadingNotes(false);
         });
@@ -85,9 +85,8 @@ export const OrganizationHistory = ({contacts, organizationId, refreshNotes, set
     useEffect(() => {
             GetOrganizationNotes(client, organizationId).then((response) => {
                 setRefreshNotes(false)
-
+                setOrganizationNotes(response.map(e => ({...e, type: "NOTE"})))
                 setLoadingOrganizationNotes(false)
-                setOrganizationNotes(response)
             }).catch((e) => {
                 setLoadingOrganizationNotes(false)
                 setRefreshNotes(false)
@@ -121,7 +120,6 @@ export const OrganizationHistory = ({contacts, organizationId, refreshNotes, set
     return (
         <div className="mt-5">
             <Timeline
-                      readonly
                       loading={loadingNotes || loadingConversations || loadingWebActions || loadingOrganizationNotes}
                       noActivity={!loadingNotes &&
                           (!loadingConversations
@@ -130,6 +128,7 @@ export const OrganizationHistory = ({contacts, organizationId, refreshNotes, set
                               && historyWebActions.length === 0
                               && organizationNotes.length === 0
                           )}
+                      notifyChange={setRefreshNotes}
                       loggedActivities={getSortedItems(historyItems, contactNotes, historyWebActions, organizationNotes)} />
 
         </div>

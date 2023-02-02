@@ -6,7 +6,7 @@ import {toast} from "react-toastify";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
 import parse from "html-react-parser";
 import ReactDOMServer from 'react-dom/server'
-import {DeleteNote} from "../../../services/contactService";
+import {DeleteNote} from "../../../services/sharedService";
 import axios from "axios";
 import {IconButton} from "../../atoms/icon-button";
 import ContactNoteModalTemplate from "../../contact/note/contactNoteModalTemplate";
@@ -22,9 +22,10 @@ interface Props  {
         lastName?: string
     }
     readonly?: boolean
+    source?: string
 }
 
-export const NoteTimelineItem: React.FC<Props> = ({ noteContent, id, createdBy, contactId, refreshNoteData, readonly}) => {
+export const NoteTimelineItem: React.FC<Props> = ({ noteContent, id, createdBy, contactId, refreshNoteData, readonly, source}) => {
     const client =  useGraphQLClient();
     const [images, setImages] = useState({});
     const [editNote, setEditNote] = useState(false);
@@ -34,6 +35,7 @@ export const NoteTimelineItem: React.FC<Props> = ({ noteContent, id, createdBy, 
         html: noteContent,
         htmlEnhanced: noteContent
     });
+
 
     useEffect(() => {
         if ((noteContent.match(/<img/g) || []).length > 0) {
@@ -96,7 +98,7 @@ export const NoteTimelineItem: React.FC<Props> = ({ noteContent, id, createdBy, 
 
     const [deleteConfirmationModalVisible, setDeleteConfirmationModalVisible] = useState(false);
     const deleteNote = () => {
-        DeleteNote(client, contactId, id).then((result: boolean) => {
+        DeleteNote(client, id).then((result: boolean) => {
             if (result) {
                 refreshNoteData(id);
                 setDeleteConfirmationModalVisible(false);
@@ -135,28 +137,51 @@ export const NoteTimelineItem: React.FC<Props> = ({ noteContent, id, createdBy, 
 
 
             {!editNote && (
+                <div className="flex justify-content-between">
+
                 <div className={styles.noteContainer}>
                     <FontAwesomeIcon icon={faThumbtack}  className={styles.pin}/>
                     <div className={`${styles.noteContent}`} dangerouslySetInnerHTML={{__html: note.htmlEnhanced}}></div>
-                    <div className={styles.noteData}>
-                        <div className="text-sm text-gray-600"> {createdBy?.firstName} {" "} {createdBy?.lastName}</div>
-                    </div>
 
-                    {!readonly && (
-                        <div className={styles.actions}>
-                            <IconButton onClick={() => setDeleteConfirmationModalVisible(true)}
-                                        icon={faTrashCan}
-                                        mode="secondary"
-                                        ariaLabel="Delete"
-                                        style={{marginRight: 0, marginBottom: '8px', height: '1rem'}}/>
+                </div>
+               <div className={styles.actionContainer}>
+                   {!readonly && (
+                       <div className={styles.actions}>
+                           <IconButton onClick={() => setDeleteConfirmationModalVisible(true)}
+                                       icon={faTrashCan}
+                                       mode="secondary"
+                                       ariaLabel="Delete"
+                                       style={{marginRight: 0, marginBottom: '8px', height: '1rem'}}/>
 
-                            <IconButton onClick={() => setEditNote(true)}
-                                        icon={faEdit}
-                                        mode="secondary"
-                                        ariaLabel="Edit"
-                                        style={{marginRight: 0, height: '1rem'}}/>
-                        </div>
-                    )}
+                           <IconButton onClick={() => setEditNote(true)}
+                                       icon={faEdit}
+                                       mode="secondary"
+                                       ariaLabel="Edit"
+                                       style={{marginRight: 0, height: '1rem'}}/>
+                       </div>
+                   )}
+                   <div className={styles.noteData}>
+
+                       <div className="text-sm text-gray-600">
+                           {(createdBy?.firstName || createdBy?.lastName) && "- " }
+                           {createdBy?.firstName} {" "} {createdBy?.lastName}
+                       </div>
+
+                       {source && (
+                           <div className="flex text-sm text-gray-600 ">
+                               <div className="mr-2">
+                                   Source:
+                               </div>
+                               <div className="capitaliseFirstLetter">
+                                   {source}
+                               </div>
+                           </div>
+
+                       )}
+
+                   </div>
+               </div>
+
 
                 </div>
             )}

@@ -292,31 +292,34 @@ export function GetConversationsForContact(client: GraphQLClient, contactId: str
         });
     });
 }
-export function GetContactNotes(client: GraphQLClient, contactId: string, pagination: Pagination): Promise<PaginatedResponse<Note>> {
+export function GetContactNotes(client: GraphQLClient, contactId: string): Promise<PaginatedResponse<Note>> {
     return new Promise((resolve, reject) => {
 
         const query = gql`query GetContactNotes($contactId: ID!, $pagination: Pagination!) {
             contact(id: $contactId) {
+                id
                 notes(pagination: $pagination) {
                     content {
                         id
                         html
                         createdAt
                         createdBy {
+                            id
                             firstName
                             lastName
                         }
                         source
                     }
-                    totalElements
-                    
                 }
             }
         }`
 
         client.request(query, {
-            contactId: contactId,
-            pagination: pagination
+            contactId,
+            pagination: {
+                limit: 999,
+                page: 0
+            }
         }).then((response: any) => {
             if (response.contact.notes) {
                 resolve({
@@ -335,22 +338,22 @@ export function GetContactNotes(client: GraphQLClient, contactId: string, pagina
 export function CreateContactNote(client: GraphQLClient, contactId: string, data: any): Promise<Note> {
     return new Promise((resolve, reject) => {
 
-        const query = gql`mutation AddNote($contactId: ID!, $note: NoteInput!) {
-            note_MergeToContact(contactId: $contactId, input: $note) {
+        const query = gql`mutation AddNote($contactId: ID!, $input: NoteInput!) {
+            note_CreateForContact(contactId: $contactId, input: $input) {
                 id
                 html
             }
         }`
 
         client.request(query, {
-                contactId: contactId,
-                note: {
+                contactId,
+                input: {
                     html: data.html
                 }
             }
         ).then((response: any) => {
-            if (response.note_MergeToContact) {
-                resolve(response.note_MergeToContact);
+            if (response.note_CreateForContact) {
+                resolve(response.note_CreateForContact);
             } else {
                 reject(response.errors);
             }
@@ -361,57 +364,3 @@ export function CreateContactNote(client: GraphQLClient, contactId: string, data
 
 }
 
-export function UpdateContactNote(client: GraphQLClient, contactId: string, data: any): Promise<Note> {
-    return new Promise((resolve, reject) => {
-
-        const query = gql`mutation UpdateNote($contactId: ID!, $note: NoteUpdateInput!) {
-            note_UpdateInContact(contactId: $contactId, input: $note) {
-                id
-                html
-            }
-        }`
-
-        client.request(query, {
-                contactId: contactId,
-                note: {
-                    id: data.id,
-                    html: data.html
-                }
-            }
-        ).then((response: any) => {
-            if (response.note_UpdateInContact) {
-                resolve(response.note_UpdateInContact);
-            } else {
-                reject(response.errors);
-            }
-        }).catch(reason => {
-            reject(reason);
-        });
-    });
-
-}
-
-export function DeleteNote(client: GraphQLClient, contactId: any, noteId: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-
-        const query = gql`mutation DeleteContact($contactId: ID!, $noteId: ID!) {
-            note_DeleteFromContact(contactId: $contactId, noteId: $noteId) {
-                result
-            }
-        }`
-
-        client.request(query, {
-            contactId: contactId,
-            noteId: noteId
-        }).then((response: any) => {
-            if (response.note_DeleteFromContact) {
-                resolve(response.note_DeleteFromContact.result);
-            } else {
-                reject(response.errors);
-            }
-        }).catch(reason => {
-            reject(reason);
-        });
-    });
-
-}
