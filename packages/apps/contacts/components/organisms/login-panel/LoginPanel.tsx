@@ -9,7 +9,6 @@ import {AxiosError} from "axios/index";
 import {edgeConfig} from "@ory/integrations/next";
 import {Flow} from "./ui";
 
-
 interface Props {
 }
 
@@ -99,10 +98,8 @@ export const LoginPanel: React.FC<Props> = () => {
     var SUCCESS = "SUCCESS";
 
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const [forgottenPasswordEmail, setForgottenPasswordEmail] = useState("");
     const [formState, setFormState] = useState(INIT);
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -190,23 +187,6 @@ export const LoginPanel: React.FC<Props> = () => {
             });
     };
 
-    const handleForgotPassword = (event: any) => {
-        event.preventDefault();
-
-        if (forgottenPasswordEmail === '' || null) {
-            SignUpFormError("Please enter your email")
-            return;
-        }
-        if (!isValidEmail(forgottenPasswordEmail)) {
-            SignUpFormError("Please enter a valid email")
-            return;
-        }
-        else {
-            toast.success("Please check your email for a password reset link!")
-            return;
-        }
-    };
-
     const router = useRouter();
     const {
         return_to: returnTo,
@@ -246,12 +226,33 @@ export const LoginPanel: React.FC<Props> = () => {
                 returnTo: returnTo ? String(returnTo) : undefined,
             })
             .then(({ data }) => {
+                console.log(data)
                 setFlow(data)
             })
             .catch(handleFlowError(router, "login", setFlow))
     }, [flowId, router, router.isReady, aal, refresh, returnTo, flow])
 
+    const [loginData, setLoginData] = useState<UpdateLoginFlowBody>({
+        csrf_token: "",
+        method: "password",
+        password: "",
+        identifier: "",
+    })
+
     const handleLogin = (values: UpdateLoginFlowBody): Promise<void> => {
+        console.log(values)
+        // csrf_token
+        //     :
+        //     "DFIRWIbhFikxl63jMHMGhJGkw89AcUc0fQv7wytVr0k3CnyyIc5cUHlges9kTSO8ypD7kqtFdtF/CrhPPe8xPA=="
+        // identifier
+        //     :
+        //     "development@openline.ai"
+        // method
+        //     :
+        //     "password"
+        // password
+        //     :
+        //     "fcLKLWCjkA3JV4n"
         return router
             // On submission, add the flow ID to the URL but do not navigate. This prevents the user loosing
             // his data when she/he reloads the page.
@@ -260,7 +261,7 @@ export const LoginPanel: React.FC<Props> = () => {
                 ory
                     .updateLoginFlow({
                         flow: String(flow?.id),
-                        updateLoginFlowBody: values,
+                        updateLoginFlowBody: loginData as UpdateLoginFlowBody,
                     })
                     // We logged in successfully! Let's bring the user home.
                     .then(() => {
@@ -306,19 +307,35 @@ export const LoginPanel: React.FC<Props> = () => {
 
                                 <Flow flow={flow} onSubmit={handleLogin} />
 
-                                {/*<form onSubmit={handleLogin}>*/}
-                                {/*    <label htmlFor="email" className="block text-600 font-medium mb-2 text-sm">Email</label>*/}
-                                {/*    <InputText id="email" type="text" autoComplete="username" className="w-full mb-3" onChange={(e) => setEmail(e.target.value)} />*/}
+                                <form>
+                                    <label htmlFor="email" className="block text-600 font-medium mb-2 text-sm">Email</label>
+                                    <InputText id="email" type="text" autoComplete="username" className="w-full mb-3" onChange={(e: any) =>
+                                        setLoginData((prevState: any) => {
+                                            return {
+                                                ...prevState, ...{
+                                                    identifier: e.value
+                                                }
+                                            };
+                                        })
+                                    } />
 
-                                {/*    <label htmlFor="password" className="block text-600 font-medium mb-2 text-sm">Password</label>*/}
-                                {/*    <InputText type="password" autoComplete='current-password' className="w-full mb-3" onChange={(e) => setPassword(e.target.value)} />*/}
+                                    <label htmlFor="password" className="block text-600 font-medium mb-2 text-sm">Password</label>
+                                    <InputText type="password" autoComplete="current-password" className="w-full mb-3" onChange={(e: any) =>
+                                        setLoginData((prevState: any) => {
+                                            return {
+                                                ...prevState, ...{
+                                                    password: e.value
+                                                }
+                                            };
+                                        })
+                                    } />
 
-                                {/*    <div className="flex align-items-center justify-content-between mb-6">*/}
-                                {/*        <a className="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer text-sm" onClick={forgotPassword}>Forgot your password?</a>*/}
-                                {/*    </div>*/}
+                                    <div className="flex align-items-center justify-content-between mb-6">
+                                        <a className="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer text-sm" onClick={forgotPassword}>Forgot your password?</a>
+                                    </div>
 
-                                {/*    <Button label="Sign In" className="w-full p-button-secondary" type='submit' />*/}
-                                {/*</form>*/}
+                                    <Button label="Sign In" className="w-full p-button-secondary" onClick={() => handleLogin} />
+                                </form>
                                 <div className="pt-5 text-center">
                                     <span className="font-medium line-height-3 text-sm" style={{ color: '#9E9E9E' }}>Protected by </span>
                                     <img src="./logos/ory-small.svg" alt="Ory" height={14} style={{ verticalAlign: 'middle' }} />
@@ -373,34 +390,6 @@ export const LoginPanel: React.FC<Props> = () => {
                                 </div>
                             }
 
-                        </>
-                    }
-
-                    {
-                        loginForm === 'forgotPassword' &&
-                        <>
-                            <div className="text-center mb-5">
-                                <img src="./logos/openline.svg" alt="Openline" height={50} className="mb-3" />
-
-                                <div>
-                                    <span className="text-600 font-medium line-height-3 text-sm">Remembered already?</span>
-                                    <a className="font-medium no-underline ml-2 text-blue-500 cursor-pointer text-sm" onClick={() => login()}>Login now!</a>
-                                </div>
-                            </div>
-
-                            <div>
-                                <form onSubmit={handleForgotPassword}>
-                                    <label htmlFor="email" className="block text-600 font-medium mb-3 text-sm">Enter your email here for a password reset</label>
-                                    <InputText id="email" type="text" autoComplete="username" className="w-full mb-5" onChange={(e) => setForgottenPasswordEmail(e.target.value)} />
-
-                                    <Button label="Reset Password" className="w-full p-button-secondary" type='submit' />
-                                </form>
-
-                                <div className="pt-5 text-center">
-                                    <span className="font-medium line-height-3 text-sm" style={{ color: '#9E9E9E' }}>Protected by </span>
-                                    <img src="./logos/ory-small.svg" alt="Ory" height={14} style={{ verticalAlign: 'middle' }} />
-                                </div>
-                            </div>
                         </>
                     }
 
