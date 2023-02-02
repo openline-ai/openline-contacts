@@ -9,6 +9,7 @@
 
   grid-template-areas: "details"
                        "contactList"
+                       "composeBox"
                        "history";
 
   @media (min-width:801px)  {
@@ -17,7 +18,7 @@
     grid-template-columns: 2fr 3fr;
     grid-template-rows: auto 80px 3fr;
     padding: 42px;
-    grid-template-areas: "details history "
+    grid-template-areas: "details composeBox "
                          "details history"
                          "contactList history"
   }
@@ -33,12 +34,8 @@
 
 .composeBox {
   grid-area: composeBox;
-  background: #fff;
+  padding: 8px 24px 0;
   border-radius: 10px;
-  padding: 32px;
-  border: 1px solid var(--gray-300)
-
-
 }
 
 .contactList {

@@ -39,7 +39,7 @@ function ContactHistory(props: Props) {
                 toast.error("HERE ");
             });
 
-            GetContactNotes(client, (props.contactId as string), {page: 0, limit: 100}).then(async (result: PaginatedResponse<Note>) => {
+            GetContactNotes(client, (props.contactId as string)).then(async (result: PaginatedResponse<Note>) => {
                 if (result) {
                     setNoteItems(result.content.map((data) => ({...data, type: "NOTE"})));
                     setNoteLoading(false);
