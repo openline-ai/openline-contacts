@@ -13,7 +13,6 @@ interface Props {
     contactId?: string
     loggedActivities: Array<any>
     notifyChange?: (id: any) => void
-    readonly?:boolean
 }
 export const Timeline = ({
                              loading,
@@ -21,7 +20,6 @@ export const Timeline = ({
                              loggedActivities,
                              contactId,
                              notifyChange= () => null,
-                             readonly=false
 }: Props) => {
     if (loading) {
         return (
@@ -42,7 +40,6 @@ export const Timeline = ({
             </p>
         )
     }
-
     const getTimelineItemByTime = (type: string, data:any, index:number) => {
         switch (type) {
             case "NOTE":
@@ -52,9 +49,10 @@ export const Timeline = ({
                                 createdAt={data.createdAt}
                                 createdBy={data?.createdBy}
                                 id={data.id}
+                                source={data?.source}
                                 refreshNoteData={notifyChange}
                                 contactId={contactId}
-                                readonly={readonly}
+                                readonly={data?.readOnly || false}
                             />
                         </TimelineItem>
             case "CONVERSATION":

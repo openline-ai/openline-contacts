@@ -6,7 +6,8 @@ import axios from "axios";
 import {toast} from "react-toastify";
 import {Controller, useForm} from "react-hook-form";
 import {Editor} from "primereact/editor";
-import {CreateContactNote, UpdateContactNote} from "../../../services/contactService";
+import {CreateContactNote} from "../../../services/contactService";
+import {UpdateNote} from "../../../services/sharedService";
 import {Note} from "../../../models/contact";
 import {Button} from "../../atoms";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
@@ -42,8 +43,8 @@ function ContactNoteModalTemplate(props: any) {
                 toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
         } else {
-            UpdateContactNote(client, props.contactId, dataToSubmit).then((savedNote: Note) => {
-                props.notifyChanged();
+            UpdateNote(client, dataToSubmit).then(() => {
+                props.notifyChanged(true);
                 reset({
                     id: '',
                     html: '',
