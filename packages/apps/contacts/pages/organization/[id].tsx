@@ -12,12 +12,14 @@ import {Skeleton} from "primereact/skeleton";
 import {Button} from "../../components/atoms";
 import {useGraphQLClient} from "../../utils/graphQLClient";
 import {CardHeading} from "../../components/atoms/cardHeading";
+import {CreateOrganisationNote} from "../../components/organization/CreateOrganisationNote";
 
 function OrganizationEdit() {
     const client =  useGraphQLClient();
     const router = useRouter();
 
     const [loading, setLoading] = useState(true);
+    const [refreshNotes, setRefreshNotes] = useState(true);
     const [organization, setOrganization] = useState(null);
     const [contactInOrganisation, setContactInOrganization] = useState([]);
     const [reloadDetails, setReloadDetails] = useState(false);
@@ -115,19 +117,13 @@ function OrganizationEdit() {
 
                     </article>
 
-                    {/*<section className={styles.composeBox}>*/}
-                    {/*    <Editor*/}
-                    {/*        // style={{height: '120px'}}*/}
-                    {/*        className="w-full h-full"*/}
-                    {/*        headerTemplate={<RichTextHeader*/}
-                    {/*            inputRef={null}*/}
-                    {/*            handleFileChange={() => null}*/}
-                    {/*            handleUploadClick={() => null}*/}
-                    {/*        />}*/}
-                    {/*        value={''}*/}
-                    {/*        onTextChange={(e) => setValue('htmlEnhanced', e?.htmlValue)}*/}
-                    {/*    />*/}
-                    {/*</section>*/}
+                    <section className={styles.composeBox}>
+
+                        <CreateOrganisationNote
+                            organizationId={router.query.id}
+                            refreshData={() => setRefreshNotes(true)}
+                        />
+                    </section>
 
                     <article className={styles.history}>
                         {loading ? (
@@ -141,7 +137,12 @@ function OrganizationEdit() {
                         ) : (
                             <>
                                 <CardHeading> Timeline </CardHeading>
-                                <OrganizationHistory  contacts={contactInOrganisation}/>
+                                <OrganizationHistory
+                                    organizationId={router.query.id as string}
+                                    contacts={contactInOrganisation}
+                                    setRefreshNotes={setRefreshNotes}
+                                    refreshNotes={refreshNotes}
+                                />
                             </>
 
                         )}

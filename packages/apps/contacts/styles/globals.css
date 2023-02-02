@@ -88,6 +88,13 @@ ul li {
     text-transform: capitalize;
 }
 
+.capitaliseFirstLetter {
+    text-transform: lowercase;
+}
+.capitaliseFirstLetter:first-letter {
+    text-transform: capitalize;
+}
+
 .p-button.p-button-link,
 .p-button.p-button-text {
     color: var(--gray-800)
@@ -100,4 +107,8 @@ ul li {
 .p-button.p-button-text:focus,
 .p-button.p-button-text:active {
     color: var(--gray-700)
+}
+
+.ql-editor {
+    word-break: break-word !important;
 }
