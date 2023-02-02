@@ -33,7 +33,6 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
 
 
         Promise.all(requestsConversations).then((response: any) => {
-
             const conversations = response
                 .map((e: { content: any; }) => {return e.content})
                 .flat()
@@ -49,13 +48,21 @@ export const OrganizationHistory = ({contacts}: {contacts: any}) => {
             setHistoryItems(conversations);
             setLoadingConversations(false);
         });
-        // Promise.all(requestsActions).then((response: any) => {
-        //     const actions = response
-        //         .map((e:any) => ({...e, createdAt: e?.startedAt, type: "ACTION"}))
-        //
-        //     setHistoryWebActions(actions);
-        //     setLoadingWebActions(false);
-        // });
+        Promise.all(requestsActions).then((response: any) => {
+            const result = response
+                .filter((data: any) => !!data.actions.length)
+                .map(({actions, firstName, lastName }:any) => actions
+                    .map((action: any) => ({
+                        ...action,
+                        createdAt: action?.startedAt,
+                        type: "ACTION",
+                        contactName: `${firstName} ${" "} ${lastName}`
+                    })))
+                .flat()
+
+            setHistoryWebActions(result);
+            setLoadingWebActions(false);
+        });
 
         Promise.all(requestsNotes).then((response: any) => {
             const newNotes = response
