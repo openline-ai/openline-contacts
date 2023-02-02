@@ -20,7 +20,6 @@ export default function Layout({ children }: any) {
     const [logoutUrl, setLogoutUrl] = useState<string | undefined>()
 
     useEffect(() => {
-        console.log(router.asPath)
         if (router.asPath.startsWith("/login")) {
             return;
         }

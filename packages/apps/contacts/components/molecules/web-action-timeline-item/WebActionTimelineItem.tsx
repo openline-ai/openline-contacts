@@ -8,7 +8,7 @@ import Link from "next/link";
 import {capitalizeFirstLetter} from "../../../utils/capitalizeFirstLetter";
 
 interface Props extends ContactWebAction {
-    id: string
+    contactName?: string
 }
 
 export const WebActionTimelineItem = (
@@ -18,36 +18,45 @@ export const WebActionTimelineItem = (
         pageUrl,
         application,
         engagedTime,
+        contactName,
         ...rest
     }: Props
 ): JSX.Element => {
 
     return (
-        <article className={`${styles.actionContainer}`}>
-            <div className="flex align-items-center">
-                <FontAwesomeIcon icon={faGlobe}
-                                 style={{ width: '40px', fontSize:'1.6rem' }}
-                                 className="mr-2 text-gray-700"
-                />
-                <div>
+        <div className={styles.x}>
+            <FontAwesomeIcon icon={faGlobe}
+                             style={{ width: '40px', fontSize:'1.6rem' }}
+                             className="mr-2 text-gray-700"
+            />
+            <article className={`${styles.actionContainer}`}>
+                <div className="flex align-items-center">
+
                     <div>
-                        <span className="mr-1 text-gray-700">Visited: </span>
-                        <Link href={pageUrl} style={{fontWeight: "bolder"}}>
-                            {pageTitle}
-                        </Link>
+                        {contactName && (
+                            <div className="text-gray-700">
+                                {contactName}
+                            </div>
+                        )}
+
+                        <div>
+                            <span className="mr-1 text-gray-700">Visited: </span>
+                            <Link href={pageUrl} style={{fontWeight: "bolder"}} className="overflow-hidden text-overflow-ellipsis">
+                                {pageTitle}
+                            </Link>
+                        </div>
+
+
+                        <div className="flex text-gray-700">
+                            <span className="mr-2 font-bolder text-gray-700">
+                                Duration:
+                            </span>
+
+                            <span>{engagedTime ? engagedTime : "-"} {" "} minutes</span>
+                        </div>
                     </div>
 
-
-                    <div className="flex text-gray-700 mt-1">
-                        <span className="mr-2 font-bolder text-gray-700">
-                            Duration:
-                        </span>
-
-                        <span>{engagedTime ? engagedTime : "-"} {" "} minutes</span>
-                    </div>
                 </div>
-
-            </div>
                 <div>
                     <div className="flex flex-column">
                         <div>
@@ -57,14 +66,18 @@ export const WebActionTimelineItem = (
                             <Moment className="text-gray-700" date={startedAt} format={'D-M-YYYY h:mm A'}/>
                         </div>
                     </div>
-                    <div className="mt-1">
+                    <div>
                         <span className="mr-1 text-gray-700 font-bolder">Accessed from: </span>
                         <span className={styles.actionDevice}>
                             {application ? capitalizeFirstLetter(application) : '-'}
                         </span>
                     </div>
+
                 </div>
-        </article>
+
+            </article>
+        </div>
+
     )
 
 };
