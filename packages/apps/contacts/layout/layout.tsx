@@ -20,9 +20,10 @@ export default function Layout({ children }: any) {
     const [logoutUrl, setLogoutUrl] = useState<string | undefined>()
 
     useEffect(() => {
-        if (router.asPath === ("/login")) {
+        console.log(router.asPath)
+        if (router.asPath.startsWith("/login")) {
             return;
-        } //TODO: remove this check when we switch to the new login page
+        }
         ory
             .toSession()
             .then(({ data }) => {
@@ -44,19 +45,17 @@ export default function Layout({ children }: any) {
     }, [router])
 
     if (!session) {
-        // Still loading
-        if (router.asPath === ("/login")) {
+        if (router.asPath.startsWith("/login")) {
             return (
             <div className="flex-grow-1 flex h-full overflow-auto">
                 <div className="w-full h-full">
                     {children}
                 </div>
             </div>)
-            ;
         }
         if (router.asPath != ("/login")) {
             return null;
-        } //TODO: revert this check to return null; when we switch to the new login page
+        }
     }
 
     return (

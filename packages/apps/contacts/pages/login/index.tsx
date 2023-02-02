@@ -1,7 +1,7 @@
-import type { NextPage } from 'next'
-import React, { useEffect, useState } from 'react';
+import type {NextPage} from 'next'
+import React, {useEffect, useState} from 'react';
 import Image from 'next/image'
-import { LoginPanel } from '../../components/organisms/login-panel';
+import {LoginPanel} from '../../components/organisms/login-panel';
 
 
 const Login: NextPage = () => {
@@ -31,9 +31,9 @@ const Login: NextPage = () => {
                     objectFit: 'cover',
                 }}
             />
-            <div className="flex flex-row h-full" style={{ background: 'rgb(0,0,50)' }}>
+            <div className="flex flex-row h-full" style={{background: 'rgb(0,0,50)'}}>
                 <div className="login-panel flex-grow-1">
-                    <LoginPanel />
+                    <LoginPanel/>
                 </div>
             </div>
         </>

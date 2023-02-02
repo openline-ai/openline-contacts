@@ -1,12 +1,90 @@
 import { InputText } from 'primereact/inputtext';
-import React, { useState } from 'react';
+import React, {Dispatch, SetStateAction, useEffect, useState} from 'react';
 import { toast } from 'react-toastify';
 import { Button } from 'primereact/button';
 import styles from './login-panel.module.scss'
+import {NextRouter, useRouter} from "next/router";
+import {Configuration, FrontendApi, LoginFlow, UpdateLoginFlowBody} from "@ory/client";
+import {AxiosError} from "axios/index";
+import {edgeConfig} from "@ory/integrations/next";
+import {Flow} from "./ui";
 
 
 interface Props {
 }
+
+
+// A small function to help us deal with errors coming from fetching a flow.
+export function handleFlowError<S>(
+    router: NextRouter,
+    flowType: "login" | "registration" | "settings" | "recovery" | "verification",
+    resetFlow: Dispatch<SetStateAction<S | undefined>>,
+) {
+    return async (err: AxiosError) => {
+        console.log('EDI ERROR');
+        console.log(err)
+        //@ts-ignore
+        switch (err.response?.data.error?.id) {
+            case "session_aal2_required":
+                // 2FA is enabled and enforced, but user did not perform 2fa yet!
+                //@ts-ignore
+                window.location.href = err.response?.data.redirect_browser_to
+                return
+            case "session_already_available":
+                // User is already signed in, let's redirect them home!
+                await router.push("/")
+                return
+            case "session_refresh_required":
+                // We need to re-authenticate to perform this action
+                //@ts-ignore
+                window.location.href = err.response?.data.redirect_browser_to
+                return
+            case "self_service_flow_return_to_forbidden":
+                // The flow expired, let's request a new one.
+                toast.error("The return_to address is not allowed.")
+                resetFlow(undefined)
+                await router.push("/" + flowType)
+                return
+            case "self_service_flow_expired":
+                // The flow expired, let's request a new one.
+                toast.error("Your interaction expired, please fill out the form again.")
+                resetFlow(undefined)
+                await router.push("/" + flowType)
+                return
+            case "security_csrf_violation":
+                // A CSRF violation occurred. Best to just refresh the flow!
+                toast.error(
+                    "A security violation was detected, please fill out the form again.",
+                )
+                resetFlow(undefined)
+                await router.push("/" + flowType)
+                return
+            case "security_identity_mismatch":
+                // The requested item was intended for someone else. Let's request a new flow...
+                resetFlow(undefined)
+                await router.push("/" + flowType)
+                return
+            case "browser_location_change_required":
+                // Ory Kratos asked us to point the user to this URL.
+                //@ts-ignore
+                window.location.href = err.response.data.redirect_browser_to
+                return
+        }
+
+        switch (err.response?.status) {
+            case 410:
+                // The flow expired, let's request a new one.
+                resetFlow(undefined)
+                await router.push("/" + flowType)
+                return
+        }
+
+        // We are not able to handle the error? Return it.
+        return Promise.reject(err)
+    }
+}
+
+const ory = new FrontendApi(new Configuration(edgeConfig))
 
 export const LoginPanel: React.FC<Props> = () => {
 
@@ -112,24 +190,6 @@ export const LoginPanel: React.FC<Props> = () => {
             });
     };
 
-    //TODO: Update following toasts to be inline errors on the form
-
-    const handleLogin = (event: any) => {
-        event.preventDefault();
-
-        if (!isValidEmail(email)) {
-            SignUpFormError("Please enter a valid email")
-            return;
-        }
-        if (password === '' || null) {
-            SignUpFormError("Please enter your password")
-            return;
-        }
-        else {
-            SignUpFormError("Incorrect login details, please try again")
-        }
-    };
-
     const handleForgotPassword = (event: any) => {
         event.preventDefault();
 
@@ -145,6 +205,85 @@ export const LoginPanel: React.FC<Props> = () => {
             toast.success("Please check your email for a password reset link!")
             return;
         }
+    };
+
+    const router = useRouter();
+    const {
+        return_to: returnTo,
+        flow: flowId,
+        // Refresh means we want to refresh the session. This is needed, for example, when we want to update the password
+        // of a user.
+        refresh,
+        // AAL = Authorization Assurance Level. This implies that we want to upgrade the AAL, meaning that we want
+        // to perform two-factor authentication/verification.
+        aal,
+    } = router.query
+
+    const [flow, setFlow] = useState<LoginFlow>()
+
+    useEffect(() => {
+        // If the router is not ready yet, or we already have a flow, do nothing.
+        if (!router.isReady || flow) {
+            return
+        }
+
+        // If ?flow=.. was in the URL, we fetch it
+        if (flowId) {
+            ory
+                .getLoginFlow({ id: String(flowId) })
+                .then(({ data }) => {
+                    setFlow(data)
+                })
+                .catch(handleFlowError(router, "login", setFlow))
+            return
+        }
+
+        // Otherwise we initialize it
+        ory
+            .createBrowserLoginFlow({
+                refresh: Boolean(refresh),
+                aal: aal ? String(aal) : undefined,
+                returnTo: returnTo ? String(returnTo) : undefined,
+            })
+            .then(({ data }) => {
+                setFlow(data)
+            })
+            .catch(handleFlowError(router, "login", setFlow))
+    }, [flowId, router, router.isReady, aal, refresh, returnTo, flow])
+
+    const handleLogin = (values: UpdateLoginFlowBody): Promise<void> => {
+        return router
+            // On submission, add the flow ID to the URL but do not navigate. This prevents the user loosing
+            // his data when she/he reloads the page.
+            .push(`/login?flow=${flow?.id}`, undefined, { shallow: true })
+            .then(() =>
+                ory
+                    .updateLoginFlow({
+                        flow: String(flow?.id),
+                        updateLoginFlowBody: values,
+                    })
+                    // We logged in successfully! Let's bring the user home.
+                    .then(() => {
+                        if (flow?.return_to) {
+                            window.location.href = flow?.return_to
+                            return
+                        }
+                        router.push("/")
+                    })
+                    .then(() => {})
+                    .catch(handleFlowError(router, "login", setFlow))
+                    .catch((err: AxiosError) => {
+                        // If the previous handler did not catch the error it's most likely a form validation error
+                        if (err.response?.status === 400) {
+                            // Yup, it is!
+                            //@ts-ignore
+                            setFlow(err.response?.data)
+                            return
+                        }
+
+                        return Promise.reject(err)
+                    }),
+            )
     };
 
     return (
@@ -164,19 +303,22 @@ export const LoginPanel: React.FC<Props> = () => {
                             </div>
 
                             <div>
-                                <form onSubmit={handleLogin}>
-                                    <label htmlFor="email" className="block text-600 font-medium mb-2 text-sm">Email</label>
-                                    <InputText id="email" type="text" autoComplete="username" className="w-full mb-3" onChange={(e) => setEmail(e.target.value)} />
 
-                                    <label htmlFor="password" className="block text-600 font-medium mb-2 text-sm">Password</label>
-                                    <InputText type="password" autoComplete='current-password' className="w-full mb-3" onChange={(e) => setPassword(e.target.value)} />
+                                <Flow flow={flow} onSubmit={handleLogin} />
 
-                                    <div className="flex align-items-center justify-content-between mb-6">
-                                        <a className="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer text-sm" onClick={forgotPassword}>Forgot your password?</a>
-                                    </div>
+                                {/*<form onSubmit={handleLogin}>*/}
+                                {/*    <label htmlFor="email" className="block text-600 font-medium mb-2 text-sm">Email</label>*/}
+                                {/*    <InputText id="email" type="text" autoComplete="username" className="w-full mb-3" onChange={(e) => setEmail(e.target.value)} />*/}
 
-                                    <Button label="Sign In" className="w-full p-button-secondary" type='submit' />
-                                </form>
+                                {/*    <label htmlFor="password" className="block text-600 font-medium mb-2 text-sm">Password</label>*/}
+                                {/*    <InputText type="password" autoComplete='current-password' className="w-full mb-3" onChange={(e) => setPassword(e.target.value)} />*/}
+
+                                {/*    <div className="flex align-items-center justify-content-between mb-6">*/}
+                                {/*        <a className="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer text-sm" onClick={forgotPassword}>Forgot your password?</a>*/}
+                                {/*    </div>*/}
+
+                                {/*    <Button label="Sign In" className="w-full p-button-secondary" type='submit' />*/}
+                                {/*</form>*/}
                                 <div className="pt-5 text-center">
                                     <span className="font-medium line-height-3 text-sm" style={{ color: '#9E9E9E' }}>Protected by </span>
                                     <img src="./logos/ory-small.svg" alt="Ory" height={14} style={{ verticalAlign: 'middle' }} />
