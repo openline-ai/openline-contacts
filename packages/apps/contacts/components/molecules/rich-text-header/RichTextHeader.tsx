@@ -1,7 +1,15 @@
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faImage} from "@fortawesome/free-solid-svg-icons";
+import {ChangeEvent, useRef} from "react";
 
-export const RichTextHeader = ({inputRef,handleFileChange, handleUploadClick }: any) => {
+interface Props {
+    onFileChange: (e: ChangeEvent<HTMLInputElement>) => void
+}
+export const RichTextHeader = ({onFileChange }: Props) => {
+    const inputRef = useRef<HTMLInputElement | null>(null);
+    const handleUploadClick = () => {
+        inputRef.current?.click();
+    };
     return (
         <span className="ql-formats">
 
@@ -21,7 +29,7 @@ export const RichTextHeader = ({inputRef,handleFileChange, handleUploadClick }: 
                 <input
                     type="file"
                     ref={inputRef}
-                    onChange={handleFileChange}
+                    onChange={onFileChange}
                     style={{display: 'none'}}
                 />
 

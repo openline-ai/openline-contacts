@@ -9,7 +9,6 @@ import ReactDOMServer from 'react-dom/server'
 import {Button} from "primereact/button";
 import {Dialog} from "primereact/dialog";
 import {DeleteNote} from "../../../services/contactService";
-import {GraphQLClient} from "graphql-request";
 import ContactNoteModalTemplate from "./contactNoteModalTemplate";
 import axios from "axios";
 import {useGraphQLClient} from "../../../utils/graphQLClient";

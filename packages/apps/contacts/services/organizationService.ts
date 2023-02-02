@@ -1,7 +1,8 @@
 import {gql, GraphQLClient} from "graphql-request";
-import {PaginatedRequest, PaginatedResponse} from "../utils/pagination";
+import {PaginatedRequest, PaginatedResponse, Pagination} from "../utils/pagination";
 import {MapGridFilters} from "../utils/converters";
 import {Organization} from "../models/organization";
+import {Note} from "../models/contact";
 
 export function GetOrganizations(client: GraphQLClient, params: PaginatedRequest): Promise<PaginatedResponse<Organization>> {
     return new Promise((resolve, reject) => {
@@ -115,6 +116,44 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
 
 }
 
+
+
+export function GetOrganizationNotes(client: GraphQLClient, id: string): Promise<Array<Note>> {
+    return new Promise((resolve, reject) => {
+
+        const query = gql`query GetOrganizationNotes($id: ID!,$pagination: Pagination) {
+            organization(id: $id) {
+                id
+                notes(pagination: $pagination) {
+                    content {
+                        id
+                        html
+                        createdAt
+                        updatedAt
+                        createdBy {
+                            id
+                            
+                        }
+                        source
+                        sourceOfTruth
+                        appSource
+                    }
+                }
+            }
+        }`
+
+        client.request(query, {id: id, pagination: {
+                limit: 999,
+                page: 0
+            }}).then((response: any) => {
+            response.organization ? resolve(response.organization.notes.content) : reject(response.errors);
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
+
+}
+
 export function CreateOrganization(client: GraphQLClient, data: any): Promise<Organization> {
     return new Promise((resolve, reject) => {
 
@@ -190,6 +229,64 @@ export function DeleteOrganization(client: GraphQLClient, id: any): Promise<bool
         client.request(query, {id: id}).then((response: any) => {
             if (response.organization_Delete) {
                 resolve(response.organization_Delete.result);
+            } else {
+                reject(response.errors);
+            }
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
+
+}
+
+export function CreateOrganizationNote(client: GraphQLClient, organizationId: string, data: any): Promise<Note> {
+    return new Promise((resolve, reject) => {
+
+        const query = gql`mutation AddNoteToOrganization($organizationId: ID!, $note: NoteInput!) {
+            note_CreateForOrganization(organizationId: $organizationId, input: $note) {
+                id
+                html
+                appSource
+            }
+        }`
+
+        client.request(query, {
+                organizationId,
+                note: {
+                    html: data.html,
+                    appSource: data?.appSource
+                }
+            }
+        ).then((response: any) => {
+            if (response.note_CreateForOrganization) {
+                resolve(response.note_CreateForOrganization);
+            } else {
+                reject(response.errors);
+            }
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
+
+}
+
+export function UpdateOrganizationNote(client: GraphQLClient, data: any): Promise<Note> {
+    return new Promise((resolve, reject) => {
+
+        const query = gql`mutation UpdateNote($note: NoteUpdateInput!) {
+            note_Update(input: $note) {
+                id
+                html
+            }
+        }`
+
+        client.request(query, {
+                id: data.id,
+                html: data.html
+            }
+        ).then((response: any) => {
+            if (response.note_Update) {
+                resolve(response.note_Update);
             } else {
                 reject(response.errors);
             }
