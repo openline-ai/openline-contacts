@@ -21,11 +21,10 @@ interface Props  {
         firstName?: string
         lastName?: string
     }
-    readonly?: boolean
     source?: string
 }
 
-export const NoteTimelineItem: React.FC<Props> = ({ noteContent, id, createdBy, contactId, refreshNoteData, readonly, source}) => {
+export const NoteTimelineItem: React.FC<Props> = ({ noteContent, id, createdBy, contactId, refreshNoteData, source}) => {
     const client =  useGraphQLClient();
     const [images, setImages] = useState({});
     const [editNote, setEditNote] = useState(false);
@@ -111,12 +110,11 @@ export const NoteTimelineItem: React.FC<Props> = ({ noteContent, id, createdBy, 
         });
     }
 
-    const canEditNote = editNote && !readonly
 
     return (
         <>
             {
-                canEditNote &&
+                editNote &&
                 <ContactNoteModalTemplate
                     isEdit
                     note={note}
@@ -145,7 +143,6 @@ export const NoteTimelineItem: React.FC<Props> = ({ noteContent, id, createdBy, 
 
                 </div>
                <div className={styles.actionContainer}>
-                   {!readonly && (
                        <div className={styles.actions}>
                            <IconButton onClick={() => setDeleteConfirmationModalVisible(true)}
                                        icon={faTrashCan}
@@ -159,7 +156,6 @@ export const NoteTimelineItem: React.FC<Props> = ({ noteContent, id, createdBy, 
                                        ariaLabel="Edit"
                                        style={{marginRight: 0, height: '1rem'}}/>
                        </div>
-                   )}
                    <div className={styles.noteData}>
 
                        <div className="text-sm text-gray-600">

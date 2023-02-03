@@ -13,6 +13,7 @@ interface Props {
     contactId?: string
     loggedActivities: Array<any>
     notifyChange?: (id: any) => void
+    notifyContactNotesUpdate?: (id: any) => void
 }
 export const Timeline = ({
                              loading,
@@ -20,6 +21,7 @@ export const Timeline = ({
                              loggedActivities,
                              contactId,
                              notifyChange= () => null,
+                             notifyContactNotesUpdate= () => null,
 }: Props) => {
     if (loading) {
         return (
@@ -50,9 +52,8 @@ export const Timeline = ({
                                 createdBy={data?.createdBy}
                                 id={data.id}
                                 source={data?.source}
-                                refreshNoteData={notifyChange}
+                                refreshNoteData={data?.contact ? notifyContactNotesUpdate : notifyChange}
                                 contactId={contactId}
-                                readonly={data?.readOnly || false}
                             />
                         </TimelineItem>
             case "CONVERSATION":
