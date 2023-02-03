@@ -26,6 +26,7 @@ export const OrganizationHistory = ({contacts, organizationId, refreshNotes, set
     const [contactNotes, setContactNotes] = useState([] as any);
     const [organizationNotes, setOrganizationNotes] = useState([] as any);
     const [historyWebActions, setHistoryWebActions] = useState([] as any);
+    const [refreshContactNotes, setRefreshContactNotes] = useState(false);
 
     useEffect(() => {
 
@@ -83,6 +84,25 @@ export const OrganizationHistory = ({contacts, organizationId, refreshNotes, set
     }, []);
 
     useEffect(() => {
+        if(refreshNotes) {
+            const requestsNotes = contacts.map(({id}: Contact) => {
+                return GetContactNotes(client, (id as string))
+            })
+
+            Promise.all(requestsNotes).then((response: any) => {
+                const newNotes = response
+                    .map((e: { content: any; }) => e.content)
+                    .flat()
+                    .map((e: any) => ({...e, type: "NOTE", contact: true}))
+                setContactNotes(newNotes);
+                setRefreshContactNotes(false)
+                setLoadingNotes(false);
+            });
+        }
+
+    }, [refreshContactNotes]);
+
+    useEffect(() => {
             GetOrganizationNotes(client, organizationId).then((response) => {
                 setRefreshNotes(false)
                 setOrganizationNotes(response.map(e => ({...e, type: "NOTE"})))
@@ -92,7 +112,7 @@ export const OrganizationHistory = ({contacts, organizationId, refreshNotes, set
                 setRefreshNotes(false)
                 toast.error("There was a problem on our side and we cannot load organization notes data at the moment,  we are doing our best to solve it! ");
             })
-    },[])
+    },[organizationId])
 
     useEffect(() => {
         if(refreshNotes) {
@@ -129,6 +149,7 @@ export const OrganizationHistory = ({contacts, organizationId, refreshNotes, set
                               && organizationNotes.length === 0
                           )}
                       notifyChange={setRefreshNotes}
+                      notifyContactNotesUpdate={setRefreshContactNotes}
                       loggedActivities={getSortedItems(historyItems, contactNotes, historyWebActions, organizationNotes)} />
 
         </div>
