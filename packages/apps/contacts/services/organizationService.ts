@@ -53,7 +53,7 @@ export function GetOrganizations(client: GraphQLClient, params: PaginatedRequest
 export function GetOrganization(client: GraphQLClient, id: string): Promise<Organization> {
     return new Promise((resolve, reject) => {
 
-        const query = gql`query GetOrganization($id: ID!) {
+        const query = gql`query GetOrganization($id: ID!, $pagination: Pagination) {
             organization(id: $id) {
                 id
                 name
@@ -61,12 +61,36 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
                 industry
                 domain
                 website
+                contacts(pagination: $pagination) {
+                    content {
+                        id
+                        firstName
+                        lastName
+                      
+                        phoneNumbers {
+                            id
+                            label
+                            primary
+                            e164
+                        }
+                        emails {
+                            id
+                            label
+                            primary
+                            email
+                        }
+                        
+                    }
+                }
             }
         }`
 
 
 
-        client.request(query, {id: id}).then((response: any) => {
+        client.request(query, {id, pagination: {
+            page: 0,
+            limit: 999
+            }}).then((response: any) => {
             response.organization ? resolve(response.organization) : reject(response.errors);
         }).catch(reason => {
             reject(reason);
