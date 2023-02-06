@@ -40,7 +40,6 @@ function OrganizationEdit() {
             setCreateMode(false)
             GetOrganization(client, router.query.id as string, ).then((org: Organization) => {
                 const {contacts: {content} ,...data} = org
-
                 // @ts-ignore
                 setOrganization(data);
                 setContactInOrganization(content)
