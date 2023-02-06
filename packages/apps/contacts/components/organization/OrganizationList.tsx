@@ -103,14 +103,6 @@ export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScree
                                    field: "NAME",
                                    label: "Name",
                                },
-                               {
-                                   field: "SOURCE",
-                                   label: "Source"
-                               },
-                               {
-                                   field: "organisation.country",
-                                   label: "Last name"
-                               }
                            ]}
                            gridActions={
                                <div className="flex align-items-center">

@@ -54,7 +54,7 @@ const GridComponent = (props: any) => {
             active: false
         }
     }));
-    const [filters, setFilters] = useState(props.filters.map((sb: any) => {
+    const [filters, setFilters] = useState((props.filters || []).map((sb: any) => {
         return {
             type: sb.type ?? "TEXT",
             label: sb.label,
@@ -205,14 +205,12 @@ const GridComponent = (props: any) => {
 
 
 
-       let filtersData: Filter[] = filters.filter((f: any) => f.value).map((f: any) => {
-            filtersData.push({
+       let filtersData: Filter[] = (filters || []).filter((f: any) => f.value).map((f: any) => ({
                 property: f.field,
                 value: f.value,
                 operation: f.operation,
                 condition: "AND"
-            } as Filter);
-        });
+            }))
 
         if(globalFilterValue) {
             const globalSearch = props.globalFilterFields
