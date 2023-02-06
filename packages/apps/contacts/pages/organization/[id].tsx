@@ -13,6 +13,7 @@ import {Button} from "../../components/atoms";
 import {useGraphQLClient} from "../../utils/graphQLClient";
 import {CardHeading} from "../../components/atoms/cardHeading";
 import {CreateOrganisationNote} from "../../components/organization/CreateOrganisationNote";
+import {Contact} from "../../models/contact";
 
 function OrganizationEdit() {
     const client =  useGraphQLClient();
@@ -21,7 +22,7 @@ function OrganizationEdit() {
     const [loading, setLoading] = useState(true);
     const [refreshNotes, setRefreshNotes] = useState(true);
     const [organization, setOrganization] = useState(null);
-    const [contactInOrganisation, setContactInOrganization] = useState([]);
+    const [contactInOrganisation, setContactInOrganization] = useState<Array<Contact>>([]);
     const [reloadDetails, setReloadDetails] = useState(false);
     const [createMode, setCreateMode] = useState(false);
 
@@ -37,15 +38,12 @@ function OrganizationEdit() {
         if(router.query.id !== undefined && router.query.id !== 'new') {
             setLoading(true)
             setCreateMode(false)
-            GetOrganization(client, router.query.id as string).then((org: Organization) => {
-                const {contactRoles ,...data} = org
-                const contactsInOrg = contactRoles.map((d: {jobTitle:string, contact: any; }) => ({
-                    ...d.contact,
-                    jobTitle: d.jobTitle
-                }))
+            GetOrganization(client, router.query.id as string, ).then((org: Organization) => {
+                const {contacts: {content} ,...data} = org
+
                 // @ts-ignore
                 setOrganization(data);
-                setContactInOrganization(contactsInOrg)
+                setContactInOrganization(content)
                 setLoading(false)
                 setReloadDetails(false)
             }).catch(() => {

@@ -1,5 +1,5 @@
 import {gql, GraphQLClient} from "graphql-request";
-import {PaginatedRequest, PaginatedResponse, Pagination} from "../utils/pagination";
+import {PaginatedRequest, PaginatedResponse} from "../utils/pagination";
 import {MapGridFilters} from "../utils/converters";
 import {Organization} from "../models/organization";
 import {Note} from "../models/contact";
@@ -61,51 +61,10 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
                 industry
                 domain
                 website
-                contactRoles {
-                    id
-                    jobTitle
-                    primary
-                    contact {
-                        id
-                        title
-                        firstName
-                        lastName
-                        source
-                        title
-                        addresses {
-                            id
-                            createdAt
-                            country
-                            state
-                            city
-                            address
-                            address2
-                            zip
-                            phone
-                            fax
-                            source
-                            
-                        }
-                        contactType {
-                            id
-                        }
-                        phoneNumbers {
-                            id
-                            e164
-                            label
-                            primary
-                            source
-                        }
-                        emails {
-                            id
-                            email
-                            primary
-                            source
-                        }
-                    }
-                }
             }
         }`
+
+
 
         client.request(query, {id: id}).then((response: any) => {
             response.organization ? resolve(response.organization) : reject(response.errors);
@@ -116,7 +75,45 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
 
 }
 
+export function GetNotesForContactsInOrganisation(client: GraphQLClient, id: string): Promise<Organization> {
+    return new Promise((resolve, reject) => {
 
+        const query = gql`query GetOrganization($id: ID!, $pagination: Pagination!) {
+            organization(id: $id) {
+                contacts(pagination: $pagination) {
+                    content {
+                        id
+                        firstName
+                        lastName
+                        notes(pagination: $pagination) {
+                            content {
+                                id
+                                html
+                                createdAt
+                                createdBy {
+                                    id
+                                    firstName
+                                    lastName
+                                }
+                                source
+                            }
+                        }
+                        
+                    }
+                }
+            }
+        }`
+
+
+
+        client.request(query, {id: id, pagination: {limit: 999, page:0}}).then((response: any) => {
+            response.organization ? resolve(response.organization) : reject(response.errors);
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
+
+}
 
 export function GetOrganizationNotes(client: GraphQLClient, id: string): Promise<Array<Note>> {
     return new Promise((resolve, reject) => {
@@ -152,8 +149,9 @@ export function GetOrganizationNotes(client: GraphQLClient, id: string): Promise
             reject(reason);
         });
     });
-
 }
+
+
 
 export function CreateOrganization(client: GraphQLClient, data: any): Promise<Organization> {
     return new Promise((resolve, reject) => {
