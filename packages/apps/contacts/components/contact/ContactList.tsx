@@ -29,14 +29,14 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
                         lastName
                         label
                         source
-                        roles {
-                            id
-                            jobTitle
-                            organization {
-                                name
-                            }
-                            primary
-                        }
+#                        roles {
+#                            id
+#                            jobTitle
+#                            organization {
+#                                name
+#                            }
+#                            primary
+#                        }
                         contactType {
                             name
                         }
@@ -128,36 +128,36 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
                                    field: 'label',
                                    label: 'Label'
                                },  
-                               {
-
-                                   display: "HIDE",
-                                   className: 'w10 capitalise',
-                                   field: 'roles',
-                                   label: 'Organizations',
-                                   template: ({roles}: any) => {
-                                       if(!roles.length) {
-                                           return "-"
-                                       }
-
-                                       return (
-                                           <div className="flex flex-column">
-                                               {roles.map((role:any) => (
-                                                   <div className='capitalise' key={role.id}>
-                                                       {role?.organization?.name}
-                                                       {role.primary && (
-                                                           <span className="text-sm text-gray-600 ml-2">Primary</span>
-                                                       )}
-                                                       {role?.jobTitle && (
-                                                           <span className="text-sm text-gray-600 ml-2">({role?.jobTitle})</span>
-                                                       )}
-
-                                                   </div>
-                                               ))}
-
-                                           </div>
-                                       )
-                                   }
-                               },
+                               // {
+                               //
+                               //     display: "HIDE",
+                               //     className: 'w10 capitalise',
+                               //     field: 'roles',
+                               //     label: 'Organizations',
+                               //     template: ({roles}: any) => {
+                               //         if(!roles.length) {
+                               //             return "-"
+                               //         }
+                               //
+                               //         return (
+                               //             <div className="flex flex-column">
+                               //                 {roles.map((role:any) => (
+                               //                     <div className='capitalise' key={role.id}>
+                               //                         {role?.organization?.name}
+                               //                         {role.primary && (
+                               //                             <span className="text-sm text-gray-600 ml-2">Primary</span>
+                               //                         )}
+                               //                         {role?.jobTitle && (
+                               //                             <span className="text-sm text-gray-600 ml-2">({role?.jobTitle})</span>
+                               //                         )}
+                               //
+                               //                     </div>
+                               //                 ))}
+                               //
+                               //             </div>
+                               //         )
+                               //     }
+                               // },
                                {
 
                                    display: "HIDE",
