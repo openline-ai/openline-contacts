@@ -103,7 +103,6 @@ const GridComponent = (props: any) => {
                     }}>
 
                         <div className="flex flex-grow-1">
-                            {renderSearch()}
                         </div>
                         <div className="flex flex-grow-1 justify-content-end">
                             {
@@ -276,12 +275,13 @@ const GridComponent = (props: any) => {
     return <>
         {
             props.showHeader != undefined && props.showHeader &&
-            <div className="p-datatable header flex align-items-center mb-5">
+            <div className="p-datatable header flex align-items-center mb-5 mt-5">
 
                 <div className="flex flex-grow-1 text-3xl">
                     {props.gridTitle}
+                    {renderSearch()}
                 </div>
-                <div className="flex flex-grow-1 justify-content-end">
+                <div className="flex justify-content-end">
                     {props.gridActions}
                 </div>
 
@@ -291,7 +291,7 @@ const GridComponent = (props: any) => {
         <DataTable value={data}
                    lazy
                    // responsiveLayout="scroll"
-                   header={renderHeader()}
+
                    // globalFilterFields={props.globalFilterFields}
                    dataKey="id"
                    size={'normal'}
@@ -495,8 +495,8 @@ GridComponent.propTypes = {
     defaultLimit: PropTypes.number,
 
     columns: PropTypes.arrayOf(PropTypes.shape({
-        field: PropTypes.string.isRequired,
-        label: PropTypes.string.isRequired,
+        field: PropTypes.any.isRequired,
+        label: PropTypes.any,
         template: PropTypes.func,
         hidden: PropTypes.bool, //column is visible in grid
         display: PropTypes.oneOf(['EXCLUDE', 'SHOW', 'HIDE']), //configuration in column grid
@@ -504,7 +504,7 @@ GridComponent.propTypes = {
         editLink: PropTypes.bool
     })),
     filters: PropTypes.arrayOf(PropTypes.shape({
-        label: PropTypes.string.isRequired,
+        label: PropTypes.any.isRequired,
         field: PropTypes.string.isRequired,
 
         type: PropTypes.oneOf(["TEXT", "DROPDOWN"]),
