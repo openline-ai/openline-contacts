@@ -66,6 +66,10 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
                         id
                         firstName
                         lastName
+                        tags {
+                            name
+                            id
+                        }
                       
                         phoneNumbers {
                             id

@@ -10,6 +10,7 @@ import {MapGridFilters} from "../../utils/converters";
 import {PaginatedRequest} from "../../utils/pagination";
 import {FullScreenModeLayout} from "../organisms/fullscreen-mode-layout";
 import {useGraphQLClient} from "../../utils/graphQLClient";
+import {TagsList} from "../atoms/tag-input/TagInput";
 
 export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMode}) => {
     const client =  useGraphQLClient();
@@ -37,7 +38,8 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
 #                            }
 #                            primary
 #                        }
-                        contactType {
+                        tags {
+                            id
                             name
                         }
                         emails {
@@ -105,13 +107,10 @@ export const ContactList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMod
                                    }
                                },
                                {
-                                   field: 'contactType',
-                                   label: 'Type',
+                                   field: 'tags',
+                                   label: 'Tags',
                                    template: (c: any) => {
-                                       return <div key={c.id}
-                                                   className='capitalise'>
-                                                        {c.contactType ? c.contactType.name.toLowerCase().split("_").join(" ") : '-'}
-                                              </div>
+                                       return <TagsList tags={c.tags} readOnly/>
                                    }
                                },
                                {

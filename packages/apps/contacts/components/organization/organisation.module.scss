@@ -1,10 +1,4 @@
-.contactType {
-  text-transform: lowercase;
 
-  &:first-letter {
-    text-transform: capitalize;
-  }
-}
 
 .contactList {
   grid-area: contactList;

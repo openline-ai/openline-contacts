@@ -3,24 +3,22 @@ import {InputText} from "primereact/inputtext";
 import {Button} from "../atoms";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faUserNinja} from "@fortawesome/free-solid-svg-icons";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Dropdown} from "primereact/dropdown";
 import {Controller, useForm} from "react-hook-form";
 import {ContactTitleEnum} from "../../model/enum-contactTitle";
 import SearchComponent from "../generic/SearchComponent";
 import {CreateContact, UpdateContact} from "../../services/contactService";
-import {Contact, ContactType} from "../../models/contact";
-import {GetContactTypes} from "../../services/contactTypeService";
+import {Contact, ContactTag} from "../../models/contact";
 import {GetUsersPage} from "../../services/userService";
 import {Page, PaginationOf} from "../../models/pagination";
 import {User} from "../../models/user";
 import PropTypes from "prop-types";
-import {GetEntityDefinitions} from "../../services/entityDefinitionService";
-import {CustomField, CustomFieldDefinition, EntityDefinition, FieldSetDefinition} from "../../models/customFields";
-import {CustomFieldTemplateProps, EntityDefinitionEditTemplate, EntityDefinitionTemplateProps, FieldSetTemplateProps, mapEntityExtensionDataFromFormData} from "../generic/entityExtensionTemplates";
+import {EntityDefinitionEditTemplate, EntityDefinitionTemplateProps, mapEntityExtensionDataFromFormData} from "../generic/entityExtensionTemplates";
 import {toast} from "react-toastify";
 import {useGraphQLClient} from "../../utils/graphQLClient";
-import {capitalizeFirstLetter} from "../../utils/capitalizeFirstLetter";
+import {ContactTags} from "./contact-tags/ContactTags";
+
 
 interface Props {
     editDetails:boolean
@@ -31,26 +29,8 @@ interface Props {
 }
 export default function ContactDetailsSection({editDetails, setEditDetails, contactId, contact, setReloadDetails}: Props) {
     const client =  useGraphQLClient();
-
     const router = useRouter();
-
-
     const {register, handleSubmit, setValue, control, reset} = useForm();
-
-    const [contactTypeList, setContactTypeList] = useState([] as any);
-
-
-    useEffect(() => {
-        if (router.query.id) {
-            GetContactTypes(client).then((contactTypes: ContactType[]) => {
-                setContactTypeList(contactTypes);
-            }).catch((reason: any) => {
-                //todo log an error in server side
-                toast.error("There was a problem on our side and we are doing our best to solve it!");
-            });
-        }
-    }, []);
-
 
     useEffect(() => {
         if(editDetails && router.query.id !== 'new') {
@@ -59,10 +39,7 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
                 title: contact?.title,
                 firstName: contact.firstName || '',
                 lastName: contact.lastName || '',
-                ownerFullName: contact.ownerFullName || '',
-                contactTypeName: contact.contactTypeName,
                 label: contact?.label,
-                contactTypeId: contact.contactTypeId,
                 ownerId: contact?.ownerId,
                 notes: contact?.notes,
                 definitionId: contact?.definitionId,
@@ -229,24 +206,14 @@ export default function ContactDetailsSection({editDetails, setEditDetails, cont
                                         maxResults={5}/>
                                 )}/>
                             </div>
-                            <div className="field w-full">
-                                <label htmlFor="contactTypeId" className="block">Type</label>
-                                    <Controller name="contactTypeId" control={control} render={({field}) => (
-                                        <>
-                                            <Dropdown id={field.name}
-                                                      value={field.value}
-                                                      onChange={(e) => {
-                                                          field.onChange(e.value);
-                                                          // contactTypeChanged(e.value);
-                                                      }}
-                                                      options={contactTypeList.map((e:any) => ({...e, name: e.name ? capitalizeFirstLetter(e.name.split('_').join(' ')): ''}))}
-                                                      optionValue="id"
-                                                      optionLabel="name"
-                                                      className="w-full"/>
-                                        </>
-                                        )}
-                                    />
-                            </div>
+
+                            {router.query.id !== 'new' && (
+                                <div className="field w-full">
+                                    <label className="block">Tags</label>
+                                    <ContactTags />
+                                </div>
+                            )}
+
                             <div className="field w-full">
                                 <label htmlFor="label" className="block">Label</label>
                                 <InputText id="label" {...register("label")} className="w-full"/>

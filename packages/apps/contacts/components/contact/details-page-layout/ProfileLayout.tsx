@@ -18,7 +18,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {DeleteContact} from "../../../services/contactService";
 import {toast} from "react-toastify";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
-import {capitalizeFirstLetter} from "../../../utils/capitalizeFirstLetter";
+import {TagsList} from "../../atoms/tag-input/TagInput";
 
 interface Props {
     onSetEditMode: (state: boolean) => void
@@ -46,7 +46,7 @@ export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
     return (
             <section className={styles.profileSection}>
                 {router.query.id !== 'new' ? (
-                    <>
+                    <div style={{display: 'flex'}}>
                         <div className={styles.avatar} style={{background: generateGradient()}}>
                             {userInitials.length ? userInitials : (
                                 <FontAwesomeIcon icon={faUser} />
@@ -72,9 +72,6 @@ export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
                                         icon={faTrashCan}/>
                                 </div>
                             </div>
-                            {contact?.contactTypeName && <div className={`${styles.contactType} mb-1`}>
-                                {capitalizeFirstLetter(contact?.contactTypeName.split('_').join(' '))}
-                            </div>}
                             <div className="flex mb-2">
                                     <span className={styles.dataSourceLabel}>
                                         Source:
@@ -92,13 +89,17 @@ export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
                                 <IconButton disabled onClick={() => console.log('')} icon={faEnvelope} />
                                 <IconButton disabled onClick={() => console.log('')} icon={faShare} />
                             </div>
+
+
                         </div>
-                    </>
+                    </div>
                    
                 ) : (
                     <h2>Add new contact</h2>
                 )}
-
+                <div>
+                    <TagsList tags={contact?.tags} readOnly />
+                </div>
 
                 <DeleteConfirmationDialog
                     header="Delete Contact"
@@ -113,6 +114,7 @@ export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
                         </>
                     )}
                 />
+
             </section>
 
     )

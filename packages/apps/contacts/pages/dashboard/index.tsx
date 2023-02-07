@@ -1,6 +1,8 @@
 import type {NextPage} from 'next'
 import {ContactList} from "../../components/contact";
 import {OrganizationList} from "../../components/organization/OrganizationList";
+import React from "react";
+
 
 const Dashboard: NextPage = () => {
     return (

@@ -2,8 +2,7 @@ import {useRouter} from "next/router";
 import "@openline-ai/openline-web-chat/dist/esm/index.css"
 import styles from './details-page-layout.module.scss'
 import React, {useEffect, useState} from "react";
-import {GetContactTypes} from "../../../services/contactTypeService";
-import {Contact, ContactType} from "../../../models/contact";
+import {Contact, ContactTag} from "../../../models/contact";
 import {toast} from "react-toastify";
 import {GetContactDetails} from "../../../services/contactService";
 import {ProfileLayout} from "./ProfileLayout";
@@ -31,13 +30,9 @@ export const DetailsPageLayout = () => {
         lastName: '',
         ownerId: undefined,
         ownerFullName: '',
-        contactTypeId: undefined,
-        contactTypeName: '',
         label: "",
     }) as any;
 
-
-    const [contactTypeList, setContactTypeList] = useState([] as any);
     const [editDetails, setEditDetails] = useState(false);
     const getContactObjectFromResponse = (contact: Contact) => {
 
@@ -48,24 +43,16 @@ export const DetailsPageLayout = () => {
             lastName: contact.lastName,
             ownerId: contact.owner?.id ?? undefined,
             ownerFullName: contact.owner ? contact.owner.firstName + ' ' + contact.owner.lastName : '',
-            contactTypeId: contact.contactType?.id ?? undefined,
-            contactTypeName: contact.contactType?.name ?? '',
             label: contact.label,
             definitionId: contact.definition?.id,
-            source: contact.source
+            source: contact.source,
+            tags: contact.tags
         };
     }
-
 
     useEffect(() => {
         if (router.query.id) {
             setEditDetails(false);
-            GetContactTypes(client).then((contactTypes: ContactType[]) => {
-                setContactTypeList(contactTypes);
-            }).catch((reason: any) => {
-                //todo log an error in server side
-                toast.error("There was a problem on our side and we are doing our best to solve it!");
-            });
         }
 
         if (router.query.id && router.query.id === 'new') {

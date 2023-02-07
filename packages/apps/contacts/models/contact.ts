@@ -20,11 +20,11 @@ export type Contact = {
     firstName: string;
     lastName: string;
     owner: Owner;
-    contactType: ContactType;
     notes: string;
     label: string;
     definition: EntityDefinition;
     source: ContactDataSource;
+    tags: Array<{id:string, name:string}>
 } & EntityExtension
 
 export interface ContactWithActions {
@@ -38,7 +38,7 @@ export type Owner = {
     lastName: string;
 }
 
-export type ContactType = {
+export type ContactTag = {
     id: string;
     name: string;
 }
