@@ -166,6 +166,17 @@ export const ConversationTimelineItem: React.FC<Props> = (
     const timeFromLastTimestamp = new Date(1970, 0, 1)
         .setSeconds(feedInitiator.lastTimestamp?.seconds);
 
+    const getSortedItems = (data: Array<any>): Array<ConversationItem> => {
+        return data.sort((a, b) => {
+            const date1 =  new Date(1970, 0, 1)
+                // @ts-ignore
+                .setSeconds(a?.time?.seconds) || timeFromLastTimestamp;
+            const date2 =  new Date(1970, 0, 1)
+                // @ts-ignore
+                .setSeconds(b?.time?.seconds) || timeFromLastTimestamp;
+            return  date2  - date1;
+        })
+    }
     return (
         <div className='flex flex-column h-full w-full'>
             <div className="flex-grow-1 w-full">
@@ -190,7 +201,7 @@ export const ConversationTimelineItem: React.FC<Props> = (
                 <div className="flex flex-column">
                     {   // email
                         !loadingMessages &&
-                        messages.filter(msg => msg.type === 1).map((msg: ConversationItem, index: number) => {
+                        getSortedItems(messages).filter((msg:ConversationItem) => msg.type === 1).map((msg: ConversationItem, index: number) => {
                             const emailData = JSON.parse(msg.content)
                             const date =  new Date(1970, 0, 1)
                                 .setSeconds(msg?.time?.seconds) || timeFromLastTimestamp;
@@ -220,7 +231,7 @@ export const ConversationTimelineItem: React.FC<Props> = (
 
                 {
                     !loadingMessages &&
-                    messages.filter(msg => msg.type !== 1).map((msg: ConversationItem, index: number) => {
+                    getSortedItems(messages).filter(msg => msg.type !== 1).map((msg: ConversationItem, index: number) => {
                         const lines = msg?.content.split('\n');
 
                         const filtered: string[] = lines.filter((line: string) => {
