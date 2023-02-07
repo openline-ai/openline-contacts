@@ -11,15 +11,20 @@ export function GetContactDetails(client: GraphQLClient, id: string): Promise<Co
                 title
                 firstName
                 lastName
+                tags {
+                    id
+                    name
+                }
                 owner{
                     id
                     firstName
                     lastName
                 }
-                contactType{
+                tags {
                     id
                     name
                 }
+                
                 template{
                     id
                 }
@@ -68,6 +73,28 @@ export function GetActionsForContact(client: GraphQLClient, id: string): Promise
         client.request(query, {id, from, to}).then((response: any) => {
             if (response.contact) {
                 resolve({...response.contact});
+            } else {
+                reject(response.error);
+            }
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
+}
+export function GetTagsForContact(client: GraphQLClient, id: string): Promise<ContactWithActions> {
+    return new Promise((resolve, reject) => {
+        const query = gql`query GetActionsForContact($id: ID!) {
+            contact(id: $id) {
+                tags {
+                    id
+                    name
+                }
+            }
+        }`
+
+        client.request(query, {id}).then((response: any) => {
+            if (response.contact.tags) {
+                resolve(response.contact.tags);
             } else {
                 reject(response.error);
             }
@@ -171,7 +198,6 @@ export function CreateContact(client: GraphQLClient, data: any): Promise<Contact
                     title: data.title,
                     firstName: data.firstName,
                     lastName: data.lastName,
-                    contactTypeId: data.contactTypeId,
                     ownerId: data.ownerId,
                     label: data.label,
                     notes: data.notes,
@@ -208,7 +234,6 @@ export function UpdateContact(client: GraphQLClient, data: any): Promise<Contact
                         title: data.title,
                         firstName: data.firstName,
                         lastName: data.lastName,
-                        contactTypeId: data.contactTypeId,
                         ownerId: data.ownerId,
                         label: data.label,
                         notes: data.notes,
@@ -335,6 +360,7 @@ export function GetContactNotes(client: GraphQLClient, contactId: string): Promi
     });
 }
 
+
 export function CreateContactNote(client: GraphQLClient, contactId: string, data: any): Promise<Note> {
     return new Promise((resolve, reject) => {
 
@@ -364,3 +390,46 @@ export function CreateContactNote(client: GraphQLClient, contactId: string, data
 
 }
 
+export function AddTagForContact(client: GraphQLClient, input: any): Promise<Note> {
+    return new Promise((resolve, reject) => {
+
+        const query = gql`mutation AddTagForContact($input: ContactTagInput!) {
+            contact_AddTagById(input: $input) {
+                id
+            }
+        }`
+
+        client.request(query, { input })
+            .then((response: any) => {
+            if (response.contact_AddTagById) {
+                resolve(response.contact_AddTagById);
+            } else {
+                reject(response.errors);
+            }
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
+}
+
+export function RemoveTagFromContact(client: GraphQLClient, input: {contactId:string, tagId:string}): Promise<Note> {
+    return new Promise((resolve, reject) => {
+
+        const query = gql`mutation RemoveTagFromContact($input: ContactTagInput!) {
+            contact_RemoveTagById(input: $input) {
+                id
+            }
+        }`
+
+        client.request(query, { input })
+            .then((response: any) => {
+                if (response.contact_RemoveTagById) {
+                    resolve(response.contact_RemoveTagById);
+                } else {
+                    reject(response.errors);
+                }
+            }).catch(reason => {
+            reject(reason);
+        });
+    });
+}

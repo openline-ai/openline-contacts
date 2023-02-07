@@ -11,6 +11,7 @@ interface Props {
     mode?: 'default' | 'primary' | 'secondary';
     disabled?: boolean;
     className?: string;
+    title?: string;
     style?: any;
     type?: string
 }

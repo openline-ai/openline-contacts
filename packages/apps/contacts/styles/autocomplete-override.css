@@ -1,0 +1,19 @@
+.p-autocomplete-token.p-highlight {
+    display: none;
+}
+
+.tagInput .p-autocomplete-multiple-container.p-focus {
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+}
+.tagInput .p-autocomplete-multiple-container {
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+    display: flex;
+    flex: 1;
+    padding: 0 12px;
+    min-width: 150px
+}
+

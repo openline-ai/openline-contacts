@@ -9,6 +9,7 @@ import '../styles/layout.css'
 import '../styles/card-fieldset.css'
 import '../styles/button.css'
 import '../styles/search-component.css'
+import '../styles/autocomplete-override.css'
 import 'react-toastify/dist/ReactToastify.css';
 import {AppProps} from "next/app";
 import {ToastContainer} from "react-toastify";

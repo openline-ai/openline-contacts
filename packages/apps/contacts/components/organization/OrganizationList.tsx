@@ -37,7 +37,7 @@ export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScree
     return (
         <FullScreenModeLayout fullScreenMode={fullScreenMode}>
             <GridComponent gridTitle="Organizations"
-                           globalFilterFields={["NAME", "SOURCE"]}
+                           globalFilterFields={["NAME"]}
                            queryData={(params: any) => loadData(params)}
                            columns={[
                                {
@@ -92,10 +92,6 @@ export const OrganizationList: NextPage<{fullScreenMode: boolean}> = ({fullScree
                                {
                                    field: "NAME",
                                    label: "Name",
-                               },
-                               {
-                                   field: "SOURCE",
-                                   label: "Source"
                                },
                            ]}
                            filters={[

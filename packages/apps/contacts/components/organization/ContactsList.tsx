@@ -2,6 +2,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEnvelope, faPhone} from "@fortawesome/free-solid-svg-icons";
 import styles from './organisation.module.scss'
 import {useRouter} from "next/router";
+import {TagsList} from "../atoms/tag-input/TagInput";
 export const OrganizationContactList = ({contacts = []}: {contacts: any}) => {
     const router = useRouter();
 
@@ -24,11 +25,14 @@ export const OrganizationContactList = ({contacts = []}: {contacts: any}) => {
                             <span> {e.lastName} </span>
                             <span className="text-xs ml-2 text-gray-600"> {e?.jobTitle}</span>
                         </div>
-                        <div className={`mb-2 ${styles.contactType}`}>
-                            <span> {e.contactType?.name}</span>
 
+                        {!!e.tags?.length && (
+                            <div className={`mb-1 mt-1`}>
+                                <TagsList tags={e.tags} readOnly />
                             </div>
-                            <div className="flex">
+                        )}
+
+                            <div className="flex mb-1 mt-1 ">
                                 {!!e.phoneNumbers.length && (
                                     <>
                                         <span className="mr-2"> <FontAwesomeIcon icon={faPhone}/> </span>
@@ -38,7 +42,7 @@ export const OrganizationContactList = ({contacts = []}: {contacts: any}) => {
 
 
                             </div>
-                            <div className="flex">
+                            <div className="flex mb-1 mt-1 ">
                                 {!!e.emails.length && (
                                     <>
                                         <span className="mr-2"> <FontAwesomeIcon icon={faEnvelope}/> </span>
