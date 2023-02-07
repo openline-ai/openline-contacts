@@ -26,7 +26,7 @@ export const TagsList = ({tags, onTagDelete, readOnly}: {tags: Array<{name:strin
             {tags?.map((tag: {name:string, id:string}) => (
                 <li key={tag.id}
                     className={styles.tag}>
-                    {tag.name}
+                    {capitalizeFirstLetter(tag.name)?.split("_")?.join(" ")}
                     {!readOnly && (
                         // @ts-ignore
                         <span className="ml-2" onClick={e => onTagDelete(tag.id)}>x</span>
@@ -124,7 +124,7 @@ export const TagInput = ({
                                 className={styles.tagListItem}>
                                 <span className={styles.option}
                                      onClick={() => onTagSelect(tag)}>
-                                    {capitalizeFirstLetter(tag.name)}
+                                    {capitalizeFirstLetter(tag.name)?.split("_")?.join(" ")}
                                 </span>
                                 <div
                                     className={styles.deleteButton}>
