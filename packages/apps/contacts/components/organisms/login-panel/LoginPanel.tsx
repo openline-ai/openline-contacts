@@ -317,7 +317,7 @@ export const LoginPanel: React.FC<Props> = () => {
                                 {/*        <a className="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer text-sm" onClick={forgotPassword}>Forgot your password?</a>*/}
                                 {/*    </div>*/}
 
-                                {/*    <Button label="Sign In" className="w-full p-button-secondary" type='submit' />*/}
+                                {/*    <TagInput label="Sign In" className="w-full p-button-secondary" type='submit' />*/}
                                 {/*</form>*/}
                                 <div className="pt-5 text-center">
                                     <span className="font-medium line-height-3 text-sm" style={{ color: '#9E9E9E' }}>Protected by </span>

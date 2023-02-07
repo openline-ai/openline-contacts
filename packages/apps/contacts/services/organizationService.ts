@@ -66,6 +66,10 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
                         id
                         firstName
                         lastName
+                        tags {
+                            name
+                            id
+                        }
                       
                         phoneNumbers {
                             id
@@ -208,24 +212,17 @@ export function CreateOrganization(client: GraphQLClient, data: any): Promise<Or
 
 }
 
-export function UpdateOrganization(client: GraphQLClient, data: any): Promise<Organization> {
+export function UpdateOrganization(client: GraphQLClient, input: any): Promise<Organization> {
     return new Promise((resolve, reject) => {
 
-        const query = gql`mutation UpdateOrganization($id: ID!, $organization: OrganizationInput!) {
-            organization_Update(id: $id, input: $organization) {
+        const query = gql`mutation UpdateOrganization($input: OrganizationUpdateInput!) {
+            organization_Update(input: $input) {
                 id
             }
         }`
 
         client.request(query, {
-                id: data.id,
-                organization: {
-                    name: data.name,
-                    description: data.description,
-                    industry: data.industry,
-                    domain: data.domain,
-                    website: data.website
-                }
+               input
             }
         ).then((response: any) => {
             if (response.organization_Update) {

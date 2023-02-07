@@ -1,20 +1,19 @@
 .noteContainer {
   display: flex;
   justify-content: space-between;
+  font-family: Helvetica, Arial, sans-serif !important;
+  line-height: 1.3rem;
 }
 
 .noteContent {
   width: fit-content;
-  font: Roboto;
-  font-weight: 200;
   line-height: 1.3rem;
   font-size: 14px;
+  font-weight: normal;
+  color: #495057;
   & * {
     margin: 4px 0;
     width: fit-content;
-    text-decoration: underline;
-    text-decoration-color: var(--gray-400);
-    //text-decoration: none;
     overflow: hidden;
     white-space: pre-line;
     word-break: break-word;
