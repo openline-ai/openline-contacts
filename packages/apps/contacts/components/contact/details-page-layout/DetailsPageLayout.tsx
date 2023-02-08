@@ -88,11 +88,15 @@ export const DetailsPageLayout = () => {
                             setReloadDetails={setReloadDetails}
                             setEditDetails={setEditDetails}
                             contactId={router.query.id as string}/>
-                        <Divider/>
+                        {router.query.id && router.query.id !== 'new' && (
+                            <Divider/>
+                            )}
                     </>
 
                 )}
-                <ContactCommunicationSection contactId={router.query.id}/>
+                {router.query.id && router.query.id !== 'new' && (
+                    <ContactCommunicationSection contactId={router.query.id}/>
+                )}
             </section>
 
             <section className={styles.messageEditorSection}>
