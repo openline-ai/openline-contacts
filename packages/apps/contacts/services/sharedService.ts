@@ -73,12 +73,12 @@ export function GetDashboardData(client: GraphQLClient, pagination: {limit: numb
                             primary
                             email
                         }
-                        addresses {
-                            id
-                            state
-                            country
-                            city
-                        }
+#                        addresses {
+#                            id
+#                            state
+#                            country
+#                            city
+#                        }
                     }
                     organization {
                         id

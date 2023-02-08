@@ -18,19 +18,19 @@ export function GetOrganizations(client: GraphQLClient, params: PaginatedRequest
                         name
                     }
                     source
-                    addresses {
-                        id
-                        createdAt
-                        country
-                        state
-                        city
-                        address
-                        address2
-                        zip
-                        phone
-                        fax
-                        source
-                    }
+#                    addresses {
+#                        id
+#                        createdAt
+#                        country
+#                        state
+#                        city
+#                        address
+#                        address2
+#                        zip
+#                        phone
+#                        fax
+#                        source
+#                    }
                     
                 }
                 totalElements
