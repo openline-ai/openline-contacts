@@ -4,7 +4,7 @@ import React from "react";
 
 export const DashboardTableCell = (
     {label, subLabel, url, className}:
-                                       {label:string, subLabel?:string, url?: string, className?: string}) => {
+                                       {label:string, subLabel?:any, url?: string, className?: string}) => {
     return (
         <div className='flex flex-column'>
             {url ? (

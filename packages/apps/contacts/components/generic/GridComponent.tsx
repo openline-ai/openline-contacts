@@ -69,18 +69,16 @@ const GridComponent = (props: any) => {
 
     const renderSearch = () => {
         return (
-            <div className="flex justify-content-between">
-                <span className="p-input-icon-left">
-                    <i className="pi pi-search"/>
-                    <DebounceInput
-                        className="p-inputtext p-inputtext-sm p-component"
-                        minLength={2}
-                        debounceTimeout={300}
-                        onChange={onGlobalFilterChange}
-                        placeholder="Keyword Search"
-                    />
-                </span>
-            </div>
+            <span className="p-input-icon-left w-full">
+                <i className="pi pi-search"/>
+                <DebounceInput
+                    className="p-inputtext p-inputtext-sm p-component w-full"
+                    minLength={2}
+                    debounceTimeout={300}
+                    onChange={onGlobalFilterChange}
+                    placeholder="Search for contacts or organizations by name or email"
+                />
+            </span>
         )
     }
 
@@ -212,22 +210,21 @@ const GridComponent = (props: any) => {
     return <>
         {
             props.showHeader != undefined && props.showHeader &&
-            <div className="p-datatable header flex align-items-center mb-5 mt-5">
+            <div className="p-datatable header flex align-items-center">
 
-                <div className="flex flex-grow-1 text-3xl">
-                    {props.gridTitle}
-                    {renderSearch()}
+                <div className="flex align-items-center w-full text-2xl mb-2">
+                    <div className={'flex flex-grow-0 mr-3'}>{props.gridTitle}</div>
+                    <div className={'flex flex-grow-1'}>{renderSearch()}</div>
                 </div>
-                <div className="flex justify-content-end">
-                    {props.gridActions}
-                </div>
-
+                {/*<div className="flex justify-content-end">*/}
+                {/*    {props.gridActions}*/}
+                {/*</div>*/}
             </div>
         }
 
         <DataTable value={data}
                    lazy
-            // responsiveLayout="scroll"
+                   stripedRows
                    dataKey="id"
                    size={'normal'}
                    paginator
@@ -249,13 +246,11 @@ const GridComponent = (props: any) => {
                     .map((columnDefinition: any) => {
                         let bodyTemplate = (rowData: any) => {
                             if (columnDefinition.template) {
-                                return columnDefinition.template(rowData);
+                                return <div style={{height: '34px'}}>{columnDefinition.template(rowData)}</div>;
                             } else if (columnDefinition.editLink) {
-                                return <span className={`cta ${columnDefinition.className ?? ''}`}
-                                             onClick={() => onEdit(rowData.id)}>{rowData?.[columnDefinition.field] || 'Unknown'}</span>
+                                return <span style={{height: '34px'}} onClick={() => onEdit(rowData.id)}>{rowData?.[columnDefinition.field] || 'Unknown'}</span>
                             } else {
-                                return <div
-                                    className={`${columnDefinition.field === 'industry' && 'capitalise'} ${columnDefinition.className}` ?? ''}>{rowData[columnDefinition.field].split("_").join(" ").toLowerCase()}</div>;
+                                return <div style={{height: '34px'}}>{rowData[columnDefinition.field]}</div>;
                             }
                         };
                         return <Column key={uuidv4()}

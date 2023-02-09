@@ -112,3 +112,7 @@ ul li {
 .ql-editor {
     word-break: break-word !important;
 }
+
+.w25 {
+    width: 25%;
+}
