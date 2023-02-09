@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from "./address.module.scss";
-import {Address as AddressInterface} from "../../../models/Address";
+import {Location as AddressInterface} from "../../../models/location";
 
 interface Props extends Omit<AddressInterface, 'id'> {
     mode?: 'default' | 'light'

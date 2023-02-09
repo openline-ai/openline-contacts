@@ -4,25 +4,18 @@ import {Column} from "primereact/column";
 import {Button} from "../atoms";
 import {Fragment} from "preact";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {
-    faArrowDownWideShort,
-    faArrowUpShortWide,
-    faColumns,
-    faFilter,
-    faRefresh,
-    faSearch
-} from "@fortawesome/free-solid-svg-icons";
+import {faArrowDownWideShort, faArrowUpShortWide, faRefresh, faSearch} from "@fortawesome/free-solid-svg-icons";
 import {Dropdown} from "primereact/dropdown";
-import PropTypes from "prop-types";
+import PropTypes, {string} from "prop-types";
 import {Sidebar} from "primereact/sidebar";
 import {OverlayPanel} from "primereact/overlaypanel";
-import {Divider} from "primereact/divider";
 import {Checkbox} from "primereact/checkbox";
 import {InputText} from "primereact/inputtext";
 import {toast} from "react-toastify";
 import {Filter, PaginatedRequest, Sort} from "../../utils/pagination";
 import {DebounceInput} from "react-debounce-input";
 import {IconButton} from "../atoms/icon-button";
+import {uuidv4} from "../../utils/uuid-generator";
 
 
 const GridComponent = (props: any) => {
@@ -70,89 +63,24 @@ const GridComponent = (props: any) => {
         props.onEdit(id);
     };
 
-    const onGlobalFilterChange = (e:any) => {
-        const value = e.target.value;
-
-        setGlobalFilterValue(value);
+    const onGlobalFilterChange = (e: any) => {
+        setGlobalFilterValue(e.target.value);
     }
 
     const renderSearch = () => {
         return (
             <div className="flex justify-content-between">
                 <span className="p-input-icon-left">
-                    <i className="pi pi-search" />
+                    <i className="pi pi-search"/>
                     <DebounceInput
                         className="p-inputtext p-inputtext-sm p-component"
-                        minLength={3}
+                        minLength={2}
                         debounceTimeout={300}
                         onChange={onGlobalFilterChange}
                         placeholder="Keyword Search"
                     />
                 </span>
             </div>
-        )
-    }
-
-    const renderHeader = () => {
-        return (
-            <>
-                {
-                    (filters.length > 0 || sort.length > 0) &&
-                    <div className="p-datatable filters flex" style={{
-                        background: '#f8f9fa',
-                    }}>
-
-                        <div className="flex flex-grow-1">
-                        </div>
-                        <div className="flex flex-grow-1 justify-content-end">
-                            {
-                                (sort.length > 0 || props.columnSelectorEnabled) &&
-                                <Divider layout="vertical" className="p-0"/>
-                            }
-
-                            {
-                                sort.length > 0 &&
-                                <Button onClick={(e: any) => sortContainerRef?.current?.toggle(e)} mode="text">
-                                    <FontAwesomeIcon icon={faArrowUpShortWide} className="mr-2"/>
-                                    <span>Sorting</span>
-                                </Button>
-                            }
-
-                            {
-                                sort.length > 0 && props.columnSelectorEnabled &&
-                                <Divider layout="vertical" className="p-0"/>
-                            }
-
-                            {
-                                props.columnSelectorEnabled &&
-                                <Button onClick={(e: any) => configurationContainerRef?.current?.toggle(e)} mode="text">
-                                    <FontAwesomeIcon icon={faColumns} className="mr-2"/>
-                                    <span>Columns</span>
-                                </Button>
-                            }
-                            {
-                                filters.length > 0  &&
-                                <Divider layout="vertical" className="p-0"/>
-                            }
-                            {
-                                filters.length > 0 &&
-                                <div className="flex align-items-center ml-1">
-                                    <Button onClick={() => setFiltersPanelVisible(true)}
-                                            className='p-button-link p-button-text'
-                                            icon={faFilter}
-                                            mode="text"
-                                    >
-                                <span className="ml-2">
-                                    Filters
-                                </span>
-                                    </Button>
-                                </div>
-                            }
-
-                        </div>
-                    </div>
-                }
-            </>
         )
     }
 
@@ -189,7 +117,7 @@ const GridComponent = (props: any) => {
         }
     } as any;
 
-    const paginatorLeft = <IconButton type="button" ariaLabel="Refresh"  icon={faRefresh} className="p-button-text" onClick={() => loadLazyData()}/>
+    const paginatorLeft = <IconButton type="button" ariaLabel="Refresh" icon={faRefresh} className="p-button-text" onClick={() => loadLazyData()}/>
 
     const [loading, setLoading] = useState(false);
     const [totalRecords, setTotalRecords] = useState(0);
@@ -202,25 +130,34 @@ const GridComponent = (props: any) => {
     const loadLazyData = () => {
         setLoading(true);
 
+        let filtersData: Filter[] = (filters || []).filter((f: any) => f.value).map((f: any) => ({
+            property: f.field,
+            value: f.value,
+            operation: f.operation,
+            condition: "AND"
+        }))
 
-
-       let filtersData: Filter[] = (filters || []).filter((f: any) => f.value).map((f: any) => ({
-                property: f.field,
-                value: f.value,
-                operation: f.operation,
-                condition: "AND"
-            }))
-
-        if(globalFilterValue) {
-            const globalSearch = props.globalFilterFields
-                .map((fieldName:string) => ({
-                    property: fieldName,
-                    value: globalFilterValue,
+        if (globalFilterValue) {
+            if (typeof props.globalFilterFields === "string") {
+                filtersData.push({
+                    property: props.globalFilterFields,
                     operation: "CONTAINS",
+                    value: globalFilterValue,
                     condition: "OR"
-                }))
-            filtersData = [...filtersData, ...globalSearch]
+                })
+            } else {
+                const globalSearch = props.globalFilterFields
+                    .map((fieldName: string) => ({
+                        property: fieldName,
+                        value: globalFilterValue,
+                        operation: "CONTAINS",
+                        condition: "OR"
+                    }))
+                filtersData = [...filtersData, ...globalSearch]
+            }
         }
+
+        console.log(filtersData)
 
         const params = {
             where: filtersData,
@@ -264,7 +201,7 @@ const GridComponent = (props: any) => {
             };
         });
     }
-    const onCustomSaveState = (state:any) => {
+    const onCustomSaveState = (state: any) => {
         sessionStorage.setItem(props.gridTitle.toLowerCase(), JSON.stringify(state));
     }
     const onCustomRestoreState = () => {
@@ -290,9 +227,7 @@ const GridComponent = (props: any) => {
 
         <DataTable value={data}
                    lazy
-                   // responsiveLayout="scroll"
-
-                   // globalFilterFields={props.globalFilterFields}
+            // responsiveLayout="scroll"
                    dataKey="id"
                    size={'normal'}
                    paginator
@@ -319,10 +254,11 @@ const GridComponent = (props: any) => {
                                 return <span className={`cta ${columnDefinition.className ?? ''}`}
                                              onClick={() => onEdit(rowData.id)}>{rowData?.[columnDefinition.field] || 'Unknown'}</span>
                             } else {
-                                return <div className={`${columnDefinition.field === 'industry' && 'capitalise'} ${columnDefinition.className}` ?? ''}>{rowData[columnDefinition.field].split("_").join(" ").toLowerCase()}</div>;
+                                return <div
+                                    className={`${columnDefinition.field === 'industry' && 'capitalise'} ${columnDefinition.className}` ?? ''}>{rowData[columnDefinition.field].split("_").join(" ").toLowerCase()}</div>;
                             }
                         };
-                        return <Column key={columnDefinition.field}
+                        return <Column key={uuidv4()}
                                        field={columnDefinition.field}
                                        header={columnDefinition.label}
                                        className={columnDefinition.className ?? ''}
@@ -336,10 +272,9 @@ const GridComponent = (props: any) => {
                 Filter by
             </h3>
 
-
             {
                 filters?.map((f: any) => {
-                    return <div className="flex flex-row mb-3 align-items-center" key={f.field}>
+                    return <div className="flex flex-row mb-3 align-items-center" key={uuidv4()}>
 
                                 <span className="mr-3">
                                     {f.label}
@@ -404,7 +339,6 @@ const GridComponent = (props: any) => {
             </div>
 
 
-
         </Sidebar>
 
         <OverlayPanel ref={sortContainerRef} dismissable>
@@ -412,7 +346,7 @@ const GridComponent = (props: any) => {
             <div className="flex flex-column">
                 {
                     sort.map((c: any) => {
-                        return <div key={c.field} className="flex flex-row mb-3">
+                        return <div key={uuidv4()} className="flex flex-row mb-3">
                             <div className="flex flex-grow-1 align-items-center mr-5">
                                 <Checkbox
                                     onChange={(e: any) => {
@@ -467,7 +401,7 @@ const GridComponent = (props: any) => {
                 columns
                     .filter((c: any) => c.display !== 'EXCLUDE')
                     .map((columnDefinition: any) => {
-                        return <div key={columnDefinition.field} className={`flex flex-grow-1 align-items-center mr-5 mb-2`}>
+                        return <div key={uuidv4()} className={`flex flex-grow-1 align-items-center mr-5 mb-2`}>
                             <Checkbox
                                 onChange={(e: any) => {
                                     setColumns(columns.map((cc: any) => {
@@ -527,8 +461,10 @@ GridComponent.propTypes = {
     queryData: PropTypes.func,
 
     onEdit: PropTypes.func,
-    globalFilterFields: PropTypes.arrayOf(PropTypes.string)
-
+    globalFilterFields: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.arrayOf(string)
+    ]) || undefined
 }
 
 GridComponent.defaultProps = {
@@ -538,7 +474,7 @@ GridComponent.defaultProps = {
     showHeader: true,
     gridTitle: 'Title',
     columnSelectorEnabled: true,
-    defaultLimit: 5,
+    defaultLimit: 10,
     globalFilterFields: []
 
 }
