@@ -72,6 +72,7 @@ export function GetDashboardData(client: GraphQLClient, request: PaginatedReques
                             primary
                         }
                         emails {
+                            id
                             primary
                             email
                         }
