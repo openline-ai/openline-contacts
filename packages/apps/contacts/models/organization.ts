@@ -1,4 +1,4 @@
-import {Address} from "./Address";
+import {Location} from "./location";
 import {Contact} from "./contact";
 
 export type Organization = {
@@ -12,6 +12,6 @@ export type Organization = {
     contacts: {
         content: Array<Contact>
     }
-    addresses: Array<Address>
+    locations: Array<Location>
     source: string
 }

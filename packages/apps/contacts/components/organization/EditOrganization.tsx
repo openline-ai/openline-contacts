@@ -118,20 +118,12 @@ function OrganizationEdit({organisation, onReload, createMode}: {organisation:Or
                                 </div>
 
                                 <div>
-                                    {/*{organisation?.addresses?.map((data) => (*/}
-                                    {/*    <Address*/}
-                                    {/*        key={data.id}*/}
-                                    {/*        createdAt={data.createdAt}*/}
-                                    {/*        country={data.country}*/}
-                                    {/*        state={data.state}*/}
-                                    {/*        city={data.city}*/}
-                                    {/*        address={data.address}*/}
-                                    {/*        address2={data?.address2}*/}
-                                    {/*        zip={data.zip}*/}
-                                    {/*        phone={data.phone}*/}
-                                    {/*        fax={data?.fax}*/}
-                                    {/*    />*/}
-                                    {/*))}*/}
+                                    {organisation?.locations?.map((data) => (
+                                        <Address
+                                            key={data.id}
+                                            place={data.place}
+                                        />
+                                    ))}
                                 </div>
                             </div>
                         }

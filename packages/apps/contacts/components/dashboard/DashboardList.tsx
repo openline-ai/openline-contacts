@@ -10,22 +10,22 @@ import {useGraphQLClient} from "../../utils/graphQLClient";
 import {GetDashboardData} from "../../services/sharedService";
 import {DashboardTableHeaderLabel} from "./dashboard-table-header-label/DashboardTableHeaderLabel";
 import {DashboardTableAddressCell, DashboardTableCell} from "./dashboard-table-header-label/DashboardTableCell";
-import {Address} from "../../models/Address";
+import {Location} from "../../models/location";
 
-export const DashboardList: NextPage< {fullScreenMode: boolean}> = ({fullScreenMode}) => {
-    const client =  useGraphQLClient();
+export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreenMode}) => {
+    const client = useGraphQLClient();
     const router = useRouter();
 
-    const loadData =  (params: PaginatedRequest) => {
-        return GetDashboardData(client, params.pagination)
+    const loadData = (params: PaginatedRequest) => {
+        return GetDashboardData(client, params)
     }
 
     return (
-        <FullScreenModeLayout fullScreenMode={fullScreenMode} >
+        <FullScreenModeLayout fullScreenMode={fullScreenMode}>
             <div className="mt-5">
                 <GridComponent gridTitle=""
                                queryData={(params: any) => loadData(params)}
-                               globalFilterFields={["FIRST_NAME", "TITLE", "LAST_NAME"]}
+                               globalFilterFields="searchTerm"
                                columns={[
                                    {
                                        editLink: true,
@@ -37,25 +37,20 @@ export const DashboardList: NextPage< {fullScreenMode: boolean}> = ({fullScreenM
                                                subLabel="Industry"
                                            />),
                                        template: (c: any) => {
-
-
-
-                                           if(c.organization) {
+                                           if (c.organization) {
                                                return (
                                                    <DashboardTableCell
                                                        label={c.organization.name}
                                                        subLabel={c.organization?.industry}
-                                                       url={`/organization/${c.organization.id}`} />
+                                                       url={`/organization/${c.organization.id}`}/>
 
                                                )
                                            }
-
-                                           if(!c.organization) {
+                                           if (!c.organization) {
                                                return <span>-</span>
                                            }
                                        }
                                    },
-
                                    {
 
                                        className: 'w10 capitalise',
@@ -66,15 +61,14 @@ export const DashboardList: NextPage< {fullScreenMode: boolean}> = ({fullScreenM
                                                subLabel="Role"
                                            />),
                                        template: (c: any) => {
-                                           if(!c.contact) {
+                                           if (!c.contact) {
                                                return <span>-</span>
                                            }
-
                                            return (
                                                <DashboardTableCell
                                                    label={`${c.contact?.firstName} ${c.contact?.lastName}`}
                                                    subLabel={c.contact.job}
-                                                   url={`/contact/${c.contact.id}`} />
+                                                   url={`/contact/${c.contact.id}`}/>
 
                                            )
                                        }
@@ -85,21 +79,18 @@ export const DashboardList: NextPage< {fullScreenMode: boolean}> = ({fullScreenM
                                        field: 'contact',
                                        label: 'Email',
                                        template: (c: any) => {
-                                           if(!c.contact?.emails) {
+                                           if (!c.contact?.emails) {
                                                return <span>-</span>
                                            }
-
-                                           return (c.contact?.emails).map((data: any,index:number) => (
+                                           return (c.contact?.emails).map((data: any, index: number) => (
                                                <div className='flex flex-wrap' key={data.id}>
                                                    <DashboardTableCell
                                                        className='lowercase'
                                                        label={data.email}
                                                    />
-                                                   {c.contact?.emails.length -1 !== index && ', '}
+                                                   {c.contact?.emails.length - 1 !== index && ', '}
                                                </div>
-
                                            ))
-
                                        }
                                    },
                                    {
@@ -113,16 +104,16 @@ export const DashboardList: NextPage< {fullScreenMode: boolean}> = ({fullScreenM
                                            />),
 
                                        template: (c: any) => {
-                                           if(!c.contact?.addresses?.length) {
+                                           if (!c.contact?.locations?.length) {
                                                return <span>-</span>
                                            }
 
-                                           return c.contact?.addresses.map((data: Address) => (
+                                           return c.contact?.locations.map((data: Location) => (
                                                <DashboardTableAddressCell
                                                    key={data.id}
-                                                   city={data?.city}
-                                                   state={data?.state}
-                                                   country={data?.country}
+                                                   city={data?.place?.city}
+                                                   state={data?.place?.state}
+                                                   country={data?.place?.country}
                                                />
                                            ))
                                        }
