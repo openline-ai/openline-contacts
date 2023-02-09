@@ -95,7 +95,8 @@ export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
                     </div>
                    
                 ) : (
-                    <h2>Add new contact</h2>
+                    <></>
+                    // <h2>Add new contact</h2>
                 )}
                 <div>
                     <TagsList tags={contact?.tags} readOnly />

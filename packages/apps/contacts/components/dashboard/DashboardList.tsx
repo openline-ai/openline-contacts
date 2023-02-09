@@ -120,14 +120,14 @@ export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreen
 
                                    },
                                ]}
-                               gridActions={
-                                   <div className="flex align-items-center">
-                                       <Button onClick={() => router.push(`/contact/new`)} className='p-button-text'>
-                                           <FontAwesomeIcon icon={faPlus} className="mr-2"/>Add a new contact
-                                       </Button>
-                                   </div>
-                               }
-                               defaultLimit={fullScreenMode ? 10 : 5}
+                               // gridActions={
+                               //     <div className="flex align-items-center">
+                               //         <Button onClick={() => router.push(`/contact/new`)} className='p-button-text'>
+                               //             <FontAwesomeIcon icon={faPlus} className="mr-2"/>Add a new contact
+                               //         </Button>
+                               //     </div>
+                               // }
+                               defaultLimit={fullScreenMode ? 10 : 10}
 
                 />
             </div>
