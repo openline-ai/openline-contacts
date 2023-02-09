@@ -1,4 +1,4 @@
-export interface Address {
+export interface Place {
     id: string,
     country?: string,
     state?: string,

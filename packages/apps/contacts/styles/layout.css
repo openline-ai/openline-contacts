@@ -70,3 +70,8 @@
     background: #313044;
     color: white!important;
 }
+
+
+.p-datatable .p-datatable-thead > tr > th {
+    background: transparent;
+}

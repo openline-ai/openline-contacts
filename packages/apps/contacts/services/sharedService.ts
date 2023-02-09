@@ -1,8 +1,6 @@
 import {gql, GraphQLClient} from "graphql-request";
-import {PaginatedRequest, PaginatedResponse, Pagination} from "../utils/pagination";
-import {MapGridFilters} from "../utils/converters";
-import {Organization} from "../models/organization";
-import {Note} from "../models/contact";
+import {PaginatedRequest} from "../utils/pagination";
+import {Contact, Note} from "../models/contact";
 
 export function UpdateNote(client: GraphQLClient, data: any): Promise<Note> {
     return new Promise((resolve, reject) => {
@@ -13,10 +11,10 @@ export function UpdateNote(client: GraphQLClient, data: any): Promise<Note> {
             }
         }`
         client.request(query, {
-            input: {
-                id: data.id,
-                html: data.html
-            }
+                input: {
+                    id: data.id,
+                    html: data.html
+                }
             }
         ).then((response: any) => {
             if (response.note_Update) {
@@ -53,4 +51,63 @@ export function DeleteNote(client: GraphQLClient, noteId: string): Promise<boole
         });
     });
 
+}
+
+export function GetDashboardData(client: GraphQLClient, request: PaginatedRequest): Promise<Contact> {
+    return new Promise((resolve, reject) => {
+
+        let searchTermFilter = request.where.filter((f: any) => f.property === 'searchTerm');
+
+        const query = gql`
+            query GetDashboardData($pagination: Pagination!${searchTermFilter.length > 0 ? ', $searchTerm: String' : ''}) {
+            dashboardView(pagination: $pagination ${searchTermFilter.length > 0 ? ', searchTerm: $searchTerm' : ''}) {
+                content {
+                    
+                    contact {
+                        id
+                        firstName
+                        lastName
+                        jobRoles {
+                            jobTitle
+                            primary
+                        }
+                        emails {
+                            primary
+                            email
+                        }
+                        locations {
+                            id
+                            name
+                            place {
+                                country
+                                state
+                                city
+                            }
+                        }
+                    }
+                    organization {
+                        id
+                        name
+                        industry
+                    }
+                }
+                totalElements
+            }
+        }`
+
+        let requestData = {pagination: request.pagination} as any;
+        if (request.where && searchTermFilter.length > 0) {
+            requestData['searchTerm'] = searchTermFilter[0].value
+        }
+
+        client.request(query, requestData).then((response: any) => {
+            if (response.dashboardView) {
+                resolve(response.dashboardView);
+            } else {
+                reject(response.error);
+            }
+        }).catch(reason => {
+            reject(reason);
+        });
+    });
 }

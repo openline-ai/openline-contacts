@@ -111,6 +111,7 @@ export const TagInput = ({
                     tags={tags}
                     onTagDelete={onTagRemove}
                 />
+
                 <AutoComplete
                     field="name"
                     inputRef={inputRef}

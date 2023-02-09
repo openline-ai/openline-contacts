@@ -1,2 +1,2 @@
 export {EditContact} from './edit'
-export {ContactList} from './ContactList'
+export {DashboardList} from '../dashboard/DashboardList'

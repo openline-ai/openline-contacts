@@ -1,17 +1,13 @@
 import type {NextPage} from 'next'
-import {ContactList} from "../../components/contact";
-import {OrganizationList} from "../../components/organization/OrganizationList";
+import {DashboardList} from "../../components/contact";
 import React from "react";
 
 
 const Dashboard: NextPage = () => {
     return (
         <div className="mt-5 mr-6 ml-5 ">
-            <div className="mt-7">
-                <OrganizationList fullScreenMode={false}/>
-            </div>
              <div className="mt-7">
-                 <ContactList fullScreenMode={false} />
+                 <DashboardList fullScreenMode={false} />
              </div>
         </div>
     )
