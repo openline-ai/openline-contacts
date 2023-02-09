@@ -6,41 +6,34 @@ interface Props extends Omit<AddressInterface, 'id'> {
     mode?: 'default' | 'light'
 }
 export const Address = ({
-                     country,
-                     state,
-                     city,
-                     address,
-                     address2,
-                     zip,
-                     phone,
-                     fax,
+                     place,
                      mode='default'
                  }: Props) => {
     return (
         <div className={styles.addressContainer}>
-            {address && (
-                <div className={`${styles.address} ${styles[mode]}`}>{address}</div>
+            {place && place.address && (
+                <div className={`${styles.address} ${styles[mode]}`}>{place.address}</div>
             )}
-            {address2 && <div className={`${styles.address} ${styles[mode]}`}>{address2}</div>}
+            {place && place.address2 && <div className={`${styles.address} ${styles[mode]}`}>{place.address2}</div>}
 
-            {(city || state || zip) && (
+            {(place && (place.city || place.state || place.zip)) && (
                 <div className={`${styles.address} ${styles[mode]}`}>
-                    {city}, {state} {zip}
+                    {place.city}, {place.state} {place.zip}
                 </div>
             )}
 
-            {country && (
-                <div className={`${styles.country} ${styles[mode]}`}>{country}</div>
+            {place && place.country && (
+                <div className={`${styles.country} ${styles[mode]}`}>{place.country}</div>
             )}
 
-            {(phone || fax) && (
+            {(place && (place.phone || place.fax)) && (
                 <div className={styles.phoneAndFaxContainer}>
-                    {phone && (
+                    {place.phone && (
                         <div className={styles.phone}>
-                            <span> Phone: </span> {phone}
+                            <span> Phone: </span> {place.phone}
                         </div>)}
-                    {fax && <div className={styles.fax}>
-                        <span> Fax: </span>  {fax}
+                    {place.fax && <div className={styles.fax}>
+                        <span> Fax: </span>  {place.fax}
                     </div>}
                 </div>
             )}
