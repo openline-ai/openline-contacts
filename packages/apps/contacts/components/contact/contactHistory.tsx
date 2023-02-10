@@ -36,7 +36,7 @@ function ContactHistory(props: Props) {
             }).catch((reason: any) => {
                 //todo log an error in server side
                 setActionsLoading(false)
-                toast.error("HERE ");
+                toast.error("There was a problem on our side and we are doing our best to solve it!");
             });
 
             GetContactNotes(client, (props.contactId as string)).then(async (result: PaginatedResponse<Note>) => {

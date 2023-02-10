@@ -5,10 +5,8 @@ import React from "react";
 
 const Dashboard: NextPage = () => {
     return (
-        <div className="mt-5 mr-6 ml-5 ">
-             <div className="mt-7">
-                 <DashboardList fullScreenMode={false} />
-             </div>
+        <div className="m-auto mt-5" style={{minWidth: '1200px', maxWidth: '1200px'}}>
+            <DashboardList fullScreenMode={false}/>
         </div>
     )
 }
