@@ -90,18 +90,14 @@
 }
 
 .contactFieldSection {
-  //background: #b072f1;
   grid-area: contactFields;
-
 }
 
 .messageEditorSection {
   grid-area: message;
-
-
-
 }
+
 .contactHistorySection {
-  //background: #949ff5;
   grid-area: contactHistory;
+  margin-top: -40px;
 }

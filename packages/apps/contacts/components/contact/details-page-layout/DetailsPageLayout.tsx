@@ -117,14 +117,11 @@ export const DetailsPageLayout = () => {
 
             <section className={styles.contactHistorySection}>
                 {router.query.id && router.query.id !== 'new' && (
-                    <article>
-                        <CardHeading>Timeline</CardHeading>
                         <ContactHistory
                             contactId={router.query.id}
                             reload={reloadNotes}
                             setReload={setReloadNotes}
                         />
-                    </article>
                 )}
             </section>
         </div>

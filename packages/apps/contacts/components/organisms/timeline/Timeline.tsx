@@ -45,7 +45,7 @@ export const Timeline = ({
     const getTimelineItemByTime = (type: string, data:any, index:number) => {
         switch (type) {
             case "NOTE":
-                return <TimelineItem last={loggedActivities.length -1 === index} createdAt={data?.createdAt} >
+                return <TimelineItem first={index == 0} createdAt={data?.createdAt} >
                             <NoteTimelineItem
                                 noteContent={data.html}
                                 createdAt={data.createdAt}
@@ -57,10 +57,10 @@ export const Timeline = ({
                             />
                         </TimelineItem>
             case "CONVERSATION":
-                return <ConversationTimelineItem feedId={data.id} source={data.source} createdAt={data?.createdAt}/>
+                return <ConversationTimelineItem first={index == 0} feedId={data.id} source={data.source} createdAt={data?.createdAt}/>
             case "ACTION":
                 return (
-                    <TimelineItem last={loggedActivities.length -1 === index} createdAt={data?.createdAt} >
+                    <TimelineItem first={index == 0} createdAt={data?.createdAt} >
                         <WebActionTimelineItem {...data} />
                     </TimelineItem>
                 )
@@ -73,8 +73,7 @@ export const Timeline = ({
     }
 
     return (
-        <div className="mt-5 mb-3">
-            <div className="text-sm text-gray-500 flex justify-content-center mb-1"> Now </div>
+        <div className="mb-3">
             {
                 loggedActivities.map((e: any, index) => (
                     <React.Fragment key={e.id}>

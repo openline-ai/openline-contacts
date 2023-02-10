@@ -213,7 +213,7 @@ const GridComponent = (props: any) => {
             <div className="p-datatable header flex align-items-center">
 
                 <div className="flex align-items-center w-full text-2xl mb-2">
-                    <div className={'flex flex-grow-0 mr-3'}>{props.gridTitle}</div>
+                    <div className={'flex flex-grow-0 ml-3 mr-3'}>{props.gridTitle}</div>
                     <div className={'flex flex-grow-1'}>{renderSearch()}</div>
                 </div>
                 {/*<div className="flex justify-content-end">*/}

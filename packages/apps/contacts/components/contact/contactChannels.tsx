@@ -123,7 +123,7 @@ function ContactCommunication(props: any) {
         <>
             <div className="card-header">
                 <div className="flex flex-row w-full align-items-center">
-                    <h1 className="text-gray-900 text-xl">Communication</h1>
+                    <h1 className="text-gray-900 text-xl">Details</h1>
                     <div className="flex ml-3">
                         <div className='flex flex-1 justify-content-end'>
                             <Button 

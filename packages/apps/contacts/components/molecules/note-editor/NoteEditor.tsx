@@ -72,10 +72,9 @@ export const NoteEditor: FC<Props> = ({
 
     };
 
-
     return (
         <div style={{display: 'flex', flexDirection: 'column',  margin: isEditMode ? '-17px -24px' : 0}}>
-            <Controller  name="htmlEnhanced" control={fieldController} render={({field}) => (
+            <Controller name="htmlEnhanced" control={fieldController} render={({field}) => (
                 <Editor
                     style={{height: isEditMode ? 'auto' : '120px', borderColor: isEditMode && "transparent" }}
                     className="w-full h-full"

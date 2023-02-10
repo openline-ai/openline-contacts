@@ -1,11 +1,11 @@
-import {EditContact} from "../../components/contact";
+import {DetailsPageLayout} from "../../components/contact/details-page-layout/DetailsPageLayout";
+import {FullScreenModeLayout} from "../../components/organisms/fullscreen-mode-layout";
 
 function ContactDetails() {
-    
     return (
-        <>
-            <EditContact />
-        </>
+        <FullScreenModeLayout fullScreenMode>
+            <DetailsPageLayout/>
+        </FullScreenModeLayout>
     );
 }
 

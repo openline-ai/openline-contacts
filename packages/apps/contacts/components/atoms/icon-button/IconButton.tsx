@@ -27,7 +27,7 @@ export const IconButton: FC<Props> = ({ icon, onClick, children, mode="default",
             title={ariaLabel}
             tabIndex={0}
             style={rest?.style}
-            className={`${styles.button} ${styles[mode]} ${rest.className}`}>
+            className={`${styles.button} ${rest.disabled? styles.disabled: ''} ${styles[mode]} ${rest.className}`}>
             <>
                 {icon && (
                     <FontAwesomeIcon icon={icon} />

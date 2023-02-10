@@ -6,7 +6,14 @@
     --gray-color-3: #c1c1c1;
     --gray-color-4: #acabab;
     --gray-color-5: #999999;
+    --gray-color-10: #1c1c1c;
     --background-color: rgba(246, 245, 249, 0.51);
 
     --dark-color-1: #313044;
+}
+
+.p-sidebar.globalSidebar {
+    background-color: var(--gray-color-10);
+    color: white;
+    width: 15rem;
 }
