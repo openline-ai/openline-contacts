@@ -3,8 +3,7 @@
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;
-   height:100%;
-   //width: 100%;
+  height: 100%;
   padding: 12px;
   grid-gap: 8px;
   grid-template-areas: "profile"
@@ -12,7 +11,7 @@
                        "message"
                        "contactHistory";
 
-  @media (min-width:801px)  {
+  @media (min-width: 801px) {
     /* tablet, landscape iPad, lo-res laptops ands desktops */
     flex-direction: row;
     padding: 24px 12px;
@@ -26,6 +25,7 @@
   }
 
 }
+
 .avatar {
   width: 60px;
   height: 60px;
@@ -40,11 +40,12 @@
 }
 
 .dataSectionWrapper {
-  height:100%;
+  height: 100%;
   width: 100%
 }
+
 .communicationSectionWrapper {
-  height:100%;
+  height: 100%;
   width: 100%
 }
 
@@ -57,6 +58,7 @@
 .userDataSection {
   padding: 0 8px 8px;
 }
+
 .profileUserData {
   display: flex;
   color: #444;
@@ -67,8 +69,9 @@
     margin-right: 8px;
   }
 }
+
 .quickActionRow {
-  display:flex;
+  display: flex;
 }
 
 .dataSourceLabel,

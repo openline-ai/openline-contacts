@@ -83,6 +83,8 @@ export function GetDashboardData(client: GraphQLClient, request: PaginatedReques
                                 country
                                 state
                                 city
+                                address
+                                address2
                             }
                         }
                     }
