@@ -8,6 +8,10 @@
 
 .listItem {
   cursor: pointer;
+  padding: 0px 24px;
+}
+.listItem:hover {
+  background-color: var(--gray-100);
 }
 
 .listItem:not(:last-of-type) {

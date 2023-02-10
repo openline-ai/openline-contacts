@@ -106,8 +106,7 @@ function OrganizationEdit({organisation, onReload, createMode}: {organisation:Or
                             !editDetails &&
                             <div className="flex flex-column justify-content-evenly flex-grow-1">
                                 <div className="flex">
-                                    <span
-                                        className="mr-3 overflow-hidden text-overflow-ellipsis">{organisation?.description}</span>
+                                    <span className="mr-3 overflow-hidden text-overflow-ellipsis">{organisation?.description}</span>
                                 </div>
                                 <div className="flex mr-3 mt-3">
                                     <Link href={`https://${organisation?.website}` || `https://${organisation?.domain}` }

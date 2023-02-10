@@ -61,11 +61,14 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
                         id
                         firstName
                         lastName
+                        jobRoles {
+                            id
+                            jobTitle
+                        }
                         tags {
                             name
                             id
                         }
-                      
                         phoneNumbers {
                             id
                             label

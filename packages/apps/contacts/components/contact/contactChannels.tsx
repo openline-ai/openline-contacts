@@ -11,12 +11,14 @@ import {Button, Divider} from "../atoms";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {useGraphQLClient} from "../../utils/graphQLClient";
 import {EmailLabelEnum} from "../../model/enum-emailLabel";
+import {Skeleton} from "primereact/skeleton";
 
 function ContactCommunication(props: any) {
-    const client =  useGraphQLClient();
+    const client = useGraphQLClient();
 
     const addCommunicationChannelContainerRef = useRef<OverlayPanel>(null);
 
+    const [loaded, setLoaded] = useState(false);
     const [emails, setEmails] = useState([] as any);
     const [phoneNumbers, setPhoneNumbers] = useState([] as any);
 
@@ -52,6 +54,8 @@ function ContactCommunication(props: any) {
                     e.newItem = false;
                 });
                 setPhoneNumbers(response.contact.phoneNumbers);
+
+                setLoaded(true)
             });
         }
 
@@ -121,94 +125,115 @@ function ContactCommunication(props: any) {
 
     return (
         <>
-            <div className="card-header">
-                <div className="flex flex-row w-full align-items-center">
-                    <h1 className="text-gray-900 text-xl">Communication</h1>
-                    <div className="flex ml-3">
-                        <div className='flex flex-1 justify-content-end'>
-                            <Button 
-                                onClick={(e: OverlayPanelEventType) => addCommunicationChannelContainerRef?.current?.toggle(e)}>
-                                <FontAwesomeIcon icon={faPlus} />
-                                Add
-                            </Button>
-                        </div>
-                        <OverlayPanel ref={addCommunicationChannelContainerRef} dismissable>
-                            <Menu model={[
-                                {
-                                    label: 'Email',
-                                    command: () => {
-                                        setEmails([...emails, {
-                                            id: undefined,
-                                            email: '',
-                                            label: EmailLabelEnum[1].value,
-                                            primary: emails.length === 0,
-                                            uiKey: uuidv4(), //TODO make sure the ID is unique in the array
-                                            newItem: true // this is used to remove the item from the emails array in case of cancel new item
-                                        }]);
-                                        addCommunicationChannelContainerRef?.current?.hide();
-                                    }
-                                },
-                                {
-                                    label: 'Phone number',
-                                    command: () => {
-                                        setPhoneNumbers([...phoneNumbers, {
-                                            id: undefined,
-                                            e164: '',
-                                            label: '',
-                                            primary: phoneNumbers.length === 0,
-                                            uiKey: uuidv4(), //TODO make sure the ID is unique in the array
-                                            newItem: true // this is used to remove the item from the phone numbers array in case of cancel new item
-                                        }]);
-                                        addCommunicationChannelContainerRef?.current?.hide();
-                                    }
-                                }
-                            ]}/>
-                        </OverlayPanel>
+            {
+                !loaded &&
+                <div className="flex flex-column mb-2">
+                    <div className="mb-2 flex">
+                        <Skeleton height="40px" width="100%"/>
+                    </div>
+                    <div className="mb-2 flex">
+                        <Skeleton height="40px" width="100%"/>
+                    </div>
+                    <div className="mb-2 flex">
+                        <Skeleton height="40px" width="100%"/>
                     </div>
                 </div>
-            </div>
-            <div>
+            }
 
-                {
-                    emails.length === 0 &&
-                    <div className="display">
-                        No communication channels
+            {
+                loaded &&
+                <>
+                    <div className="card-header">
+                        <div className="flex flex-row w-full align-items-center">
+                            <h1 className="text-gray-900 text-xl">Details</h1>
+                            <div className="flex ml-3">
+                                <div className='flex flex-1 justify-content-end'>
+                                    <Button
+                                        onClick={(e: OverlayPanelEventType) => addCommunicationChannelContainerRef?.current?.toggle(e)}>
+                                        <FontAwesomeIcon icon={faPlus}/>
+                                        Add
+                                    </Button>
+                                </div>
+                                <OverlayPanel ref={addCommunicationChannelContainerRef} dismissable>
+                                    <Menu model={[
+                                        {
+                                            label: 'Email',
+                                            command: () => {
+                                                setEmails([...emails, {
+                                                    id: undefined,
+                                                    email: '',
+                                                    label: EmailLabelEnum[1].value,
+                                                    primary: emails.length === 0,
+                                                    uiKey: uuidv4(), //TODO make sure the ID is unique in the array
+                                                    newItem: true // this is used to remove the item from the emails array in case of cancel new item
+                                                }]);
+                                                addCommunicationChannelContainerRef?.current?.hide();
+                                            }
+                                        },
+                                        {
+                                            label: 'Phone number',
+                                            command: () => {
+                                                setPhoneNumbers([...phoneNumbers, {
+                                                    id: undefined,
+                                                    e164: '',
+                                                    label: '',
+                                                    primary: phoneNumbers.length === 0,
+                                                    uiKey: uuidv4(), //TODO make sure the ID is unique in the array
+                                                    newItem: true // this is used to remove the item from the phone numbers array in case of cancel new item
+                                                }]);
+                                                addCommunicationChannelContainerRef?.current?.hide();
+                                            }
+                                        }
+                                    ]}/>
+                                </OverlayPanel>
+                            </div>
+                        </div>
                     </div>
-                }
+                    <div>
 
-                {
-                    emails.map((e: any, i:number) => {
-                        return (
-                            <React.Fragment key={e.uiKey}>
-                                <ContactEmailTemplate
+                        {
+                            emails.length === 0 &&
+                            <div className="display">
+                                No communication channels
+                            </div>
+                        }
+
+                        {
+                            emails.map((e: any, i: number) => {
+                                return (
+                                    <React.Fragment key={e.uiKey}>
+                                        <ContactEmailTemplate
+                                            contactId={props.contactId}
+                                            email={e}
+                                            initialEditState={e.newItem}
+                                            notifySave={(e: any) => emailSaved(e)}
+                                            notifyDelete={(uiKey: string) => emailDeleted(uiKey)}
+                                            notifyCancelEdit={(uiKey: string) => emailCancelEdit(uiKey)}
+                                        />
+                                        <Divider/>
+                                    </React.Fragment>
+                                )
+                            })
+                        }
+
+                        {
+                            phoneNumbers.map((e: any) => {
+                                return <ContactPhoneNumberTemplate
+                                    key={e.uiKey}
                                     contactId={props.contactId}
-                                    email={e}
+                                    phoneNumber={e}
                                     initialEditState={e.newItem}
-                                    notifySave={(e: any) => emailSaved(e)}
-                                    notifyDelete={(uiKey: string) => emailDeleted(uiKey)}
-                                    notifyCancelEdit={(uiKey: string) => emailCancelEdit(uiKey)}
+                                    notifySave={(e: any) => phoneNumberSaved(e)}
+                                    notifyDelete={(uiKey: string) => phoneNumberDeleted(uiKey)}
+                                    notifyCancelEdit={(uiKey: string) => phoneNumberCancelEdit(uiKey)}
                                 />
-                                <Divider/>
-                            </React.Fragment>
-                        )
-                    })
-                }
+                            })
+                        }
 
-                {
-                    phoneNumbers.map((e: any) => {
-                        return <ContactPhoneNumberTemplate 
-                                                     key={e.uiKey}
-                                                     contactId={props.contactId}
-                                                     phoneNumber={e}
-                                                     initialEditState={e.newItem}
-                                                     notifySave={(e: any) => phoneNumberSaved(e)}
-                                                     notifyDelete={(uiKey: string) => phoneNumberDeleted(uiKey)}
-                                                     notifyCancelEdit={(uiKey: string) => phoneNumberCancelEdit(uiKey)}
-                        />
-                    })
-                }
+                    </div>
+                </>
+            }
 
-            </div>
         </>
     );
 }

@@ -13,6 +13,7 @@ import ContactDetailsSection from "../contactDetailsSection";
 import {Divider} from "../../atoms";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
 import {CardHeading} from "../../atoms/cardHeading";
+import {Skeleton} from "primereact/skeleton";
 
 // TODO Move atom components to ui-kit
 // TODO refactor this so it is layout that can be reused
@@ -24,6 +25,7 @@ export const DetailsPageLayout = () => {
     const [reloadDetails, setReloadDetails] = useState(false);
     const [reloadNotes, setReloadNotes] = useState(false);
     const [contact, setContact] = useState({
+        id: undefined,
         definitionId: undefined,
         title: undefined,
         firstName: '',
@@ -35,7 +37,6 @@ export const DetailsPageLayout = () => {
 
     const [editDetails, setEditDetails] = useState(false);
     const getContactObjectFromResponse = (contact: Contact) => {
-
         return {
             id: contact.id,
             title: contact.title || undefined,
@@ -75,9 +76,28 @@ export const DetailsPageLayout = () => {
 
     return (
         <div className={styles.pageWrapper}>
-            <ProfileLayout
-                contact={contact}
-                onSetEditMode={setEditDetails}/>
+
+            {
+                !contact.id &&
+                <div className="flex flex-column mb-2">
+                    <div className="mb-2 flex">
+                        <Skeleton height="31px" width="100%" />
+                    </div>
+                    <div className="mb-2 flex">
+                        <Skeleton height="31px" width="100%" />
+                    </div>
+                    <div className="mb-2 flex">
+                        <Skeleton height="31px" width="100%" />
+                    </div>
+                </div>
+            }
+
+            {
+                contact.id &&
+                <ProfileLayout
+                    contact={contact}
+                    onSetEditMode={setEditDetails}/>
+            }
 
             <section className={styles.contactFieldSection}>
                 {editDetails && (
@@ -117,14 +137,11 @@ export const DetailsPageLayout = () => {
 
             <section className={styles.contactHistorySection}>
                 {router.query.id && router.query.id !== 'new' && (
-                    <article>
-                        <CardHeading>Timeline</CardHeading>
                         <ContactHistory
                             contactId={router.query.id}
                             reload={reloadNotes}
                             setReload={setReloadNotes}
                         />
-                    </article>
                 )}
             </section>
         </div>
