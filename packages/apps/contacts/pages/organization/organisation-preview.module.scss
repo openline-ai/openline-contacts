@@ -18,8 +18,7 @@
     grid-template-columns: 2fr 3fr;
     grid-template-rows: auto 80px 3fr;
     padding: 42px;
-    grid-template-areas: "details composeBox "
-                         "details history"
+    grid-template-areas: "details composeBox"
                          "contactList history"
   }
 }
@@ -34,7 +33,7 @@
 
 .composeBox {
   grid-area: composeBox;
-  padding: 8px 24px 0;
+  padding: 0px 24px 0;
   border-radius: 10px;
 }
 
@@ -42,16 +41,15 @@
   grid-area: contactList;
   background: #fff;
   border-radius: 10px;
-  padding: 32px 24px;
+  padding: 32px 0px;
   border: 1px solid var(--gray-300);
   height: fit-content;
 }
 
 .history {
   grid-area: history;
-    //background: #fff;
   border-radius: 10px;
-  padding: 32px 24px;
+  padding: 0 24px 32px 24px;
   height: fit-content;
   overflow-x: hidden;
   //border: 1px solid var(--gray-300)

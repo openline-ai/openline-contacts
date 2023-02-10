@@ -20,7 +20,7 @@ export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreen
     return (
         <FullScreenModeLayout fullScreenMode={fullScreenMode}>
             <div className="mt-5">
-                <GridComponent gridTitle="All Contacts"
+                <GridComponent gridTitle="All contacts"
                                queryData={(params: any) => loadData(params)}
                                globalFilterFields="searchTerm"
                                columns={[

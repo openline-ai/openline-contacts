@@ -6,7 +6,12 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  // fixme improve visual
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
   &:hover,
   &:focus,
   &:active {
@@ -22,11 +27,12 @@
     color: #474747;
 
     // fixme improve visual
-    &:hover,
-    &:focus,
-    &:active {
+    &:hover(not:disabled),
+    &:focus(not:disabled),
+    &:active(not:disabled) {
       background: #D3D3D3;
     }
+
   }
 
   &.primary {
@@ -34,9 +40,9 @@
     color: white;
 
     // fixme improve visual
-    &:hover,
-    &:focus,
-    &:active {
+    &:hover(not:disabled),
+    &:focus(not:disabled),
+    &:active(not:disabled) {
       background: linear-gradient(-45deg, #b072f1, #f696b6);
     }
   }
@@ -45,17 +51,12 @@
     background: transparent;
     cursor: pointer;
     // fixme improve visual
-    &:hover,
-    &:focus,
-    &:active {
+    &:hover(not:disabled),
+    &:focus(not:disabled),
+    &:active(not:disabled) {
       background: none;
       color: var(--gray-800)
     }
   }
-
-  &:disabled {
-    pointer-events: none;
-  }
-
 
 }

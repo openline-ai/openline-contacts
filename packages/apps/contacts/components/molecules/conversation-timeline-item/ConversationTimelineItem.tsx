@@ -14,13 +14,11 @@ interface Props  {
     feedId: string
     source: string
     createdAt:any
+    first?: boolean
 }
 
-
-
 export const ConversationTimelineItem: React.FC<Props> = (
-    { feedId, source, createdAt}
-) => {
+    { feedId, source, createdAt, first}) => {
     const client =  useGraphQLClient()
 
 
@@ -206,13 +204,10 @@ export const ConversationTimelineItem: React.FC<Props> = (
                             const date =  new Date(1970, 0, 1)
                                 .setSeconds(msg?.time?.seconds) || timeFromLastTimestamp;
                             return (
-                                <TimelineItem last={false}
+                                <TimelineItem first={!first ? false : (index === 0)}
                                               createdAt={date}
                                               style={{paddingBottom: '8px'}}
-                                              key={msg.id}
-
-
-                                >
+                                              key={msg.id}>
                                     <EmailTimelineItem
                                         emailContent={emailData.html}
                                         sender={emailData.from || 'Unknown'}
@@ -223,11 +218,9 @@ export const ConversationTimelineItem: React.FC<Props> = (
                                     />
                                 </TimelineItem>
                             )
-
                         })
                     }
                 </div>
-
 
                 {
                     !loadingMessages &&
@@ -242,7 +235,7 @@ export const ConversationTimelineItem: React.FC<Props> = (
                         const time = new Date(1970, 0, 1).setSeconds(msg?.time?.seconds);
 
                         return (
-                            <TimelineItem last={false} createdAt={createdAt || timeFromLastTimestamp} key={msg.id}>
+                            <TimelineItem first={!first ? false : (index === 0)} createdAt={createdAt || timeFromLastTimestamp} key={msg.id}>
                                 <Message key={msg.id}
                                          message={msg}
                                          feedInitiator={feedInitiator}

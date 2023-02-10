@@ -16,7 +16,7 @@ import {CreateOrganisationNote} from "../../components/organization/CreateOrgani
 import {Contact} from "../../models/contact";
 
 function OrganizationEdit() {
-    const client =  useGraphQLClient();
+    const client = useGraphQLClient();
     const router = useRouter();
 
     const [loading, setLoading] = useState(true);
@@ -35,11 +35,11 @@ function OrganizationEdit() {
     }, [router.query.id]);
 
     useEffect(() => {
-        if(router.query.id !== undefined && router.query.id !== 'new') {
+        if (router.query.id !== undefined && router.query.id !== 'new') {
             setLoading(true)
             setCreateMode(false)
-            GetOrganization(client, router.query.id as string, ).then((org: Organization) => {
-                const {contacts: {content} ,...data} = org
+            GetOrganization(client, router.query.id as string,).then((org: Organization) => {
+                const {contacts: {content}, ...data} = org
                 // @ts-ignore
                 setOrganization(data);
                 setContactInOrganization(content)
@@ -55,21 +55,21 @@ function OrganizationEdit() {
 
 
     if (organization === null && !loading && !createMode) {
-        return <FullScreenModeLayout fullScreenMode >
-                <div className="flex flex-column align-items-center justify-items-center">
-                    <h1 >Error</h1>
-                    <p className="text-lg">
-                        This page crashed due to unexpected error, this should not happen but our team is
-                        working hard to solve it.
-                    </p>
-                    <p className="mb-6 text-lg">
-                        Meanwhile you can reload the page or navigate back to dashboard
-                    </p>
-                    <Button className="mt-6"
-                        mode="primary" onClick={()=> router.push("/")}>
-                     Go back to dashboard
-                    </Button>
-             </div>
+        return <FullScreenModeLayout fullScreenMode>
+            <div className="flex flex-column align-items-center justify-items-center">
+                <h1>Error</h1>
+                <p className="text-lg">
+                    This page crashed due to unexpected error, this should not happen but our team is
+                    working hard to solve it.
+                </p>
+                <p className="mb-6 text-lg">
+                    Meanwhile you can reload the page or navigate back to dashboard
+                </p>
+                <Button className="mt-6"
+                        mode="primary" onClick={() => router.push("/")}>
+                    Go back to dashboard
+                </Button>
+            </div>
         </FullScreenModeLayout>
     }
 
@@ -95,58 +95,52 @@ function OrganizationEdit() {
                 </article>
 
                 {!createMode && (
-                <>
-                    <article className={styles.contactList}>
-                        {loading ? (
-                            <div className="p-3">
-                                <Skeleton className="mb-3"/>
-                                <Skeleton className="mb-3"/>
-                                <Skeleton className="mb-3"/>
-                                <Skeleton className="mb-3"/>
-                                <Skeleton className="mb-3"/>
-                            </div>
-                        ) : (
-                            <>
-                                <CardHeading>  Contacts </CardHeading>
-                                <OrganizationContactList contacts={contactInOrganisation} />
-                            </>
-                        )}
+                    <>
+                        <article className={styles.contactList}>
+                            {loading ? (
+                                <div className="p-3">
+                                    <Skeleton className="mb-3"/>
+                                    <Skeleton className="mb-3"/>
+                                    <Skeleton className="mb-3"/>
+                                    <Skeleton className="mb-3"/>
+                                    <Skeleton className="mb-3"/>
+                                </div>
+                            ) : (
+                                <>
+                                    <CardHeading><span style={{padding: '0px 24px'}}>Contacts</span></CardHeading>
+                                    <OrganizationContactList contacts={contactInOrganisation}/>
+                                </>
+                            )}
 
-                    </article>
+                        </article>
 
-                    <section className={styles.composeBox}>
+                        <section className={styles.composeBox}>
+                            <CreateOrganisationNote
+                                organizationId={router.query.id}
+                                refreshData={() => setRefreshNotes(true)}
+                            />
+                        </section>
 
-                        <CreateOrganisationNote
-                            organizationId={router.query.id}
-                            refreshData={() => setRefreshNotes(true)}
-                        />
-                    </section>
-
-                    <article className={styles.history}>
-                        {loading ? (
-                            <div className="p-3">
-                                <Skeleton className="mb-3"/>
-                                <Skeleton className="mb-3"/>
-                                <Skeleton className="mb-3"/>
-                                <Skeleton className="mb-3"/>
-                                <Skeleton className="mb-3"/>
-                            </div>
-                        ) : (
-                            <>
-                                <CardHeading> Timeline </CardHeading>
+                        <article className={styles.history}>
+                            {loading ? (
+                                <div className="p-3">
+                                    <Skeleton className="mb-3"/>
+                                    <Skeleton className="mb-3"/>
+                                    <Skeleton className="mb-3"/>
+                                    <Skeleton className="mb-3"/>
+                                    <Skeleton className="mb-3"/>
+                                </div>
+                            ) : (
                                 <OrganizationHistory
                                     organizationId={router.query.id as string}
                                     contacts={contactInOrganisation}
                                     setRefreshNotes={setRefreshNotes}
                                     refreshNotes={refreshNotes}
                                 />
-                            </>
-
-                        )}
-                    </article>
-                </>
-                    )}
-
+                            )}
+                        </article>
+                    </>
+                )}
 
             </div>
 
