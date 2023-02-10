@@ -1,9 +1,6 @@
 import type {NextPage} from 'next'
 import {useRouter} from "next/router";
 import GridComponent from "../generic/GridComponent";
-import {Button} from "../atoms";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import {PaginatedRequest} from "../../utils/pagination";
 import {FullScreenModeLayout} from "../organisms/fullscreen-mode-layout";
 import {useGraphQLClient} from "../../utils/graphQLClient";
@@ -23,13 +20,13 @@ export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreen
     return (
         <FullScreenModeLayout fullScreenMode={fullScreenMode}>
             <div className="mt-5">
-                <GridComponent gridTitle=""
+                <GridComponent gridTitle="All Contacts"
                                queryData={(params: any) => loadData(params)}
                                globalFilterFields="searchTerm"
                                columns={[
                                    {
                                        editLink: true,
-                                       className: 'w50',
+                                       className: 'w25',
                                        field: 'organization',
                                        label: () => (
                                            <DashboardTableHeaderLabel
@@ -38,10 +35,11 @@ export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreen
                                            />),
                                        template: (c: any) => {
                                            if (c.organization) {
+                                               let industry = <span className={'capitalise'}>{c.organization?.industry.split("_").join(" ").toLowerCase()}</span>;
                                                return (
                                                    <DashboardTableCell
                                                        label={c.organization.name}
-                                                       subLabel={c.organization?.industry}
+                                                       subLabel={industry}
                                                        url={`/organization/${c.organization.id}`}/>
 
                                                )
@@ -53,7 +51,7 @@ export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreen
                                    },
                                    {
 
-                                       className: 'w10 capitalise',
+                                       className: 'w25',
                                        field: 'contact',
                                        label: () => (
                                            <DashboardTableHeaderLabel
@@ -75,7 +73,7 @@ export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreen
                                    },
                                    {
 
-                                       className: 'w10 capitalise',
+                                       className: 'w25',
                                        field: 'contact',
                                        label: 'Email',
                                        template: (c: any) => {
@@ -87,6 +85,7 @@ export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreen
                                                    <DashboardTableCell
                                                        className='lowercase'
                                                        label={data.email}
+                                                       url={`/contact/${data.id}`}
                                                    />
                                                    {c.contact?.emails.length - 1 !== index && ', '}
                                                </div>
@@ -95,7 +94,7 @@ export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreen
                                    },
                                    {
 
-                                       className: 'w10 capitalise',
+                                       className: 'w25',
                                        field: 'contact',
                                        label: () => (
                                            <DashboardTableHeaderLabel
@@ -120,13 +119,13 @@ export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreen
 
                                    },
                                ]}
-                               // gridActions={
-                               //     <div className="flex align-items-center">
-                               //         <Button onClick={() => router.push(`/contact/new`)} className='p-button-text'>
-                               //             <FontAwesomeIcon icon={faPlus} className="mr-2"/>Add a new contact
-                               //         </Button>
-                               //     </div>
-                               // }
+                    // gridActions={
+                    //     <div className="flex align-items-center">
+                    //         <Button onClick={() => router.push(`/contact/new`)} className='p-button-text'>
+                    //             <FontAwesomeIcon icon={faPlus} className="mr-2"/>Add a new contact
+                    //         </Button>
+                    //     </div>
+                    // }
                                defaultLimit={fullScreenMode ? 10 : 10}
 
                 />
