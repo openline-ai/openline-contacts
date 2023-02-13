@@ -54,6 +54,7 @@ export function GetActionsForContact(client: GraphQLClient, id: string): Promise
                 id
                 firstName
                 lastName
+                createdAt
                 actions(from:$from, to:$to) {
                     ... on PageViewAction {
                         id

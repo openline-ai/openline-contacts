@@ -29,15 +29,38 @@
 }
 
 .content {
-  background: #fff;
-  padding: 16px 24px;
+  background: #F3E7FA;
+  padding: 10px 25px;
 
-  border-radius: 6px;
-  border: 1px solid var(--gray-300);
+  border-radius: 50px;
   width: 100%;
   position: relative;
 }
 
 .content:not(.minimal-width) {
   width: auto;
+}
+
+.actionContainer {
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: self-start;
+  justify-content: space-between;
+  flex:1;
+  line-height: 1.5rem;
+
+  @media (max-width:1024px)  {
+    flex-direction: column;
+  }
+}
+
+.actionDevice {
+  margin-top: 4px;
+  color: var(--gray-600);
+}
+
+.x {
+  align-items: center;
+  display: flex;
 }

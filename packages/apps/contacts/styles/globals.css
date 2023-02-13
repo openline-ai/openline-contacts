@@ -1,9 +1,4 @@
 @font-face {
-    font-family: mona-sans-black;
-    src: url('../fonts/Mona-Sans-Medium.woff');
-}
-
-@font-face {
     font-family: Roboto;
     src: url('../fonts/Roboto/Roboto-Regular.ttf');
     font-weight: 400;
@@ -26,7 +21,7 @@ html,
 body {
     padding: 0;
     margin: 0;
-    font-family:  mona-sans-black, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    font-family:  -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
     font-size: 14px;
     /*background: var(--background-color);*/
@@ -50,6 +45,16 @@ div#__next > div {
 .cta:hover {
     cursor: pointer;
     text-decoration: underline;
+}
+
+.ctaCursorStyle {
+    color: initial;
+    text-decoration: none
+}
+
+.ctaCursorStyle:hover {
+    cursor: pointer;
+    text-decoration: none
 }
 
 .text-black {

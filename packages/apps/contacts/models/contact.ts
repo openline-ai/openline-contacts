@@ -29,6 +29,7 @@ export type Contact = {
 
 export interface ContactWithActions {
     id: string;
+    createdAt: string;
     actions: Array<ContactWebAction>
 }
 

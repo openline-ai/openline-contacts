@@ -1,14 +1,9 @@
 .backButton {
+   position: absolute;
    border: none;
    border-radius: 50%;
-   width: 40px;
-   height: 40px;
-   display: flex;
-   align-items: center;
-   justify-content: center;
    cursor: pointer;
    background: #e8ecfb;
-   margin-bottom: 8px;
    transition: transform .2s ease-in;
 
    &:hover,
@@ -20,7 +15,5 @@
 }
 
 .fullScreenModeContainer {
-   padding: 0px 40px;
-   margin-top: 24px;
-
+   padding: 0px;
 }

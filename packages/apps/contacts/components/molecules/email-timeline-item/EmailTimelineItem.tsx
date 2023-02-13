@@ -15,6 +15,9 @@ export const EmailTimelineItem: React.FC<Props> = (
 ) => {
     const [expanded, toggleExpanded] = useState(false)
 
+    //remove embeded images from emails
+    emailContent = emailContent.replaceAll(/.src(\S*)/g, "");
+
     return (
         <article className={`${styles.emailContainer}`}>
                 <div className={styles.emailData}>
