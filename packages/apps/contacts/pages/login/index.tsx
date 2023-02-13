@@ -1,28 +1,24 @@
-import type {NextPage} from 'next'
-import React, {useEffect, useState} from 'react';
-import Image from 'next/image'
-import {LoginPanel} from '../../components/organisms/login-panel';
+import React from 'react';
+import Image from 'next/image';
+import {LoginPanel} from "../../components/organisms/login-panel";
 
+export async function getServerSideProps() {
+    const backgroundImageUrlNumber = `${
+        Math.floor(Math.random() * 75) + 1
+    }`.padStart(2, '0');
 
-const Login: NextPage = () => {
-
-    const [backgroundImageUrl, setBackgroundImageUrl] = useState('')
-
-    function getRandom(min: number, max: number) {
-        return min + Math.floor(Math.random() * (max - min + 1));
-    }
-
-    useEffect(() => {
-        const backgroundImageUrlNumber = String(getRandom(1, 75)).padStart(2, '0')
-        const backgroundImageUrl = `/backgrounds/blueprint/background-000${backgroundImageUrlNumber}.jpg`;
-        setBackgroundImageUrl(backgroundImageUrl);
-    }, []);
-
+    return {
+        props: {
+            image: `/backgrounds/blueprint/background-000${backgroundImageUrlNumber}.jpg`,
+        },
+    };
+}
+const Login = ({ image }: { image: string }) => {
     return (
         <>
             <Image
-                alt=""
-                src={backgroundImageUrl}
+                alt=''
+                src={image}
                 fill
                 priority={true}
                 sizes="100vw"
@@ -37,7 +33,7 @@ const Login: NextPage = () => {
                 </div>
             </div>
         </>
-    )
-}
+    );
+};
 
-export default Login
+export default Login;
