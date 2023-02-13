@@ -1,4 +1,5 @@
 import {EntityDefinition, EntityExtension} from "./customFields";
+import {Organization} from "./organization";
 
 type ContactDataSource = "NA" | "OPENLINE" | "HUBSPOT" | "ZENDESK";
 
@@ -22,9 +23,9 @@ export type Contact = {
     owner: Owner;
     notes: string;
     label: string;
-    definition: EntityDefinition;
     source: ContactDataSource;
-    tags: Array<{id:string, name:string}>
+    tags: Array<ContactTag>
+    jobRoles: Array<ContactJobRole>
 } & EntityExtension
 
 export interface ContactWithActions {
@@ -42,6 +43,12 @@ export type Owner = {
 export type ContactTag = {
     id: string;
     name: string;
+}
+
+export type ContactJobRole = {
+    id: string;
+    jobTitle: string;
+    organization: Organization;
 }
 
 export type Note = {

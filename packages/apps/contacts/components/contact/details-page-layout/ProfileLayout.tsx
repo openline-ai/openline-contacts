@@ -73,6 +73,15 @@ export const ProfileLayout = ({onSetEditMode, contact }: Props) => {
                                 </div>
                             </div>
                             <div className="flex mb-2">
+                                {
+                                    contact.jobRoles?.map((jobRole: any) => {
+                                        return <div className={styles.dataSourceLabel} key={jobRole.id}>
+                                            {jobRole.jobTitle} - {jobRole.organization.name}
+                                        </div>
+                                    })
+                                }
+                            </div>
+                            <div className="flex mb-2">
                                     <span className={styles.dataSourceLabel}>
                                         Source:
                                     </span>

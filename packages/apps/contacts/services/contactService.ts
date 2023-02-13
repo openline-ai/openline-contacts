@@ -20,13 +20,12 @@ export function GetContactDetails(client: GraphQLClient, id: string): Promise<Co
                     firstName
                     lastName
                 }
-                tags {
+                jobRoles {
                     id
-                    name
-                }
-                
-                template{
-                    id
+                    jobTitle
+                    organization {
+                        name
+                    }
                 }
                 label
                 source
