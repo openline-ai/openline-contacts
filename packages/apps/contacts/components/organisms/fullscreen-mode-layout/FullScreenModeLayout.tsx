@@ -1,15 +1,13 @@
-import React  from 'react';
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import React from 'react';
 import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
 import {useRouter} from "next/router";
 import styles from "./fullscreen-mode.module.scss";
-import {IconButton} from "../../atoms/icon-button";
 import {Button} from "../../atoms";
 
 interface Props {
-   fullScreenMode: boolean
-   children: React.ReactNode
-   classNames?: string;
+    fullScreenMode: boolean
+    children: React.ReactNode
+    classNames?: string;
 }
 
 export const FullScreenModeLayout: React.FC<Props> = ({fullScreenMode, children, classNames}) => {
@@ -17,16 +15,19 @@ export const FullScreenModeLayout: React.FC<Props> = ({fullScreenMode, children,
 
 
     return (
-        <div className={fullScreenMode ? `${classNames} ${styles.fullScreenModeContainer}` : classNames}>
-            {fullScreenMode && (
-                <div style={{width: '40px'}}>
-                    <Button icon={faChevronLeft} onClick={() => router.push('/')}>
-                      Back
-                    </Button>
-                </div>
-            )}
+        <div className={fullScreenMode ? `flex ${classNames} ${styles.fullScreenModeContainer}` : classNames}>
+            {
+                fullScreenMode && (
+                    <div className={'flex flex-column pt-3 pl-3'}>
+                        <Button className={'mr-3'} icon={faChevronLeft} onClick={() => router.push('/')}>
+                            Back
+                        </Button>
+                    </div>
+                )}
+            <div className={'flex flex-column w-full'}>
             {children}
-       </div>
+            </div>
+        </div>
     );
 };
 

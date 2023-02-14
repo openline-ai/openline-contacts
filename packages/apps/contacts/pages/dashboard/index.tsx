@@ -5,7 +5,7 @@ import React from "react";
 
 const Dashboard: NextPage = () => {
     return (
-        <div className="m-auto mt-5" style={{minWidth: '1200px', maxWidth: '1200px'}}>
+        <div className="m-auto mt-3" style={{minWidth: '1200px', maxWidth: '1200px'}}>
             <DashboardList fullScreenMode={false}/>
         </div>
     )

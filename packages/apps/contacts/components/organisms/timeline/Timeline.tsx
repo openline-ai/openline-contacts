@@ -1,11 +1,8 @@
 import React from "react";
 import {Skeleton} from "primereact/skeleton";
-import {
-    ConversationTimelineItem,
-    NoteTimelineItem,
-    WebActionTimelineItem
-} from "../../molecules";
+import {ConversationTimelineItem, NoteTimelineItem, WebActionTimelineItem} from "../../molecules";
 import {TimelineItem} from "../../atoms/timeline-item";
+import {AppActionTimelineItem} from "../../molecules/app-action-timeline-item";
 
 interface Props {
     loading: boolean
@@ -15,54 +12,59 @@ interface Props {
     notifyChange?: (id: any) => void
     notifyContactNotesUpdate?: (id: any) => void
 }
+
 export const Timeline = ({
                              loading,
                              noActivity,
                              loggedActivities,
                              contactId,
-                             notifyChange= () => null,
-                             notifyContactNotesUpdate= () => null,
-}: Props) => {
+                             notifyChange = () => null,
+                             notifyContactNotesUpdate = () => null,
+                         }: Props) => {
     if (loading) {
         return (
             <div className="flex flex-column mt-4">
-                <Skeleton className="mb-3" />
-                <Skeleton  className="mb-3"/>
-                <Skeleton  className="mb-3"/>
-                <Skeleton  className="mb-3"/>
+                <Skeleton className="mb-3"/>
+                <Skeleton className="mb-3"/>
+                <Skeleton className="mb-3"/>
+                <Skeleton className="mb-3"/>
                 <Skeleton/>
             </div>
         )
     }
 
-    if(!loading && noActivity) {
+    if (!loading && noActivity) {
         return (
             <p className="text-gray-600 font-italic mt-4">
                 No activity logged yet
             </p>
         )
     }
-    const getTimelineItemByTime = (type: string, data:any, index:number) => {
+    const getTimelineItemByTime = (type: string, data: any, index: number) => {
         switch (type) {
             case "NOTE":
-                return <TimelineItem first={index == 0} createdAt={data?.createdAt} >
-                            <NoteTimelineItem
-                                noteContent={data.html}
-                                createdAt={data.createdAt}
-                                createdBy={data?.createdBy}
-                                id={data.id}
-                                source={data?.source}
-                                refreshNoteData={data?.contact ? notifyContactNotesUpdate : notifyChange}
-                                contactId={contactId}
-                            />
-                        </TimelineItem>
+                return <TimelineItem first={index == 0} createdAt={data?.createdAt}>
+                    <NoteTimelineItem
+                        noteContent={data.html}
+                        createdAt={data.createdAt}
+                        createdBy={data?.createdBy}
+                        id={data.id}
+                        source={data?.source}
+                        refreshNoteData={data?.contact ? notifyContactNotesUpdate : notifyChange}
+                        contactId={contactId}
+                    />
+                </TimelineItem>
             case "CONVERSATION":
                 return <ConversationTimelineItem first={index == 0} feedId={data.id} source={data.source} createdAt={data?.createdAt}/>
             case "ACTION":
                 return (
-                    <TimelineItem first={index == 0} createdAt={data?.createdAt} >
+                    <TimelineItem first={index == 0} createdAt={data?.createdAt}>
                         <WebActionTimelineItem {...data} />
                     </TimelineItem>
+                )
+            case "APP_ACTION":
+                return (
+                    <AppActionTimelineItem first={index == 0} createdAt={data?.createdAt}  {...data} />
                 )
             // case "CALL":
             //     return <PhoneCallTimelineItem phoneCallParties={data} duration={}/>
@@ -77,7 +79,7 @@ export const Timeline = ({
             {
                 loggedActivities.map((e: any, index) => (
                     <React.Fragment key={e.id}>
-                            {getTimelineItemByTime(e.type, e, index)}
+                        {getTimelineItemByTime(e.type, e, index)}
                     </React.Fragment>
 
                 ))

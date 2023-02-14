@@ -56,6 +56,16 @@ export function GetOrganization(client: GraphQLClient, id: string): Promise<Orga
                 industry
                 domain
                 website
+                locations {
+                    id
+                    place {
+                        country
+                        state
+                        city
+                        address
+                        address2
+                    }
+                }
                 contacts(pagination: $pagination) {
                     content {
                         id

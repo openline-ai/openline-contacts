@@ -20,7 +20,7 @@ export const SidePanel: React.FC<Props> = ({userEmail, logoutUrl, isOpen, onOpen
 
     return (
         <>
-            <div className={`cursor-pointer ${styles.openPanelButton}`}>
+            <div className={`mt-3 ml-3 cursor-pointer ${styles.openPanelButton}`}>
                 <AvatarButton ariaLabel='Profile' onClick={isOpen ? onClose : onOpen}/>
             </div>
             <Sidebar className='globalSidebar' visible={isOpen} onHide={() => onClose()}>

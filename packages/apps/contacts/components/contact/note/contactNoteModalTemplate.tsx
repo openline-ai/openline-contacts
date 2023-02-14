@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import {ChangeEvent, useRef } from "react";
+import {ChangeEvent, useRef} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faImage} from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
@@ -12,9 +12,8 @@ import {Note} from "../../../models/contact";
 import {Button} from "../../atoms";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
 
-
 function ContactNoteModalTemplate(props: any) {
-    const client =  useGraphQLClient();
+    const client = useGraphQLClient();
 
     const {register, handleSubmit, setValue, getValues, control, reset} = useForm({
         defaultValues: {
@@ -93,8 +92,8 @@ function ContactNoteModalTemplate(props: any) {
 
                 })
                 .catch((reason: any) => {
-                toast.error("There was a problem on our side and we are doing our best to solve it!");
-            });
+                    toast.error("There was a problem on our side and we are doing our best to solve it!");
+                });
 
         }).catch((reason: any) => {
             toast.error("There was a problem on our side and we are doing our best to solve it!");
@@ -105,20 +104,32 @@ function ContactNoteModalTemplate(props: any) {
     // https://quilljs.com/docs/modules/toolbar/
     const richTextHeader = () => {
         return (
-            <span className="ql-formats">
+            <span className="flex justify-content-end">
 
-                <button className="ql-bold" aria-label="Bold"></button>
-                <button className="ql-italic" aria-label="Italic"></button>
-                <button className="ql-underline" aria-label="Underline"></button>
-                <button className="ql-strike" aria-label="Strike"></button>
+                 <div className="flex flex-grow-1">
+                    <button className="ql-bold" aria-label="Bold"></button>
+                    <button className="ql-italic" aria-label="Italic"></button>
+                    <button className="ql-underline" aria-label="Underline"></button>
+                    <button className="ql-strike" aria-label="Strike"></button>
 
-                <button className="ql-link" aria-label="Link"></button>
-                <button className="ql-code-block" aria-label="Code block"></button>
-                <button className="ql-blockquote" aria-label="Blockquote"></button>
+                    <button className="ql-link" aria-label="Link"></button>
+                    <button className="ql-code-block" aria-label="Code block"></button>
+                    <button className="ql-blockquote" aria-label="Blockquote"></button>
 
-                <button id="custom-button" type={"button"} aria-label="Insert picture" onClick={() => handleUploadClick()}>
-                    <FontAwesomeIcon size="xs" icon={faImage} style={{color: '#6c757d'}}/>
-                </button>
+                    <button id="custom-button" type={"button"} aria-label="Insert picture" onClick={() => handleUploadClick()}>
+                        <FontAwesomeIcon size="xs" icon={faImage} style={{color: '#6c757d'}}/>
+                    </button>
+                 </div>
+
+                {props.addButtonInHeader &&
+                    <>
+                        <div className="flex">
+                            <Button onClick={onSubmit} mode="primary">
+                                Add note
+                            </Button>
+                        </div>
+                    </>
+                }
 
                 <input
                     type="file"
@@ -132,13 +143,13 @@ function ContactNoteModalTemplate(props: any) {
     }
 
     return (
-        <div style={{display: 'flex', flexDirection: 'column',  margin: props.isEdit ? '-17px -24px' : 0}}>
-            <Controller  name="htmlEnhanced" control={control} render={({field}) => (
+        <div style={{display: 'flex', flexDirection: 'column', margin: props.isEdit ? '-17px -24px' : 0}}>
+            <Controller name="htmlEnhanced" control={control} render={({field}) => (
                 <Editor
-                    style={{height: props.isEdit ? 'auto' : '120px', borderColor: props.isEdit && "transparent" }}
+                    style={{height: props.isEdit ? 'auto' : '120px', borderColor: props.isEdit && "transparent"}}
                     className="w-full h-full"
                     headerTemplate={richTextHeader()}
-                    value={field.value} 
+                    value={field.value}
                     onTextChange={(e) => setValue('htmlEnhanced', e.htmlValue)}
                 />
             )}/>
@@ -153,12 +164,13 @@ function ContactNoteModalTemplate(props: any) {
                         </Button>
                     </>
                 ) : (
+                    !props.addButtonInHeader &&
                     <>
                         <Button onClick={onSubmit} mode="primary" className={`${props.isEdit ? 'mb-3 mr-3' : ''}`}>
                             Add note
                         </Button>
                     </>
-                ) }
+                )}
 
                 {/*<DeleteConfirmationDialog onClick={onSubmit} mode="primary">*/}
                 {/*    Send message*/}
@@ -174,11 +186,15 @@ function ContactNoteModalTemplate(props: any) {
 ContactNoteModalTemplate.propTypes = {
     contactId: PropTypes.string,
     note: PropTypes.object,
-    add: PropTypes.number,
+    addButtonInHeader: PropTypes.bool,
     isEdit: PropTypes.bool,
     notifyCancel: PropTypes.func,
     notifyChanged: PropTypes.func,
     notifyDeleted: PropTypes.func,
+}
+
+ContactNoteModalTemplate.defaultProps = {
+    addButtonInHeader: false,
 }
 
 export default ContactNoteModalTemplate

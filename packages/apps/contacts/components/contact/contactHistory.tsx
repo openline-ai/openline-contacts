@@ -31,7 +31,8 @@ function ContactHistory(props: Props) {
                 client,
                 props.contactId as string,
             ).then((contact: ContactWithActions) => {
-                setActions(contact.actions)
+                let act = contact.actions.map(e => ({...e, createdAt: e.startedAt, type: "ACTION"}));
+                setActions([...act, {createdAt: contact.createdAt, actionName: "Contact created", type: "APP_ACTION"}])
                 setActionsLoading(false)
             }).catch((reason: any) => {
                 //todo log an error in server side
@@ -57,20 +58,6 @@ function ContactHistory(props: Props) {
         }
 
     }, [props.contactId, props.reload]);
-
-    useEffect(() => {
-        if (props.contactId) {
-            GetActionsForContact(
-                client,
-                props.contactId as string,
-            ).then((contact: ContactWithActions) => {
-                setActions(contact.actions.map(e => ({...e, createdAt: e.startedAt, type: "ACTION"})))
-            }).catch((reason: any) => {
-                toast.error("There was a problem on our side and we are doing our best to solve it!");
-            });
-        }
-    }, [props.contactId]);
-
 
     useEffect(() => {
         if (props.contactId) {
