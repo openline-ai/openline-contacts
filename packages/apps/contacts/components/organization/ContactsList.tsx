@@ -20,10 +20,10 @@ export const OrganizationContactList = ({contacts = []}: {contacts: any}) => {
                     <li key={e.id}
                         onClick={() => router.push(`/contact/${e.id}`)}
                         className={`hover-background text-gray-800 line-height-2 pt-3 pb-3 ${styles.listItem}`}>
-                        <div>
+                        <div className="flex align-items-center">
                             <span> {e.firstName} </span>
                             <span> {e.lastName} </span>
-                            <span className="text-xs ml-2 text-gray-600">{e.jobTitle}</span>
+                            <span className="text-xs ml-2 text-gray-600">{e.jobRoles[0]?.jobTitle}</span>
                             <TagsList tags={e.tags} readOnly />
                         </div>
 

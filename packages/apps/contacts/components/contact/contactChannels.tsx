@@ -146,47 +146,6 @@ function ContactCommunication(props: any) {
                     <div className="card-header">
                         <div className="flex flex-row w-full align-items-center">
                             <h1 className="text-gray-900 text-xl">Details</h1>
-                            <div className="flex ml-3">
-                                <div className='flex flex-1 justify-content-end'>
-                                    <Button
-                                        onClick={(e: OverlayPanelEventType) => addCommunicationChannelContainerRef?.current?.toggle(e)}>
-                                        <FontAwesomeIcon icon={faPlus}/>
-                                        Add
-                                    </Button>
-                                </div>
-                                <OverlayPanel ref={addCommunicationChannelContainerRef} dismissable>
-                                    <Menu model={[
-                                        {
-                                            label: 'Email',
-                                            command: () => {
-                                                setEmails([...emails, {
-                                                    id: undefined,
-                                                    email: '',
-                                                    label: EmailLabelEnum[1].value,
-                                                    primary: emails.length === 0,
-                                                    uiKey: uuidv4(), //TODO make sure the ID is unique in the array
-                                                    newItem: true // this is used to remove the item from the emails array in case of cancel new item
-                                                }]);
-                                                addCommunicationChannelContainerRef?.current?.hide();
-                                            }
-                                        },
-                                        {
-                                            label: 'Phone number',
-                                            command: () => {
-                                                setPhoneNumbers([...phoneNumbers, {
-                                                    id: undefined,
-                                                    e164: '',
-                                                    label: '',
-                                                    primary: phoneNumbers.length === 0,
-                                                    uiKey: uuidv4(), //TODO make sure the ID is unique in the array
-                                                    newItem: true // this is used to remove the item from the phone numbers array in case of cancel new item
-                                                }]);
-                                                addCommunicationChannelContainerRef?.current?.hide();
-                                            }
-                                        }
-                                    ]}/>
-                                </OverlayPanel>
-                            </div>
                         </div>
                     </div>
                     <div>
@@ -229,6 +188,46 @@ function ContactCommunication(props: any) {
                                 />
                             })
                         }
+
+                        <div className='flex flex-1 justify-content-center'>
+                            <Button mode={'primary'}
+                                onClick={(e: OverlayPanelEventType) => addCommunicationChannelContainerRef?.current?.toggle(e)}>
+                                <FontAwesomeIcon icon={faPlus}/>
+                                Add more details
+                            </Button>
+                        </div>
+                        <OverlayPanel ref={addCommunicationChannelContainerRef} dismissable>
+                            <Menu model={[
+                                {
+                                    label: 'Email',
+                                    command: () => {
+                                        setEmails([...emails, {
+                                            id: undefined,
+                                            email: '',
+                                            label: EmailLabelEnum[1].value,
+                                            primary: emails.length === 0,
+                                            uiKey: uuidv4(), //TODO make sure the ID is unique in the array
+                                            newItem: true // this is used to remove the item from the emails array in case of cancel new item
+                                        }]);
+                                        addCommunicationChannelContainerRef?.current?.hide();
+                                    }
+                                },
+                                {
+                                    label: 'Phone number',
+                                    command: () => {
+                                        setPhoneNumbers([...phoneNumbers, {
+                                            id: undefined,
+                                            e164: '',
+                                            label: '',
+                                            primary: phoneNumbers.length === 0,
+                                            uiKey: uuidv4(), //TODO make sure the ID is unique in the array
+                                            newItem: true // this is used to remove the item from the phone numbers array in case of cancel new item
+                                        }]);
+                                        addCommunicationChannelContainerRef?.current?.hide();
+                                    }
+                                }
+                            ]}/>
+                        </OverlayPanel>
 
                     </div>
                 </>

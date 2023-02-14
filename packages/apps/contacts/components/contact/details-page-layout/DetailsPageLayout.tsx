@@ -128,6 +128,7 @@ export const DetailsPageLayout = () => {
                             html: ''
 
                         }}
+                        addButtonInHeader={true}
                         notifyChanged={() => setReloadNotes(true)}
                         contactId={router.query?.id as string}
 
