@@ -12,7 +12,7 @@ import {Skeleton} from "primereact/skeleton";
 import {Button} from "../../components/atoms";
 import {useGraphQLClient} from "../../utils/graphQLClient";
 import {CardHeading} from "../../components/atoms/cardHeading";
-import {CreateOrganisationNote} from "../../components/organization/CreateOrganisationNote";
+import CreateOrganizationNoteEditor from "../../components/organization/CreateOrganisationNoteEditor";
 import {Contact} from "../../models/contact";
 
 function OrganizationEdit() {
@@ -115,9 +115,9 @@ function OrganizationEdit() {
                         </article>
 
                         <section className={styles.composeBox}>
-                            <CreateOrganisationNote
-                                organizationId={router.query.id}
-                                refreshData={() => setRefreshNotes(true)}
+                            <CreateOrganizationNoteEditor
+                                organizationId={router.query.id as string}
+                                notifyChanged={() => setRefreshNotes(true)}
                             />
                         </section>
 
