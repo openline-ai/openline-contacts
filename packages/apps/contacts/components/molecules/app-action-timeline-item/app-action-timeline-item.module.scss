@@ -1,0 +1,66 @@
+.timelineItem {
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: Roboto, sans-serif;
+  font-weight: 200;
+  line-height: 1.3rem;
+  font-size: 1rem;
+}
+
+.last {
+  margin-bottom: 24px;
+}
+
+.timelineLine {
+  width: 1px;
+  background: var(--gray-400);
+
+  &:first-of-type {
+    height: 24px;
+    margin-bottom: 4px;
+  }
+
+  &:not(:first-of-type) {
+    height: 12px;
+    margin-top: 4px;
+  }
+}
+
+.content {
+  background: #F3E7FA;
+  padding: 10px 25px;
+
+  border-radius: 50px;
+  width: 100%;
+  position: relative;
+}
+
+.content:not(.minimal-width) {
+  width: auto;
+}
+
+.actionContainer {
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  align-items: self-start;
+  justify-content: space-between;
+  flex:1;
+  line-height: 1.5rem;
+
+  @media (max-width:1024px)  {
+    flex-direction: column;
+  }
+}
+
+.actionDevice {
+  margin-top: 4px;
+  color: var(--gray-600);
+}
+
+.x {
+  align-items: center;
+  display: flex;
+}

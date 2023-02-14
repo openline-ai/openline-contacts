@@ -2,7 +2,7 @@ import {useRouter} from "next/router";
 import "@openline-ai/openline-web-chat/dist/esm/index.css"
 import styles from './details-page-layout.module.scss'
 import React, {useEffect, useState} from "react";
-import {Contact, ContactTag} from "../../../models/contact";
+import {Contact, ContactJobRole, ContactTag, Owner} from "../../../models/contact";
 import {toast} from "react-toastify";
 import {GetContactDetails} from "../../../services/contactService";
 import {ProfileLayout} from "./ProfileLayout";
@@ -14,6 +14,7 @@ import {Divider} from "../../atoms";
 import {useGraphQLClient} from "../../../utils/graphQLClient";
 import {CardHeading} from "../../atoms/cardHeading";
 import {Skeleton} from "primereact/skeleton";
+import {EntityDefinition} from "../../../models/customFields";
 
 // TODO Move atom components to ui-kit
 // TODO refactor this so it is layout that can be reused
@@ -26,13 +27,13 @@ export const DetailsPageLayout = () => {
     const [reloadNotes, setReloadNotes] = useState(false);
     const [contact, setContact] = useState({
         id: undefined,
-        definitionId: undefined,
         title: undefined,
         firstName: '',
         lastName: '',
         ownerId: undefined,
         ownerFullName: '',
         label: "",
+        jobRoles: [] as ContactJobRole[]
     }) as any;
 
     const [editDetails, setEditDetails] = useState(false);
@@ -45,9 +46,9 @@ export const DetailsPageLayout = () => {
             ownerId: contact.owner?.id ?? undefined,
             ownerFullName: contact.owner ? contact.owner.firstName + ' ' + contact.owner.lastName : '',
             label: contact.label,
-            definitionId: contact.definition?.id,
             source: contact.source,
-            tags: contact.tags
+            tags: contact.tags,
+            jobRoles: contact.jobRoles
         };
     }
 
@@ -127,6 +128,7 @@ export const DetailsPageLayout = () => {
                             html: ''
 
                         }}
+                        addButtonInHeader={true}
                         notifyChanged={() => setReloadNotes(true)}
                         contactId={router.query?.id as string}
 

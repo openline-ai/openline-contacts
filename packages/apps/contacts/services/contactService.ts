@@ -20,13 +20,13 @@ export function GetContactDetails(client: GraphQLClient, id: string): Promise<Co
                     firstName
                     lastName
                 }
-                tags {
+                jobRoles {
                     id
-                    name
-                }
-                
-                template{
-                    id
+                    jobTitle
+                    organization {
+                        id
+                        name
+                    }
                 }
                 label
                 source
@@ -54,6 +54,7 @@ export function GetActionsForContact(client: GraphQLClient, id: string): Promise
                 id
                 firstName
                 lastName
+                createdAt
                 actions(from:$from, to:$to) {
                     ... on PageViewAction {
                         id
@@ -103,86 +104,86 @@ export function GetTagsForContact(client: GraphQLClient, id: string): Promise<Co
         });
     });
 }
-
-export function GetContactCustomFields(client: GraphQLClient, id: string): Promise<Contact> {
-    return new Promise((resolve, reject) => {
-
-        const query = gql`query GetContactCustomFields($id: ID!) {
-            contact(id: $id) {
-                template {
-                    id
-                }
-                customFields {
-                    id
-                    name
-                    datatype
-                    value
-                    template {
-                        id
-                        name
-                        type
-                        order
-                        mandatory
-                        length
-                        min
-                        max
-                    }
-                }
-                fieldSets {
-                    id
-                    name
-                    template {
-                        id
-                        name
-                        order
-                    }
-                    customFields {
-                        id
-                        name
-                        datatype
-                        value
-                        template {
-                            id
-                            name
-                            type
-                            order
-                            mandatory
-                            length
-                            min
-                            max
-                        }
-                    }
-                }
-            }
-        }`
-
-        client.request(query, {id: id}).then((response: any) => {
-            if (response.contact) {
-                var sortedData = [] as any;
-                response.contact.customFields.forEach((f: any) => sortedData.push(f));
-                response.contact.fieldSets.forEach((f: any) => {
-                    f.customFields = f.customFields.sort(function (a: any, b: any) {
-                        return a.definition.order - b.definition.order;
-                    });
-                    sortedData.push(f);
-                });
-
-                sortedData = sortedData.sort(function (a: any, b: any) {
-                    return a.definition.order - b.definition.order;
-                });
-
-                resolve({
-                    definition: response.contact.definition,
-                    sortedFieldsAndFieldSets: sortedData,
-                } as Contact);
-            } else {
-                reject(response.errors);
-            }
-        }).catch(reason => {
-            reject(reason);
-        });
-    });
-}
+//
+// export function GetContactCustomFields(client: GraphQLClient, id: string): Promise<Contact> {
+//     return new Promise((resolve, reject) => {
+//
+//         const query = gql`query GetContactCustomFields($id: ID!) {
+//             contact(id: $id) {
+//                 template {
+//                     id
+//                 }
+//                 customFields {
+//                     id
+//                     name
+//                     datatype
+//                     value
+//                     template {
+//                         id
+//                         name
+//                         type
+//                         order
+//                         mandatory
+//                         length
+//                         min
+//                         max
+//                     }
+//                 }
+//                 fieldSets {
+//                     id
+//                     name
+//                     template {
+//                         id
+//                         name
+//                         order
+//                     }
+//                     customFields {
+//                         id
+//                         name
+//                         datatype
+//                         value
+//                         template {
+//                             id
+//                             name
+//                             type
+//                             order
+//                             mandatory
+//                             length
+//                             min
+//                             max
+//                         }
+//                     }
+//                 }
+//             }
+//         }`
+//
+//         client.request(query, {id: id}).then((response: any) => {
+//             if (response.contact) {
+//                 var sortedData = [] as any;
+//                 response.contact.customFields.forEach((f: any) => sortedData.push(f));
+//                 response.contact.fieldSets.forEach((f: any) => {
+//                     f.customFields = f.customFields.sort(function (a: any, b: any) {
+//                         return a.definition.order - b.definition.order;
+//                     });
+//                     sortedData.push(f);
+//                 });
+//
+//                 sortedData = sortedData.sort(function (a: any, b: any) {
+//                     return a.definition.order - b.definition.order;
+//                 });
+//
+//                 resolve({
+//                     definition: response.contact.definition,
+//                     sortedFieldsAndFieldSets: sortedData,
+//                 } as Contact);
+//             } else {
+//                 reject(response.errors);
+//             }
+//         }).catch(reason => {
+//             reject(reason);
+//         });
+//     });
+// }
 
 export function CreateContact(client: GraphQLClient, data: any): Promise<Contact> {
     return new Promise((resolve, reject) => {

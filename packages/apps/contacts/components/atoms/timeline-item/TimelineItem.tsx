@@ -7,12 +7,13 @@ interface Props  {
     createdAt?: string | number
     first?: boolean
     style?: any
+    className?: string
 }
 
-export const TimelineItem: React.FC<Props> = ({ children,  createdAt, first, ...rest}) => {
+export const TimelineItem: React.FC<Props> = ({ children,  createdAt, first, className, ...rest}) => {
 
     return (
-        <div className={`${styles.timelineItem} `}>
+        <div className={`${styles.timelineItem} ${className ?? ''}`}>
 
             <span className={`${!first ? styles.timelineLine : ''}`}/>
             {createdAt ? (

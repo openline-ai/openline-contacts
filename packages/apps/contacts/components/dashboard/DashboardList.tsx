@@ -19,7 +19,6 @@ export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreen
 
     return (
         <FullScreenModeLayout fullScreenMode={fullScreenMode}>
-            <div className="mt-5">
                 <GridComponent gridTitle="All contacts"
                                queryData={(params: any) => loadData(params)}
                                globalFilterFields="searchTerm"
@@ -83,9 +82,9 @@ export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreen
                                            return (c.contact?.emails).map((data: any, index: number) => (
                                                <div className='flex flex-wrap' key={data.id}>
                                                    <DashboardTableCell
-                                                       className='lowercase'
+                                                       className='lowercase ctaCursorStyle'
                                                        label={data.email}
-                                                       url={`/contact/${data.id}`}
+                                                       url={`/contact/${c.contact.id}`}
                                                    />
                                                    {c.contact?.emails.length - 1 !== index && ', '}
                                                </div>
@@ -129,10 +128,7 @@ export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreen
                                defaultLimit={fullScreenMode ? 10 : 10}
 
                 />
-            </div>
 
         </FullScreenModeLayout>
-
-
     );
 }

@@ -8,8 +8,7 @@ export const DashboardTableCell = (
     return (
         <div className='flex flex-column'>
             {url ? (
-                <Link href={url}
-                      className='cta'>
+                <Link href={url} className={`cta ${className}`}>
                     {label}
                 </Link>
             ): (
