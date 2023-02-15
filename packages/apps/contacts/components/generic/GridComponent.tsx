@@ -76,7 +76,7 @@ const GridComponent = (props: any) => {
                     minLength={2}
                     debounceTimeout={300}
                     onChange={onGlobalFilterChange}
-                    placeholder="Search for contacts or organizations by name or email"
+                    placeholder="Search organizations, contacts, locations"
                 />
             </span>
         )
@@ -210,12 +210,11 @@ const GridComponent = (props: any) => {
     return <>
         {
             props.showHeader != undefined && props.showHeader &&
-            <div className="p-datatable header flex align-items-center">
-
-                <div className="flex align-items-center w-full text-2xl mb-2">
-                    <div className={'flex flex-grow-0 ml-3 mr-3'}>{props.gridTitle}</div>
-                    <div className={'flex flex-grow-1'}>{renderSearch()}</div>
+            <div className="p-datatable header flex flex-column align-items-center ml-3">
+                <div className=" w-full mb-3">
+                    {renderSearch()}
                 </div>
+                <div className={'w-full text-2xl'}>{props.gridTitle}</div>
                 {/*<div className="flex justify-content-end">*/}
                 {/*    {props.gridActions}*/}
                 {/*</div>*/}

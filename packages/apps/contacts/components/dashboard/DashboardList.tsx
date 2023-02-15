@@ -74,7 +74,11 @@ export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreen
 
                                        className: 'w25',
                                        field: 'contact',
-                                       label: 'Email',
+                                       label: () => (
+                                           <DashboardTableHeaderLabel
+                                               label="Email"
+                                               subLabel="&nbsp;"
+                                           />),
                                        template: (c: any) => {
                                            if (!c.contact?.emails) {
                                                return <span>-</span>

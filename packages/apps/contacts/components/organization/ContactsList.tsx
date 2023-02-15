@@ -21,31 +21,30 @@ export const OrganizationContactList = ({contacts = []}: {contacts: any}) => {
                         onClick={() => router.push(`/contact/${e.id}`)}
                         className={`hover-background text-gray-800 line-height-2 pt-3 pb-3 ${styles.listItem}`}>
                         <div className="flex align-items-center">
-                            <span> {e.firstName} </span>
-                            <span> {e.lastName} </span>
+                            <span>{e.firstName}&nbsp;{e.lastName}</span>
                             <span className="text-xs ml-2 text-gray-600">{e.jobRoles[0]?.jobTitle}</span>
                             <TagsList tags={e.tags} readOnly />
                         </div>
 
-                            <div className="flex mb-1 mt-1 ">
-                                {!!e.phoneNumbers.length && (
-                                    <>
-                                        <span className="mr-2"> <FontAwesomeIcon icon={faPhone}/> </span>
-                                        {e.phoneNumbers.find((d:any ) => d.primary)?.e164 || e.phoneNumbers[0]?.e164}
-                                    </>
-                                )}
+                        <div className="flex mb-1 mt-1 ">
+                            {!!e.phoneNumbers.length && (
+                                <>
+                                    <span className="mr-2"> <FontAwesomeIcon icon={faPhone}/> </span>
+                                    {e.phoneNumbers.find((d:any ) => d.primary)?.e164 || e.phoneNumbers[0]?.e164}
+                                </>
+                            )}
 
 
-                            </div>
-                            <div className="flex mb-1 mt-1 ">
-                                {!!e.emails.length && (
-                                    <>
-                                        <span className="mr-2"> <FontAwesomeIcon icon={faEnvelope}/> </span>
-                                        {e.emails.find((d:any ) => d.primary)?.email || e.emails[0]?.email }
-                                    </>
-                                )}
+                        </div>
+                        <div className="flex mb-1 mt-1 ">
+                            {!!e.emails.length && (
+                                <>
+                                    <span className="mr-2"> <FontAwesomeIcon icon={faEnvelope}/> </span>
+                                    {e.emails.find((d:any ) => d.primary)?.email || e.emails[0]?.email }
+                                </>
+                            )}
 
-                            </div>
+                        </div>
                     </li>
                 ))}
             </ul>

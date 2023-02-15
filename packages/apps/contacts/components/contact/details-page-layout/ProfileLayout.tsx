@@ -85,6 +85,8 @@ export const ProfileLayout = ({onSetEditMode, contact}: Props) => {
 
                         </div>
 
+                        <TagsList tags={contact?.tags} readOnly/>
+
                     </div>
                 </div>
 
@@ -92,9 +94,6 @@ export const ProfileLayout = ({onSetEditMode, contact}: Props) => {
                 <></>
                 // <h2>Add new contact</h2>
             )}
-            <div>
-                <TagsList tags={contact?.tags} readOnly/>
-            </div>
 
             <DeleteConfirmationDialog
                 header="Delete Contact"

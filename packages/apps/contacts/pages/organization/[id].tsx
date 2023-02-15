@@ -107,7 +107,7 @@ function OrganizationEdit() {
                                 </div>
                             ) : (
                                 <>
-                                    <CardHeading><span style={{padding: '0px 24px'}}>Contacts</span></CardHeading>
+                                    <CardHeading><div style={{padding: '10px 24px 0px 24px'}}>Contacts</div></CardHeading>
                                     <OrganizationContactList contacts={contactInOrganisation}/>
                                 </>
                             )}
