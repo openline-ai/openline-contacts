@@ -56,6 +56,7 @@ export const SidePanel: React.FC<Props> = ({userEmail, logoutUrl, isOpen, onOpen
                     </button>
                 </div>
 
+
             </Sidebar>
         </>
     );
