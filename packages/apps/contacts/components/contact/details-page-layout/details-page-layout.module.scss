@@ -11,7 +11,7 @@
                        "message"
                        "contactHistory";
 
-  @media (min-width: 801px) {
+  @media (min-width:1200px) {
     /* tablet, landscape iPad, lo-res laptops ands desktops */
     flex-direction: row;
     padding: 24px 12px;
@@ -21,7 +21,24 @@
     grid-template-areas: "profile message"
                           "contactFields message"
                          "contactFields contactHistory"
+                         "contactFields contactHistory";
+
+    width: 1200px;
+  }
+
+  @media (min-width:1000px) {
+    /* tablet, landscape iPad, lo-res laptops ands desktops */
+    flex-direction: row;
+    padding: 24px 12px;
+    grid-template-columns: 2fr 3fr;
+    grid-template-rows: auto 50px 50px 1fr;
+    grid-gap: 48px;
+    grid-template-areas: "profile message"
+                          "contactFields message"
                          "contactFields contactHistory"
+                         "contactFields contactHistory";
+
+    width: 1000px;
   }
 
 }
