@@ -121,3 +121,24 @@ ul li {
 .w25 {
     width: 25%;
 }
+
+.openline_avatar_wrapper {
+    left:12px!important;
+    right: 0!important;
+    bottom: 10px!important;
+}
+
+.openline_webchat_button {
+    width: 40px!important;
+    height: 40px!important;
+}
+
+.support_window {
+    bottom: 60px!important;
+    left: 12px!important;
+}
+
+.support_window_border {
+    bottom: 60px!important;
+    left: 12px!important;
+}

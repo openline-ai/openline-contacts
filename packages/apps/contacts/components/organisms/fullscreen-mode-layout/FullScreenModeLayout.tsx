@@ -20,11 +20,11 @@ export const FullScreenModeLayout: React.FC<Props> = ({fullScreenMode, children,
                 fullScreenMode && (
                     <div className={'flex flex-column pt-3 pl-3'}>
                         <Button className={'mr-3'} icon={faChevronLeft} onClick={() => router.push('/')}>
-                            Back
+
                         </Button>
                     </div>
                 )}
-            <div className={'flex flex-column w-full'}>
+            <div className={'flex flex-column'} style={{width: '1200px', minWidth: '1200px', maxWidth: '1200px'}}>
             {children}
             </div>
         </div>
