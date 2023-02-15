@@ -58,7 +58,7 @@ export default function Layout({ children }: any) {
     }
 
     return (
-        <div className={`flex h-full w-full ${styles.pageContentWrapper}`}>
+        <div className={`flex w-full ${styles.pageContentWrapper}`} style={{minHeight: '100%'}}>
 
             {router.pathname === '/' && userEmail && (
                 <SidePanel
