@@ -22,7 +22,7 @@ export const SidePanel: React.FC<Props> = ({userEmail, logoutUrl, isOpen, onOpen
     return (
         <>
             <div className={`cursor-pointer p-3 ${styles.openPanelButton} flex flex-column justify-content-between`}>
-                <AvatarButton ariaLabel='Profile' onClick={isOpen ? onClose : onOpen}/>
+                <AvatarButton ariaLabel='Profile' onClick={isOpen ? onClose : onOpen} className={'top-20-px sticky'}/>
 
                 <WebChat apikey={`${process.env.WEB_CHAT_API_KEY}`}
                          httpServerPath={`${process.env.WEB_CHAT_HTTP_PATH}`}

@@ -48,6 +48,30 @@ export function UpdateSmartsheetSettings(data: SmartsheetSettings): Promise<Smar
     }));
 }
 
+export function UpdateJiraSettings(data: any): Promise<any> {
+    return new Promise((resolve, reject) => axios.post(`/sa/settings/jira`, data).then((response: any) => {
+        if (response.data) {
+            resolve(response.data);
+        } else {
+            reject(response.error);
+        }
+    }).catch(reason => {
+        reject(reason);
+    }));
+}
+
+export function UpdateTrelloSettings(data: any): Promise<any> {
+    return new Promise((resolve, reject) => axios.post(`/sa/settings/trello`, data).then((response: any) => {
+        if (response.data) {
+            resolve(response.data);
+        } else {
+            reject(response.error);
+        }
+    }).catch(reason => {
+        reject(reason);
+    }));
+}
+
 export function DeleteSmartsheetSettings(): Promise<SmartsheetSettings> {
     return new Promise((resolve, reject) => axios.delete(`/sa/settings/smartSheet`).then((response: any) => {
         if (response.data) {
@@ -83,3 +107,26 @@ export function DeleteZendeskSettings(): Promise<SmartsheetSettings> {
     }));
 }
 
+export function DeleteJiraSettings(): Promise<SmartsheetSettings> {
+    return new Promise((resolve, reject) => axios.delete(`/sa/settings/jira`).then((response: any) => {
+        if (response.data) {
+            resolve(response.data);
+        } else {
+            reject(response.error);
+        }
+    }).catch(reason => {
+        reject(reason);
+    }));
+}
+
+export function DeleteTrelloSettings(): Promise<SmartsheetSettings> {
+    return new Promise((resolve, reject) => axios.delete(`/sa/settings/trello`).then((response: any) => {
+        if (response.data) {
+            resolve(response.data);
+        } else {
+            reject(response.error);
+        }
+    }).catch(reason => {
+        reject(reason);
+    }));
+}
