@@ -60,7 +60,7 @@ export default function Layout({ children }: any) {
     return (
         <div className={`flex h-full w-full ${styles.pageContentWrapper}`}>
 
-            {router.pathname === '/' && (
+            {router.pathname === '/' && userEmail && (
                 <SidePanel
                     userEmail={userEmail}
                     logoutUrl={logoutUrl}
