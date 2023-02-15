@@ -9,11 +9,12 @@ interface Props extends Partial<HTMLButtonElement> {
     image?: StaticImageData;
     onClick?: () => void;
     ariaLabel: string;
+    className?: string;
 }
 
-export const AvatarButton: FC<Props> = ({ image, onClick, ariaLabel }) => {
+export const AvatarButton: FC<Props> = ({ image, onClick, ariaLabel, className }) => {
     return (
-        <div onClick={onClick} aria-label={ariaLabel} role="button" tabIndex={0} className={styles.button}>
+        <div onClick={onClick} aria-label={ariaLabel} role="button" tabIndex={0} className={`${styles.button} ${className}`}>
             {image ? (
                 <Avatar username={ariaLabel} image={image} />
             ) : <FontAwesomeIcon icon={faUser} />
