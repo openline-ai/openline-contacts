@@ -21,11 +21,9 @@ export function GetOrganizations(client: GraphQLClient, params: PaginatedRequest
                     locations {
                         id
                         name
-                        place {
-                            country
-                            state
-                            city
-                        }
+                        country
+                        region
+                        locality
                     }
                 }
                 totalElements

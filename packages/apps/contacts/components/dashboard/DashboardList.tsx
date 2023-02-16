@@ -113,9 +113,9 @@ export const DashboardList: NextPage<{ fullScreenMode: boolean }> = ({fullScreen
                                            return c.contact?.locations.map((data: Location) => (
                                                <DashboardTableAddressCell
                                                    key={data.id}
-                                                   city={data?.place?.city}
-                                                   state={data?.place?.state}
-                                                   country={data?.place?.country}
+                                                   city={data?.locality}
+                                                   state={data?.region}
+                                                   country={data?.country}
                                                />
                                            ))
                                        }
