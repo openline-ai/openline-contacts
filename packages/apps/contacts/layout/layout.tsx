@@ -23,7 +23,6 @@ export default function Layout({ children }: any) {
         if (router.asPath.startsWith("/login")) {
             return;
         }
-        const start = Date.now();
         ory
             .toSession(undefined, {
                 headers: {
@@ -31,8 +30,6 @@ export default function Layout({ children }: any) {
                 },
             })
             .then(({ data }) => {
-                const end = Date.now();
-                console.log(`Execution time: ${end - start} ms`);
 
                 // User has a session!
                 setSession(data)

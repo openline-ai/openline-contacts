@@ -6,16 +6,12 @@ export function middleware(request: NextRequest) {
         return NextResponse.next()
     }
 
-    const start = Date.now();
     return fetch(`${process.env.ORY_SDK_URL}/sessions/whoami`, {
         headers: {
             cookie: request.headers.get("cookie") || "",
             "Cache-Control": "max-age=60"
         },
     }).then((resp) => {
-
-        const end = Date.now();
-        console.log(`Execution time: ${end - start} ms`);
 
         // there must've been no response (invalid URL or something...)
         if (!resp) {
