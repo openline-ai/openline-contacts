@@ -105,14 +105,13 @@ function OrganizationEdit({organisation, onReload, createMode}: { organisation: 
 
                 <div className="block" style={{marginTop: '-20px'}}>
                     {organisation?.locations?.map((data) => {
-                        var place = data.place;
                         return <div key={data.id} className={`${addressStyles.addressContainer} flex-row`}>
-                            {place && place.country && (
-                                <div className={`flex ${addressStyles.country} ${addressStyles['default']}`}>{place.country}</div>
+                            {data && data.country && (
+                                <div className={`flex ${addressStyles.country} ${addressStyles['default']}`}>{data.country}</div>
                             )}
-                            {(place && (place.city || place.state || place.zip)) && (
-                                <div className={`flex ${addressStyles.address} ${addressStyles['default']} ${place.country ? 'ml-2': ''}`}>
-                                    {place.city}, {place.state} {place.zip}
+                            {(data && (data.locality || data.region || data.zip)) && (
+                                <div className={`flex ${addressStyles.address} ${addressStyles['default']} ${data.country ? 'ml-2': ''}`}>
+                                    {data.locality}, {data.region} {data.zip}
                                 </div>
                             )}
                         </div>

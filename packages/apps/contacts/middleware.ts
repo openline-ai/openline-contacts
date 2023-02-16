@@ -3,6 +3,8 @@ import axios from "axios";
 
 export function middleware(request: NextRequest) {
     if (!request.nextUrl.pathname.startsWith('/customer-os-api/') && !request.nextUrl.pathname.startsWith('/sa/') && !request.nextUrl.pathname.startsWith('/fs/') && !request.nextUrl.pathname.startsWith('/oasis-api/')) {
+        console.log('ignore URL: ');
+        console.log(request.nextUrl);
         return NextResponse.next()
     }
 
@@ -10,7 +12,7 @@ export function middleware(request: NextRequest) {
     return fetch(`${process.env.ORY_SDK_URL}/sessions/whoami`, {
         headers: {
             cookie: request.headers.get("cookie") || "",
-            "Cache-Control": "max-age=60"
+            "cache-control": "max-age=60"
         },
     }).then((resp) => {
 

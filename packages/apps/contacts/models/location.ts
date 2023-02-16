@@ -1,7 +1,10 @@
-import {Place} from "./place";
-
 export interface Location {
     id: string,
     name?: string,
-    place?: Place,
+    country?: string,
+    region?: string,
+    locality?: string,
+    zip?: string,
+    address?: string,
+    address2?: string | null,
 }
