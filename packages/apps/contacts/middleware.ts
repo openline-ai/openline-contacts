@@ -18,6 +18,7 @@ export function middleware(request: NextRequest) {
 
         const end = Date.now();
         console.log(`Execution time: ${end - start} ms`);
+        console.log(resp.headers)
 
         // there must've been no response (invalid URL or something...)
         if (!resp) {
