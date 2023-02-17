@@ -27,7 +27,7 @@ export default function Layout({ children }: any) {
         ory
             .toSession(undefined, {
                 headers: {
-                    "cache-control": "max-age=60",
+                    "cache-control": "max-age=600",
                 },
             })
             .then(({data, headers}) => {
