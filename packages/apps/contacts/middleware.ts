@@ -12,7 +12,7 @@ export function middleware(request: NextRequest) {
     return fetch(`${process.env.ORY_SDK_URL}/sessions/whoami`, {
         headers: {
             cookie: request.headers.get("cookie") || "",
-            "cache-control": "max-age=60"
+            "cache-control": "max-age=600"
         },
     }).then((resp) => {
 
