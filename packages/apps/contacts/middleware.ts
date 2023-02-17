@@ -17,8 +17,7 @@ export function middleware(request: NextRequest) {
     }).then((resp) => {
 
         const end = Date.now();
-        console.log(`Execution time: ${end - start} ms`);
-        console.log(resp.headers)
+        console.log(`Ory session execution time: ${end - start} ms; Cache: ` + (resp.headers.get('cf-cache-status') ?? 'missing header'));
 
         // there must've been no response (invalid URL or something...)
         if (!resp) {
@@ -33,8 +32,6 @@ export function middleware(request: NextRequest) {
         }
 
         return resp.json().then((data) => {
-            console.log("User is signed in. Proceeding to redirect.");
-
             return getRedirectUrl(data.identity.traits.email, request);
         })
     }).catch((err) => {

@@ -27,12 +27,12 @@ export default function Layout({ children }: any) {
         ory
             .toSession(undefined, {
                 headers: {
-                    "Cache-Control": "max-age=60",
+                    "cache-control": "max-age=60",
                 },
             })
-            .then(({ data }) => {
+            .then(({data, headers}) => {
                 const end = Date.now();
-                console.log(`Execution time: ${end - start} ms`);
+                console.log(`Ory session execution time: ${end - start} ms; Cache: ` + (headers['cf-cache-status'] ?? 'missing header'));
 
                 // User has a session!
                 setSession(data)
