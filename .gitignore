@@ -7,3 +7,5 @@
 
 # Sentry
 .sentryclirc
+
+.env.production
